@@ -1,28 +1,22 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using Restless.ViewModels;
+using SexyReact.Views;
 
 namespace Restless.Windows
 {
-    public class MainWindow : Window
+    public class MainWindow : RxWindow<MainWindowModel>
     {
         public MainWindow()
         {
-            Title = "Restless";
-            Height = 350;
-            Width = 525;
-
-            var button = new Button
-            {
-                Content = "Scan Drive"
-            };
-            button.Click += (sender, args) =>
-            {
-//                var analyzer = new DiskAnalyzer();
-//                analyzer.AnalyzeDrive(new DriveInfo("c:\\"));
-            };
+            this.Bind(x => x.Title).To(this, (window, title) => Title = title ?? "");
+            Height = 550;
+            Width = 725;
 
             var apiList = new ListView();
+            this.Bind(x => x.Items).To(this, (window, items) => apiList.ItemsSource = items);
+//            apiList.ItemsSource = 
+//            apiList.SetBinding(ItemsControl.ItemsSourceProperty, nameof(MainWindowModel.Items));
 
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition
@@ -58,17 +52,22 @@ namespace Restless.Windows
             grid.Children.Add(splitter);
 
             var menu = new Menu();
-            menu.Items.Add(new MenuItem
+            var fileMenu = new MenuItem
             {
                 Header = "_File"
-            });
+            };
+            var newApiMenuItem = new MenuItem
+            {
+                Header = "_New Api"
+            };
+            fileMenu.Items.Add(newApiMenuItem);
+            this.Bind(x => x.AddApi).To(x => newApiMenuItem.Command = x);
+            menu.Items.Add(fileMenu);
             
             var content = new DockPanel { LastChildFill = true };
             DockPanel.SetDock(menu, Dock.Top);
             content.Children.Add(menu);
             content.Children.Add(grid);
-
-//            grid.Children.Add(menu);
 
             Content = content;
         }

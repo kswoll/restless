@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
+using Restless.ViewModels;
 using Restless.Windows;
 
 namespace Restless
@@ -22,7 +23,11 @@ namespace Restless
         {
             base.OnStartup(e);
 
-            new MainWindow().Show();
+            var mainWindow = new MainWindow
+            {
+                Model = new MainWindowModel()
+            };
+            mainWindow.Show();
         }
     }
 }
