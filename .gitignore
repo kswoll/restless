@@ -1,0 +1,8 @@
+.vs/
+packages/
+Restless/bin/
+Restless.Models/obj/
+Restless.Database/obj/
+Restless.Models/bin/
+Restless.Database/bin/
+Restless/obj/
