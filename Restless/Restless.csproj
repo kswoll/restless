@@ -152,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Controls\ApiPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -166,8 +167,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ViewModels\ApiItemModel.cs" />
+    <Compile Include="ViewModels\ApiModel.cs" />
     <Compile Include="ViewModels\MainWindowModel.cs" />
-    <Compile Include="Windows\MainWindow.cs" />
+    <Compile Include="Windows\MainWindows\ApiItemControl.cs" />
+    <Compile Include="Windows\MainWindows\MainWindow.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

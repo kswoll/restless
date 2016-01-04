@@ -1,22 +1,30 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using Restless.Controls;
 using Restless.ViewModels;
 using SexyReact.Views;
 
-namespace Restless.Windows
+namespace Restless.Windows.MainWindows
 {
     public class MainWindow : RxWindow<MainWindowModel>
     {
+        private UIElement content;
+
         public MainWindow()
         {
+            this.SetBinding(TitleProperty, new Binding("Title"));
             this.Bind(x => x.Title).To(this, (window, title) => Title = title ?? "");
             Height = 550;
             Width = 725;
 
+            var apiListItemTemplate = new FrameworkElementFactory(typeof(TextBlock));
+
+            apiListItemTemplate.SetValue(TextBlock.TextProperty, new Binding(nameof(ApiItemModel.Title)));
+
             var apiList = new ListView();
+            apiList.ItemTemplate = new DataTemplate { VisualTree = apiListItemTemplate };
             this.Bind(x => x.Items).To(this, (window, items) => apiList.ItemsSource = items);
-//            apiList.ItemsSource = 
-//            apiList.SetBinding(ItemsControl.ItemsSourceProperty, nameof(MainWindowModel.Items));
 
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition
@@ -70,6 +78,25 @@ namespace Restless.Windows
             content.Children.Add(grid);
 
             Content = content;
+
+            apiList.SelectionChanged += (sender, args) =>
+            {
+                var item = (ApiItemModel)apiList.SelectedValue;
+                var itemPanel = new ApiPanel
+                {
+                    Model = new ApiModel
+                    {
+                        Title = item.Title
+                    }
+                };
+                Grid.SetColumn(itemPanel, 2);
+                Grid.SetRow(itemPanel, 0);
+
+                if (this.content != null)
+                    grid.Children.Remove(this.content);
+                this.content = itemPanel;
+                grid.Children.Add(itemPanel);
+            };
         }
     }
 }

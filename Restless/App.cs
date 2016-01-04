@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using Restless.ViewModels;
-using Restless.Windows;
+using Restless.Windows.MainWindows;
 
 namespace Restless
 {
