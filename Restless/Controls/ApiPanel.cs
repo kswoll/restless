@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Restless.ViewModels;
+using Restless.WpfExtensions;
 using SexyReact.Views;
 
 namespace Restless.Controls
@@ -9,25 +12,21 @@ namespace Restless.Controls
     {
         public ApiPanel()
         {
-            ColumnDefinitions.Add(new ColumnDefinition
-            {
-                Width = GridLength.Auto
-            });
-            RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            this.AddColumn(1, GridUnitType.Star);
+            this.AddRow(GridLength.Auto);
+            this.AddRow(GridLength.Auto);
 
             var titleLabel = new Label
             {
                 Content = "Title"
             };
-            SetColumn(titleLabel, 0);
-            SetRow(titleLabel, 0);
-            Children.Add(titleLabel);
+            this.Add(titleLabel, 0, 0);
 
             var title = new TextBox();
-            SetColumn(title, 0);
-            SetRow(title, 1);
-            Children.Add(title);
+            title.Margin = new Thickness(5, 0, 5, 0);
+            this.Add(title, 1, 0);
+
+            this.Bind(x => x.Title).Mate(title);
         }
     }
 }
