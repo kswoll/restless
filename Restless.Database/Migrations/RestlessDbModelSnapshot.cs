@@ -27,8 +27,10 @@ namespace Restless.Database.Migrations
 
                     b.Property<string>("ResponseVisualizer");
 
-                    b.Property<string>("Url")
+                    b.Property<string>("Title")
                         .IsRequired();
+
+                    b.Property<string>("Url");
 
                     b.HasKey("Id");
 

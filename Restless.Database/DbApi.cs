@@ -10,9 +10,11 @@ namespace Restless.Database
         public int Id { get; set; }
 
         [Required]
-        public string HttpMethod { get; set; }
+        public string Title { get; set; }
 
         [Required]
+        public string HttpMethod { get; set; }
+
         public string Url { get; set; }
 
         public byte[] Body { get; set; }

@@ -17,7 +17,8 @@ namespace Restless.Database.Migrations
                     Body = table.Column<byte[]>(nullable: true),
                     HttpMethod = table.Column<string>(nullable: false),
                     ResponseVisualizer = table.Column<string>(nullable: true),
-                    Url = table.Column<string>(nullable: false)
+                    Title = table.Column<string>(nullable: false),
+                    Url = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

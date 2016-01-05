@@ -8,7 +8,7 @@ using Restless.Database;
 namespace Restless.Database.Migrations
 {
     [DbContext(typeof(RestlessDb))]
-    [Migration("20160102194850_InitialDb")]
+    [Migration("20160105153250_InitialDb")]
     partial class InitialDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,8 +28,10 @@ namespace Restless.Database.Migrations
 
                     b.Property<string>("ResponseVisualizer");
 
-                    b.Property<string>("Url")
+                    b.Property<string>("Title")
                         .IsRequired();
+
+                    b.Property<string>("Url");
 
                     b.HasKey("Id");
 

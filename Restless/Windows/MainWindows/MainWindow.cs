@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using Restless.Controls;
+using Restless.Database;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
@@ -14,17 +16,16 @@ namespace Restless.Windows.MainWindows
 
         public MainWindow()
         {
-            this.Bind(x => x.Title).To(this, (window, title) => Title = title ?? "");
+            this.Bind(x => x.Title).To(this, (window, title) => window.Title = title ?? "");
             Height = 550;
             Width = 725;
 
             var apiListItemTemplate = new FrameworkElementFactory(typeof(TextBlock));
-
-            apiListItemTemplate.SetValue(TextBlock.TextProperty, new Binding(nameof(ApiModel.Title)));
+            this.Bind(x => x.Title).To(apiListItemTemplate, TextBlock.TextProperty);
 
             var apiList = new ListView();
             apiList.ItemTemplate = new DataTemplate { VisualTree = apiListItemTemplate };
-            this.Bind(x => x.Items).To(this, (window, items) => apiList.ItemsSource = items);
+            this.Bind(x => x.Items).To(apiList, (view, list) => view.ItemsSource = list);
 
             var grid = new Grid();
             grid.AddColumn(300);
@@ -39,7 +40,13 @@ namespace Restless.Windows.MainWindows
             var fileMenu = menu.Add("_File");
             var newApiMenuItem = fileMenu.Add("_New Api");
 
-            this.Bind(x => x.AddApi).To(x => newApiMenuItem.Command = x);
+            var addApi = this.Bind(x => x.AddApi);
+            addApi.To(x => newApiMenuItem.Command = x);
+            addApi.ObserveModelPropertyChange().SelectMany(x => x).Subscribe(apiModel =>
+            {
+                apiList.SelectedValue = apiModel;
+                ((ApiPanel)this.content).InitNew();
+            });
             
             var content = new DockPanel { LastChildFill = true };
             content.Add(menu, Dock.Top);
@@ -49,7 +56,7 @@ namespace Restless.Windows.MainWindows
 
             apiList.SelectionChanged += (sender, args) =>
             {
-                var item = (ApiModel)apiList.SelectedValue;
+                var item = (ApiModel)args.AddedItems[0];
                 var itemPanel = new ApiPanel { Model = item };
 
                 if (this.content != null)

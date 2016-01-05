@@ -10,6 +10,8 @@ namespace Restless.Controls
 {
     public class ApiPanel : RxGrid<ApiModel>
     {
+        private readonly TextBox title;
+
         public ApiPanel()
         {
             this.AddColumn(1, GridUnitType.Star);
@@ -22,11 +24,17 @@ namespace Restless.Controls
             };
             this.Add(titleLabel, 0, 0);
 
-            var title = new TextBox();
+            title = new TextBox();
             title.Margin = new Thickness(5, 0, 5, 0);
             this.Add(title, 1, 0);
 
             this.Bind(x => x.Title).Mate(title);
+        }
+
+        public void InitNew()
+        {
+            title.SelectAll();
+            title.Focus();
         }
     }
 }
