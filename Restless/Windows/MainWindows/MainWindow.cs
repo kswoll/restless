@@ -56,24 +56,32 @@ namespace Restless.Windows.MainWindows
             this.Bind(x => x.SelectedItem).ObserveModelPropertyChange().Subscribe(x =>
             {
                 itemPanel.Model = x;
-                Show(itemPanel);
+                if (x != null)
+                    ShowContent(itemPanel);
+                else
+                    HideContent();
             });
 
             var addApi = this.Bind(x => x.AddApi);
             addApi.To(x => newApiMenuItem.Command = x);
             addApi.ObserveModelPropertyChange().SelectMany(x => x).Subscribe(apiModel =>
             {
-                apiList.SelectedValue = apiModel;
+                Model.SelectedItem = apiModel;
                 ((ApiPanel)this.content).InitNew();
             });            
         }
 
-        private void Show(FrameworkElement content)
+        private void ShowContent(FrameworkElement content)
         {
-            if (this.content != null)
-                grid.Children.Remove(this.content);
+            HideContent();
             this.content = content;
             grid.Add(content, 0, 2);            
+        }
+
+        private void HideContent()
+        {
+            if (content != null)
+                grid.Children.Remove(this.content);            
         }
     }
 }

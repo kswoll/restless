@@ -59,6 +59,7 @@ namespace Restless.ViewModels
 
             var selectedItemIndex = Items.IndexOf(SelectedItem);
             Items.RemoveAt(selectedItemIndex);
+            SelectedItem = null;
         }
     }
 }
