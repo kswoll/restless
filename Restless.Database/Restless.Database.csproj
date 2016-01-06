@@ -139,9 +139,9 @@
     <Compile Include="DbApiCallRequestHeader.cs" />
     <Compile Include="DbApiCallResponseHeader.cs" />
     <Compile Include="DbApiHeader.cs" />
-    <Compile Include="Migrations\20160105153250_InitialDb.cs" />
-    <Compile Include="Migrations\20160105153250_InitialDb.designer.cs">
-      <DependentUpon>20160105153250_InitialDb.cs</DependentUpon>
+    <Compile Include="Migrations\20160106131452_InitialDb.cs" />
+    <Compile Include="Migrations\20160106131452_InitialDb.designer.cs">
+      <DependentUpon>20160106131452_InitialDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\RestlessDbModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

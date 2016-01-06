@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Restless.Models;
 
 namespace Restless.Database
 {
@@ -13,7 +14,7 @@ namespace Restless.Database
         public string Title { get; set; }
 
         [Required]
-        public string HttpMethod { get; set; }
+        public ApiMethod Method { get; set; }
 
         public string Url { get; set; }
 

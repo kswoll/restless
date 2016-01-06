@@ -11,6 +11,13 @@ namespace Restless.WpfExtensions
             return menuItem;
         }
 
+        public static MenuItem Add(this ContextMenu menu, string title)
+        {
+            var menuItem = new MenuItem { Header = title };
+            menu.Items.Add(menuItem);
+            return menuItem;
+        }
+
         public static MenuItem Add(this MenuItem menu, string title)
         {
             var menuItem = new MenuItem { Header = title };

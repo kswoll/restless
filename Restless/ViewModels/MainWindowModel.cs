@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using System.Windows.Threading;
 using Microsoft.Data.Entity;
 using Restless.Database;
+using Restless.Models;
 using SexyReact;
 
 namespace Restless.ViewModels
@@ -11,6 +11,9 @@ namespace Restless.ViewModels
         public string Title { get; set; }
         public IRxFunction<ApiModel> AddApi { get; }
         public RxList<ApiModel> Items { get; }
+        public ApiModel SelectedItem { get; set; }
+
+        public IRxCommand DeleteSelectedItem { get; }
 
         public MainWindowModel()
         {
@@ -27,6 +30,8 @@ namespace Restless.ViewModels
                     Items.Add(new ApiModel(api));
                 }
             });
+
+            DeleteSelectedItem = RxCommand.CreateAsync(DeleteSelectedItemImpl);
         }
 
         private async Task<ApiModel> AddApiImpl()
@@ -35,7 +40,7 @@ namespace Restless.ViewModels
             var dbApi = new DbApi
             {
                 Title = "(New Api)",
-                HttpMethod = "GET"
+                Method = ApiMethod.Get
             };
             db.Apis.Add(dbApi);
             await db.SaveChangesAsync();
@@ -43,6 +48,17 @@ namespace Restless.ViewModels
             var model = new ApiModel(dbApi);
             Items.Add(model);
             return model;
+        }
+        
+        private async Task DeleteSelectedItemImpl()
+        {
+            var db = new RestlessDb();
+            var dbApi = await db.Apis.SingleAsync(x => x.Id == SelectedItem.Id);
+            db.Apis.Remove(dbApi);
+            await db.SaveChangesAsync();
+
+            var selectedItemIndex = Items.IndexOf(SelectedItem);
+            Items.RemoveAt(selectedItemIndex);
         }
     }
 }

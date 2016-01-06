@@ -22,8 +22,7 @@ namespace Restless.Database.Migrations
 
                     b.Property<byte[]>("Body");
 
-                    b.Property<string>("HttpMethod")
-                        .IsRequired();
+                    b.Property<int>("Method");
 
                     b.Property<string>("ResponseVisualizer");
 

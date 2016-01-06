@@ -175,6 +175,7 @@
     <Compile Include="WpfExtensions\GridExtensions.cs" />
     <Compile Include="WpfExtensions\GridSplitterExtensions.cs" />
     <Compile Include="WpfExtensions\MenuExtensions.cs" />
+    <Compile Include="WpfExtensions\NameValuePanel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -193,6 +194,10 @@
     <ProjectReference Include="..\Restless.Database\Restless.Database.csproj">
       <Project>{ce1bfb96-c6c2-4764-833b-4e450ee2b0e1}</Project>
       <Name>Restless.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Restless.Models\Restless.Models.csproj">
+      <Project>{1815F43C-669C-469B-B81B-042AD0E28CC6}</Project>
+      <Name>Restless.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

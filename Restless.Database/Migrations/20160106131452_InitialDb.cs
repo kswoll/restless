@@ -15,7 +15,7 @@ namespace Restless.Database.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Body = table.Column<byte[]>(nullable: true),
-                    HttpMethod = table.Column<string>(nullable: false),
+                    Method = table.Column<int>(nullable: false),
                     ResponseVisualizer = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: false),
                     Url = table.Column<string>(nullable: true)
