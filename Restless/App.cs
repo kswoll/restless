@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
+using Restless.Styles;
 using Restless.ViewModels;
 using Restless.Windows.MainWindows;
 
@@ -22,6 +23,8 @@ namespace Restless
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            GlobalStyles.RegisterStyles(Resources);
 
             var mainWindow = new MainWindow
             {

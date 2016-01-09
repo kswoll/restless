@@ -166,11 +166,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Styles\ButtonStyle.cs" />
+    <Compile Include="Styles\GlobalStyles.cs" />
+    <Compile Include="Templates\ButtonTemplate.cs" />
     <Compile Include="ViewModels\ApiModel.cs" />
     <Compile Include="ViewModels\BaseModel.cs" />
     <Compile Include="ViewModels\MainWindowModel.cs" />
     <Compile Include="Windows\MainWindows\ApiItemControl.cs" />
     <Compile Include="Windows\MainWindows\MainWindow.cs" />
+    <Compile Include="WpfExtensions\ButtonExtensions.cs" />
     <Compile Include="WpfExtensions\DockPanelExtensions.cs" />
     <Compile Include="WpfExtensions\GridExtensions.cs" />
     <Compile Include="WpfExtensions\GridSplitterExtensions.cs" />
