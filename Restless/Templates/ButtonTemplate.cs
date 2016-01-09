@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -83,69 +82,35 @@ namespace Restless.Templates
             borderGrid.Children.Add(borderGridGradient);
 
             var disabledStoryboard = new Storyboard();
-            var disabledAnimation = new DoubleAnimation(0, .55D, new Duration(TimeSpan.FromSeconds(0)));
-            disabledStoryboard.AddAnimation(disabledAnimation, disabledContent, x => x.Opacity);
+            disabledStoryboard.AddDoubleAnimation(disabledContent, x => x.Opacity, .55D);
             disabledState.Storyboard = disabledStoryboard;
 
             var mouseOverStoryboard = new Storyboard();
             mouseOverStoryboard.AddDoubleAnimation(borderGridBackground, x => x.Opacity, 1);
-
-            var mouseOverGradient1Animation = new ColorAnimation(Color.FromArgb(0xF2, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(mouseOverGradient1Animation, borderGridGradient);
-            Storyboard.SetTargetProperty(mouseOverGradient1Animation, new PropertyPath("(0).(1)[1].(2)", Shape.FillProperty, GradientBrush.GradientStopsProperty, GradientStop.ColorProperty));
-
-            var mouseOverGradient2Animation = new ColorAnimation(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(mouseOverGradient2Animation, borderGridGradient);
-            Storyboard.SetTargetProperty(mouseOverGradient2Animation, new PropertyPath("Fill.GradientStops[2].Color"));
-
-            var mouseOverGradient3Animation = new ColorAnimation(Color.FromArgb(0x7F, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(mouseOverGradient3Animation, borderGridGradient);
-            Storyboard.SetTargetProperty(mouseOverGradient3Animation, new PropertyPath("Fill.GradientStops[3].Color"));
-
-            mouseOverStoryboard.Children.Add(mouseOverGradient1Animation);
-            mouseOverStoryboard.Children.Add(mouseOverGradient2Animation);
-            mouseOverStoryboard.Children.Add(mouseOverGradient3Animation);
+            mouseOverStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[1].Color, 
+                Color.FromArgb(0xF2, 0xFF, 0xFF, 0xFF));
+            mouseOverStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[2].Color,
+                Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
+            mouseOverStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[3].Color,
+                Color.FromArgb(0x7F, 0xFF, 0xFF, 0xFF));
             mouseOverState.Storyboard = mouseOverStoryboard;
 
-            var pressedBackgroundColorAnimation = new ColorAnimation(Color.FromArgb(0xFF, 0x6D, 0xBD, 0xD1), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(pressedBackgroundColorAnimation, border);
-            Storyboard.SetTargetProperty(pressedBackgroundColorAnimation, new PropertyPath("Background.Color"));
-
-            var pressedBackgroundOpacityAnimation = new DoubleAnimation(1, new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(pressedBackgroundOpacityAnimation, borderGridBackground);
-            Storyboard.SetTargetProperty(pressedBackgroundOpacityAnimation, new PropertyPath(OpacityProperty));
-
-            var pressedGradient1Animation = new ColorAnimation(Color.FromArgb(0xD8, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(pressedGradient1Animation, borderGridGradient);
-            Storyboard.SetTargetProperty(pressedGradient1Animation, new PropertyPath("(0).(1)[0].(2)", Shape.FillProperty, GradientBrush.GradientStopsProperty, GradientStop.ColorProperty));
-
-            var pressedGradient2Animation = new ColorAnimation(Color.FromArgb(0xD8, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(pressedGradient2Animation, borderGridGradient);
-            Storyboard.SetTargetProperty(pressedGradient2Animation, new PropertyPath("(0).(1)[1].(2)", Shape.FillProperty, GradientBrush.GradientStopsProperty, GradientStop.ColorProperty));
-
-            var pressedGradient3Animation = new ColorAnimation(Color.FromArgb(0xD8, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(pressedGradient3Animation, borderGridGradient);
-            Storyboard.SetTargetProperty(pressedGradient3Animation, new PropertyPath("(0).(1)[2].(2)", Shape.FillProperty, GradientBrush.GradientStopsProperty, GradientStop.ColorProperty));
-
-            var pressedGradient4Animation = new ColorAnimation(Color.FromArgb(0xD8, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(pressedGradient4Animation, borderGridGradient);
-            Storyboard.SetTargetProperty(pressedGradient4Animation, new PropertyPath("(0).(1)[3].(2)", Shape.FillProperty, GradientBrush.GradientStopsProperty, GradientStop.ColorProperty));
-
             var pressedStoryboard = new Storyboard();
-            pressedStoryboard.Children.Add(pressedBackgroundColorAnimation);
-            pressedStoryboard.Children.Add(pressedBackgroundOpacityAnimation);
-            pressedStoryboard.Children.Add(pressedGradient1Animation);
-            pressedStoryboard.Children.Add(pressedGradient2Animation);
-            pressedStoryboard.Children.Add(pressedGradient3Animation);
-            pressedStoryboard.Children.Add(pressedGradient4Animation);
+            pressedStoryboard.AddColorAnimation(border, x => ((SolidColorBrush)x.Background).Color, 
+                Color.FromArgb(0xFF, 0x6D, 0xBD, 0xD1));
+            pressedStoryboard.AddDoubleAnimation(borderGridBackground, x => x.Opacity, 1);
+            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[0].Color, 
+                Color.FromArgb(0xD8, 0xFF, 0xFF, 0xFF));
+            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[1].Color, 
+                Color.FromArgb(0xC6, 0xFF, 0xFF, 0xFF));
+            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[2].Color, 
+                Color.FromArgb(0x8C, 0xFF, 0xFF, 0xFF));
+            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[3].Color, 
+                Color.FromArgb(0x3F, 0xFF, 0xFF, 0xFF));
             pressedState.Storyboard = pressedStoryboard;
 
-            var focusedOpacityAnimation = new DoubleAnimation(1, new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(focusedOpacityAnimation, focusContent);
-            Storyboard.SetTargetProperty(focusedOpacityAnimation, new PropertyPath(OpacityProperty));
-
             var focusedStoryboard = new Storyboard();
-            focusedStoryboard.Children.Add(focusedOpacityAnimation);
+            focusedStoryboard.AddDoubleAnimation(focusContent, x => x.Opacity, 1);
             focusedState.Storyboard = focusedStoryboard;
 
             var contentPresenter = new ContentPresenter

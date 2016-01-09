@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Expression = System.Linq.Expressions.Expression;
 
@@ -23,6 +24,20 @@ namespace Restless.WpfExtensions
             where T : DependencyObject
         {
             storyboard.AddAnimation(new DoubleAnimation(fromValue, toValue, duration ?? new Duration(TimeSpan.FromSeconds(0))), target, targetProperty);
+        }
+
+        public static void AddColorAnimation<T, TValue>(this Storyboard storyboard, T target, Expression<Func<T, TValue>> targetProperty,
+            Color toValue, Duration? duration = null)
+            where T : DependencyObject
+        {
+            storyboard.AddAnimation(new ColorAnimation(toValue, duration ?? new Duration(TimeSpan.FromSeconds(0))), target, targetProperty);
+        }
+
+        public static void AddColorAnimation<T, TValue>(this Storyboard storyboard, T target, Expression<Func<T, TValue>> targetProperty,
+            Color fromValue, Color toValue, Duration? duration = null)
+            where T : DependencyObject
+        {
+            storyboard.AddAnimation(new ColorAnimation(fromValue, toValue, duration ?? new Duration(TimeSpan.FromSeconds(0))), target, targetProperty);
         }
 
         public static void AddAnimation<T, TValue>(this Storyboard storyboard, Timeline animation, T target, Expression<Func<T, TValue>> targetProperty)
@@ -64,6 +79,21 @@ namespace Restless.WpfExtensions
                 tokens.Add(new MemberToken(token));
 
                 return base.VisitMember(node);
+            }
+
+            protected override Expression VisitMethodCall(MethodCallExpression node)
+            {
+                if (node.Method.Name == "get_Item")
+                {
+                    var index = node.Arguments.Cast<ConstantExpression>().Single();
+                    var indexValue = (int)index.Value;
+                    tokens.Add(new IndexToken(indexValue));
+                }
+                else
+                {
+                    throw new InvalidOperationException("Cannot invoke methods in a property expression");
+                }
+                return base.VisitMethodCall(node);
             }
 
             protected override Expression VisitIndex(IndexExpression node)
