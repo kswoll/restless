@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using Restless.WpfExtensions;
 
 namespace Restless.Templates
 {
@@ -13,38 +14,17 @@ namespace Restless.Templates
         {
             var button = (Button)TemplatedParent;
 
-            var stateGroups = VisualStateManager.GetVisualStateGroups(this);
+            var stateGroups = this.GetVisualStateGroups();
+
             var commonStates = new VisualStateGroup();
-            var disabledState = new VisualState
-            {
-                Name = "Disabled",
-            };
-            var mouseOverState = new VisualState
-            {
-                Name = "MouseOver"
-            };
-            var pressedState = new VisualState
-            {
-                Name = "Pressed"
-            };
+            commonStates.CreateState("Normal");
+            var mouseOverState = commonStates.CreateState("MouseOver");
+            var pressedState = commonStates.CreateState("Pressed");
+            var disabledState = commonStates.CreateState("Disabled");
 
             var focusStates = new VisualStateGroup();
-            var focusedState = new VisualState
-            {
-                Name = "Focused"
-            };
-            var unfocusedState = new VisualState
-            {
-                Name = "Unfocused"
-            };
-
-            commonStates.States.Add(new VisualState { Name = "Normal" });
-            commonStates.States.Add(mouseOverState);
-            commonStates.States.Add(pressedState);
-            commonStates.States.Add(disabledState);
-
-            focusStates.States.Add(focusedState);
-            focusStates.States.Add(unfocusedState);
+            var focusedState = focusStates.CreateState("Focused");
+            focusStates.CreateState("Unfocused");
 
             stateGroups.Add(commonStates);
             stateGroups.Add(focusStates);
@@ -67,7 +47,6 @@ namespace Restless.Templates
                 Opacity = 0,
                 IsHitTestVisible = false
             };
-
             var border = new Border
             {
                 CornerRadius = new CornerRadius(3),
@@ -105,14 +84,11 @@ namespace Restless.Templates
 
             var disabledStoryboard = new Storyboard();
             var disabledAnimation = new DoubleAnimation(0, .55D, new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(disabledAnimation, disabledContent);
-            Storyboard.SetTargetProperty(disabledAnimation, new PropertyPath(OpacityProperty));
-            disabledStoryboard.Children.Add(disabledAnimation);
+            disabledStoryboard.AddAnimation(disabledAnimation, disabledContent, x => x.Opacity);
             disabledState.Storyboard = disabledStoryboard;
 
-            var mouseOverDoubleAnimation = new DoubleAnimation(1, new Duration(TimeSpan.FromSeconds(0)));
-            Storyboard.SetTarget(mouseOverDoubleAnimation, borderGridBackground);
-            Storyboard.SetTargetProperty(mouseOverDoubleAnimation, new PropertyPath(OpacityProperty));
+            var mouseOverStoryboard = new Storyboard();
+            mouseOverStoryboard.AddDoubleAnimation(borderGridBackground, x => x.Opacity, 1);
 
             var mouseOverGradient1Animation = new ColorAnimation(Color.FromArgb(0xF2, 0xFF, 0xFF, 0xFF), new Duration(TimeSpan.FromSeconds(0)));
             Storyboard.SetTarget(mouseOverGradient1Animation, borderGridGradient);
@@ -126,8 +102,6 @@ namespace Restless.Templates
             Storyboard.SetTarget(mouseOverGradient3Animation, borderGridGradient);
             Storyboard.SetTargetProperty(mouseOverGradient3Animation, new PropertyPath("Fill.GradientStops[3].Color"));
 
-            var mouseOverStoryboard = new Storyboard();
-            mouseOverStoryboard.Children.Add(mouseOverDoubleAnimation);
             mouseOverStoryboard.Children.Add(mouseOverGradient1Animation);
             mouseOverStoryboard.Children.Add(mouseOverGradient2Animation);
             mouseOverStoryboard.Children.Add(mouseOverGradient3Animation);
@@ -172,6 +146,7 @@ namespace Restless.Templates
 
             var focusedStoryboard = new Storyboard();
             focusedStoryboard.Children.Add(focusedOpacityAnimation);
+            focusedState.Storyboard = focusedStoryboard;
 
             var contentPresenter = new ContentPresenter
             {

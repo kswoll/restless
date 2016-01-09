@@ -1,8 +1,5 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
@@ -30,23 +27,6 @@ namespace Restless.Controls
             urlAndMethod.AddRow(GridLength.Auto);
             urlAndMethod.Add(url, 0, 0);
             urlAndMethod.Add(method, 0, 1);
-
-            var buttonStyle = new Style
-            {
-                TargetType = typeof(Button),
-                Setters = {  }
-            };
-            var buttonTemplate = new ControlTemplate
-            {
-
-            };
-            var buttonGrid = new Grid
-            {
-
-            };
-            var buttonGridFactory = new FrameworkElementFactory(typeof(Grid));
-//            buttonGridFactory.
-            buttonTemplate.VisualTree = buttonGridFactory;
 
             var sendButton = new Button { Content = new Label { Content = "Send" } };
 

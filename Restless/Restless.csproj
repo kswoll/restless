@@ -180,6 +180,8 @@
     <Compile Include="WpfExtensions\GridSplitterExtensions.cs" />
     <Compile Include="WpfExtensions\MenuExtensions.cs" />
     <Compile Include="WpfExtensions\NameValuePanel.cs" />
+    <Compile Include="WpfExtensions\StoryboardExtensions.cs" />
+    <Compile Include="WpfExtensions\VisualStateExtensions.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
