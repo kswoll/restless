@@ -153,6 +153,8 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Controls\ApiPanel.cs" />
+    <Compile Include="Controls\ResponseVisualizers\DefaultResponseVisualizer.cs" />
+    <Compile Include="Controls\ResponseVisualizers\ResponseVisualizerRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -169,7 +171,9 @@
     <Compile Include="Styles\ButtonStyle.cs" />
     <Compile Include="Styles\GlobalStyles.cs" />
     <Compile Include="Templates\ButtonTemplate.cs" />
+    <Compile Include="ViewModels\ApiHeaderModel.cs" />
     <Compile Include="ViewModels\ApiModel.cs" />
+    <Compile Include="ViewModels\ApiResponseModel.cs" />
     <Compile Include="ViewModels\BaseModel.cs" />
     <Compile Include="ViewModels\MainWindowModel.cs" />
     <Compile Include="Windows\MainWindows\ApiItemControl.cs" />
