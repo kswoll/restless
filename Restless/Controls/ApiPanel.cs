@@ -32,17 +32,16 @@ namespace Restless.Controls
 
             var buttonsPanel = new StackPanel
             {
-                Orientation = Orientation.Horizontal,
-                Margin = new Thickness(5, 0, 5, 0)
+                Orientation = Orientation.Horizontal
             };
             buttonsPanel.Children.Add(sendButton);
 
             var apiDetailsPanel = new StackPanel();
             apiDetailsPanel.Children.Add(title);
             apiDetailsPanel.Children.Add(urlAndMethod);
-            apiDetailsPanel.Children.Add(new Separator { Margin = new Thickness(0, 10, 0, 10) });
+            apiDetailsPanel.Children.Add(new Separator { Margin = new Thickness(0, 10, 0, 0) });
             apiDetailsPanel.Children.Add(buttonsPanel);
-            apiDetailsPanel.Children.Add(new Separator { Margin = new Thickness(0, 10, 0, 10) });
+            apiDetailsPanel.Children.Add(new Separator { Margin = new Thickness(0, 0, 0, 10) });
 
             var apiResponsePanel = new Label { Content = "Foo" };
 

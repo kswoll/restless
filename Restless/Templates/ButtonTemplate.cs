@@ -13,6 +13,8 @@ namespace Restless.Templates
         {
             var button = (Button)TemplatedParent;
 
+            Background = button.Background;
+
             var stateGroups = this.GetVisualStateGroups();
 
             var commonStates = new VisualStateGroup();
@@ -30,7 +32,7 @@ namespace Restless.Templates
 
             var disabledContent = new Rectangle
             {
-                Fill = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF)),
+                Fill = new SolidColorBrush(((SolidColorBrush)button.Background).Color),
                 RadiusX = 3,
                 RadiusY = 3,
                 Opacity = 0,
@@ -46,67 +48,19 @@ namespace Restless.Templates
                 Opacity = 0,
                 IsHitTestVisible = false
             };
-            var border = new Border
-            {
-                CornerRadius = new CornerRadius(3),
-                Background = new SolidColorBrush(Colors.White),
-                BorderThickness = button.BorderThickness,
-                BorderBrush = button.BorderBrush
-            };
-            var borderGrid = new Grid
-            {
-                Background = button.Background,
-                Margin = new Thickness(1)
-            };
-            border.Child = borderGrid;
-            var borderGridBackground = new Border
-            {
-                Opacity = 0,
-                Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x44, 0x8D, 0xCA))
-            };
-            borderGrid.Children.Add(borderGridBackground);
-
-            var borderGridGradient = new Rectangle
-            {
-                Fill = new LinearGradientBrush(
-                    new GradientStopCollection(new[]
-                    {
-                        new GradientStop(Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF), 0), 
-                        new GradientStop(Color.FromArgb(0xF9, 0xFF, 0xFF, 0xFF), .375), 
-                        new GradientStop(Color.FromArgb(0xE5, 0xFF, 0xFF, 0xFF), .625), 
-                        new GradientStop(Color.FromArgb(0xC6, 0xFF, 0xFF, 0xFF), 1) 
-                    }),
-                    new Point(.7, 0),
-                    new Point(.7, 1))
-            };
-            borderGrid.Children.Add(borderGridGradient);
 
             var disabledStoryboard = new Storyboard();
             disabledStoryboard.AddDoubleAnimation(disabledContent, x => x.Opacity, .55D);
             disabledState.Storyboard = disabledStoryboard;
 
             var mouseOverStoryboard = new Storyboard();
-            mouseOverStoryboard.AddDoubleAnimation(borderGridBackground, x => x.Opacity, 1);
-            mouseOverStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[1].Color, 
-                Color.FromArgb(0xF2, 0xFF, 0xFF, 0xFF));
-            mouseOverStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[2].Color,
-                Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
-            mouseOverStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[3].Color,
-                Color.FromArgb(0x7F, 0xFF, 0xFF, 0xFF));
+            mouseOverStoryboard.AddColorAnimation(this, x => ((SolidColorBrush)x.Background).Color, 
+                Color.FromArgb(0xFF, 0xBF, 0xBF, 0xBF));
             mouseOverState.Storyboard = mouseOverStoryboard;
 
             var pressedStoryboard = new Storyboard();
-            pressedStoryboard.AddColorAnimation(border, x => ((SolidColorBrush)x.Background).Color, 
+            pressedStoryboard.AddColorAnimation(this, x => ((SolidColorBrush)x.Background).Color, 
                 Color.FromArgb(0xFF, 0x6D, 0xBD, 0xD1));
-            pressedStoryboard.AddDoubleAnimation(borderGridBackground, x => x.Opacity, 1);
-            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[0].Color, 
-                Color.FromArgb(0xD8, 0xFF, 0xFF, 0xFF));
-            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[1].Color, 
-                Color.FromArgb(0xC6, 0xFF, 0xFF, 0xFF));
-            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[2].Color, 
-                Color.FromArgb(0x8C, 0xFF, 0xFF, 0xFF));
-            pressedStoryboard.AddColorAnimation(borderGridGradient, x => ((LinearGradientBrush)x.Fill).GradientStops[3].Color, 
-                Color.FromArgb(0x3F, 0xFF, 0xFF, 0xFF));
             pressedState.Storyboard = pressedStoryboard;
 
             var focusedStoryboard = new Storyboard();
@@ -123,7 +77,6 @@ namespace Restless.Templates
             };
             SetColumn(contentPresenter, 0);
             SetRow(contentPresenter, 0);
-            Children.Add(border);
             Children.Add(contentPresenter);
             Children.Add(disabledContent);
             Children.Add(focusContent);
