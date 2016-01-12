@@ -1,7 +1,5 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using Restless.Controls.ResponseVisualizers;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact;
@@ -12,7 +10,7 @@ namespace Restless.Controls
     public class ApiPanel : RxDockPanel<ApiModel>
     {
         private readonly NameValuePanel<TextBox> title;
-        private UIElement currentApiResponsePanel;
+        private ApiResponsePanel currentApiResponsePanel;
 
         public ApiPanel()
         {
@@ -66,10 +64,11 @@ namespace Restless.Controls
 
             var apiHeadersGrid = new RxDataGrid<ApiHeaderModel>
             {
-                AutoGenerateColumns = false
+                AutoGenerateColumns = false,
+                HeadersVisibility = DataGridHeadersVisibility.Column
             };
-            apiHeadersGrid.AddTextColumn("Name", x => x.Name);
-            apiHeadersGrid.AddTextColumn("Value", x => x.Value);
+            apiHeadersGrid.AddTextColumn("Name", x => x.Name).Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+            apiHeadersGrid.AddTextColumn("Value", x => x.Value).Width = new DataGridLength(2, DataGridLengthUnitType.Star);
             var apiHeadersPanel = new Grid();
             apiHeadersPanel.RowDefinitions.Add(new RowDefinition { SharedSizeGroup = "apiTabs" });
             apiHeadersPanel.Children.Add(apiHeadersGrid);
@@ -91,7 +90,7 @@ namespace Restless.Controls
             this.Bind(x => x.Url).Mate(url.Value);
             this.Bind(x => x.Methods).To(x => method.ItemsSource = x);
             this.Bind(x => x.Method).Mate(method);
-            this.Bind(x => x.Headers).To(x => apiHeadersGrid.ItemsSource = x == null ? null : x.ToObservableCollection());
+            this.Bind(x => x.Headers).To(x => apiHeadersGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Send).To(x => sendButton.Command = x);
             this.Bind(x => x.Response).To(x =>
             {
@@ -99,10 +98,9 @@ namespace Restless.Controls
                 {
                     Children.Remove(currentApiResponsePanel);
                 }
-                var responseVisualizer = new DefaultResponseVisualizer();
-                currentApiResponsePanel = responseVisualizer;
-                responseVisualizer.Model = x;
-                this.Add(responseVisualizer);
+                currentApiResponsePanel = new ApiResponsePanel();
+                currentApiResponsePanel.Model = x;
+                this.Add(currentApiResponsePanel);
             });
             this.Bind(x => x.Response).To(x => statusPanel.Visibility = x == null ? Visibility.Hidden : Visibility.Visible);
             this.Bind(x => x.Response.StatusCode).To(x => statusCodeLabel.Content = x);

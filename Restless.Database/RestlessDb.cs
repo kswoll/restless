@@ -7,6 +7,7 @@ namespace Restless.Database
     public class RestlessDb : DbContext
     {
         public DbSet<DbApi> Apis { get; set; }
+        public DbSet<DbApiHeader> ApiHeaders { get; set; }
         public DbSet<DbApiCall> ApiCalls { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

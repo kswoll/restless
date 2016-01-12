@@ -24,7 +24,7 @@ namespace Restless.ViewModels
             Task.Run(async () =>
             {
                 var db = new RestlessDb();
-                var apis = await db.Apis.ToArrayAsync();
+                var apis = await db.Apis.Include(x => x.Headers).ToArrayAsync();
                 foreach (var api in apis)
                 {
                     Items.Add(new ApiModel(api));

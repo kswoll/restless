@@ -1,19 +1,16 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using Restless.Models;
+using Restless.Controls.ResponseVisualizers;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
-using SexyReact;
 using SexyReact.Views;
 
-namespace Restless.Controls.ResponseVisualizers
+namespace Restless.Controls
 {
-    public class DefaultResponseVisualizer : RxTabControl<ApiResponseModel>
+    public class ApiResponsePanel : RxTabControl<ApiResponseModel>
     {
-        public DefaultResponseVisualizer()
+        public ApiResponsePanel()
         {
             Visibility = Visibility.Hidden;
 
@@ -27,7 +24,6 @@ namespace Restless.Controls.ResponseVisualizers
             bodyText.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             bodyText.IsReadOnly = true;
             bodyTab.Content = bodyText;
-//            bodyTab.Content = new ScrollViewer { Content = bodyText };
 
             var headersTab = new TabItem
             {
@@ -40,8 +36,8 @@ namespace Restless.Controls.ResponseVisualizers
                 HeadersVisibility = DataGridHeadersVisibility.None,
                 SelectionUnit = DataGridSelectionUnit.Cell
             };
-            headersGrid.AddTextColumn("Name", x => x.Name);
-            headersGrid.AddTextColumn("Value", x => x.Value);
+            headersGrid.AddTextColumn("Name", x => x.Name).Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+            headersGrid.AddTextColumn("Value", x => x.Value).Width = new DataGridLength(2, DataGridLengthUnitType.Star);
             headersTab.Content = headersGrid;
 
             var summaryTab = new TabItem
@@ -61,6 +57,21 @@ namespace Restless.Controls.ResponseVisualizers
             Items.Add(headersTab);
             Items.Add(summaryTab);
 
+            this.Bind(x => x.Status).To(x =>
+            {
+                if (x != null)
+                {
+                    var visualizers = ResponseVisualizerRegistry.GetVisualizers(Model);
+                    foreach (var visualizer in visualizers)
+                    {
+                        Items.Insert(0, new TabItem
+                        {
+                            Header = visualizer.Header,
+                            Content = visualizer
+                        });
+                    }
+                }
+            });
             this.Bind(x => x.Headers).To(x => headersGrid.ItemsSource = x);
             this.Bind(x => x.Response).To(x =>
             {

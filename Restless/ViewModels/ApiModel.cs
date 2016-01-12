@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Restless.Database;
@@ -36,11 +37,47 @@ namespace Restless.ViewModels
             Method = dbApi.Method;
             Headers = dbApi.Headers == null ? new RxList<ApiHeaderModel>() : new RxList<ApiHeaderModel>(dbApi.Headers.Select(x => new ApiHeaderModel
             {
+                Id = x.Id,
                 Name = x.Name,
                 Value = x.Value
             }));
-            Headers.Add(new ApiHeaderModel { Name = "foo", Value = "bar" });
             Send = RxCommand.CreateAsync(SendImpl);
+
+            var semaphore = new Semaphore(1, 1);
+            Headers.ItemAdded.SubscribeAsync(async x =>
+            {
+                semaphore.WaitOne();
+                var db = new RestlessDb();
+                var dbApiHeader = new DbApiHeader
+                {
+                    ApiId = Id,
+                    Name = "",
+                    Value = ""
+                };
+                db.ApiHeaders.Add(dbApiHeader);
+                await db.SaveChangesAsync();
+                x.Id = dbApiHeader.Id;
+                semaphore.Release();
+            });
+            Headers.ItemRemoved.SubscribeAsync(async x =>
+            {
+                semaphore.WaitOne();
+                var db = new RestlessDb();
+                var dbApiHeader = await db.ApiHeaders.SingleAsync(y => y.Id == x.Id);
+                db.ApiHeaders.Remove(dbApiHeader);
+                await db.SaveChangesAsync();
+                semaphore.Release();
+            });
+            Headers.ObserveElementChange(x => x.Name, x => x.Value).SubscribeAsync(async x =>
+            {
+                semaphore.WaitOne();
+                var db = new RestlessDb();
+                var dbApiHeader = await db.ApiHeaders.SingleAsync(y => y.Id == x.Element.Id);
+                dbApiHeader.Name = x.Element.Name;
+                dbApiHeader.Value = x.Element.Value;
+                await db.SaveChangesAsync();
+                semaphore.Release();
+            });
 
             this.ObservePropertiesChange(x => x.Title, x => x.Url, x => x.Method)
                 .Throttle(TimeSpan.FromSeconds(1))
@@ -117,6 +154,10 @@ namespace Restless.ViewModels
         private HttpRequestMessage CreateRequest()
         {
             var request = new HttpRequestMessage(MapApiMethod(), Url);
+            foreach (var header in Headers)
+            {
+                request.Headers.Add(header.Name, header.Value);
+            }
             return request;
         }
     }
