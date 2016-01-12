@@ -95,7 +95,7 @@ namespace Restless.ViewModels
         private async Task SendImpl()
         {
             var request = CreateRequest();
-            var responseModel = new ApiResponseModel();
+            var responseModel = new ApiResponseModel { Api = this };
 
             using (var client = CreateClient())
             {
