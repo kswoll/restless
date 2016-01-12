@@ -159,6 +159,7 @@
     <Compile Include="Controls\ApiPanel.cs" />
     <Compile Include="Controls\ApiResponsePanel.cs" />
     <Compile Include="Controls\ResponseVisualizers\HtmlResponseVisualizer.cs" />
+    <Compile Include="Controls\ResponseVisualizers\ImageResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\IResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\JsonResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\ResponseVisualizerAttribute.cs" />
