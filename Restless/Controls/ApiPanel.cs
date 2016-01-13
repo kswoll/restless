@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact;
@@ -11,6 +12,11 @@ namespace Restless.Controls
     {
         private readonly NameValuePanel<TextBox> title;
         private ApiResponsePanel currentApiResponsePanel;
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
 
         public ApiPanel()
         {
@@ -84,7 +90,6 @@ namespace Restless.Controls
             topPanel.Children.Add(new Separator { Margin = new Thickness(0, 0, 0, 0) });
 
             this.Add(topPanel, Dock.Top);
-//            this.Add(apiResponsePanel);
 
             this.Bind(x => x.Title).Mate(title.Value);
             this.Bind(x => x.Url).Mate(url.Value);
@@ -96,6 +101,7 @@ namespace Restless.Controls
             {
                 if (currentApiResponsePanel != null)
                 {
+//                    currentApiResponsePanel.Dispose();
                     Children.Remove(currentApiResponsePanel);
                 }
                 currentApiResponsePanel = new ApiResponsePanel();
@@ -113,7 +119,7 @@ namespace Restless.Controls
             {
                 title.Value.SelectAll();
                 title.Value.Focus();
-            });
+            }, DispatcherPriority.ApplicationIdle);
         }
     }
 }

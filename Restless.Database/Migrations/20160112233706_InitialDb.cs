@@ -14,9 +14,8 @@ namespace Restless.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Body = table.Column<byte[]>(nullable: true),
                     Method = table.Column<int>(nullable: false),
-                    ResponseVisualizer = table.Column<string>(nullable: true),
+                    RequestBody = table.Column<byte[]>(nullable: true),
                     Title = table.Column<string>(nullable: false),
                     Url = table.Column<string>(nullable: true)
                 },
@@ -58,6 +57,27 @@ namespace Restless.Database.Migrations
                     table.PrimaryKey("PK_DbApiHeader", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DbApiHeader_DbApi_ApiId",
+                        column: x => x.ApiId,
+                        principalTable: "Api",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+            migrationBuilder.CreateTable(
+                name: "ApiResponseVisualizer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ApiId = table.Column<int>(nullable: false),
+                    ComplicationClass = table.Column<string>(nullable: true),
+                    ComplicationData = table.Column<string>(nullable: true),
+                    Priority = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DbApiResponseComplication", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DbApiResponseComplication_DbApi_ApiId",
                         column: x => x.ApiId,
                         principalTable: "Api",
                         principalColumn: "Id",
@@ -126,6 +146,7 @@ namespace Restless.Database.Migrations
             migrationBuilder.DropTable("ApiCallRequestHeader");
             migrationBuilder.DropTable("ApiCallResponseHeader");
             migrationBuilder.DropTable("ApiHeader");
+            migrationBuilder.DropTable("ApiResponseVisualizer");
             migrationBuilder.DropTable("ApiCall");
             migrationBuilder.DropTable("Api");
         }

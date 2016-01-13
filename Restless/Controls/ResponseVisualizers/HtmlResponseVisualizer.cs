@@ -2,13 +2,14 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using Restless.Utils;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
 
 namespace Restless.Controls.ResponseVisualizers
 {
-    [ResponseVisualizer("text/html")]
+    [ResponseVisualizer(ContentTypes.TextHtml)]
     public class HtmlResponseVisualizer : RxDockPanel<ApiResponseModel>, IResponseVisualizer
     {
         public HtmlResponseVisualizer()

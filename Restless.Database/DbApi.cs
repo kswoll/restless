@@ -18,9 +18,9 @@ namespace Restless.Database
 
         public string Url { get; set; }
 
-        public byte[] Body { get; set; }
-        public string ResponseVisualizer { get; set; }
+        public byte[] RequestBody { get; set; }
 
-        public List<DbApiHeader> Headers { get; set; }
+        public List<DbApiHeader> RequestHeaders { get; set; }
+        public List<DbApiResponseComplication> ResponseComplications { get; set; }
     }
 }

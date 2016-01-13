@@ -35,7 +35,7 @@ namespace Restless.ViewModels
             Url = dbApi.Url;
             Methods = httpMethods.ToList();
             Method = dbApi.Method;
-            Headers = dbApi.Headers == null ? new RxList<ApiHeaderModel>() : new RxList<ApiHeaderModel>(dbApi.Headers.Select(x => new ApiHeaderModel
+            Headers = dbApi.RequestHeaders == null ? new RxList<ApiHeaderModel>() : new RxList<ApiHeaderModel>(dbApi.RequestHeaders.Select(x => new ApiHeaderModel
             {
                 Id = x.Id,
                 Name = x.Name,

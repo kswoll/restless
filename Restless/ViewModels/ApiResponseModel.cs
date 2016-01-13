@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Restless.Models;
+using System.Linq;
+using System.Text;
+using Newtonsoft.Json.Linq;
+using Restless.Utils;
 
 namespace Restless.ViewModels
 {
@@ -14,5 +17,18 @@ namespace Restless.ViewModels
         public int StatusCode { get; set; }
         public string Status { get; set; }
         public string Reason { get; set; }
+
+        public string ContentType => Headers.SingleOrDefault(x => x.Name == "Content-Type")?.Value.Split(';').First();
+        public string StringResponse => stringResponse.Value;
+        public JToken JsonResponse => jsonResponse.Value;
+
+        private readonly Lazy<string> stringResponse;
+        private readonly Lazy<JToken> jsonResponse;
+
+        public ApiResponseModel()
+        {
+            stringResponse = new Lazy<string>(() => Response == null || !ContentTypes.IsText(ContentType) ? null : Encoding.UTF8.GetString(Response));
+            jsonResponse = new Lazy<JToken>(() => Response == null || ContentType != ContentTypes.ApplicationJson ? null : JToken.Parse(StringResponse));
+        }
     }
 }

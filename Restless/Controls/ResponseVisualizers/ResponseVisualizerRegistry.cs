@@ -8,7 +8,7 @@ namespace Restless.Controls.ResponseVisualizers
 {
     public static class ResponseVisualizerRegistry
     {
-        private static Dictionary<string, List<Type>> visualizersByContentType = new Dictionary<string, List<Type>>();
+        private static readonly Dictionary<string, List<Type>> visualizersByContentType = new Dictionary<string, List<Type>>();
 
         static ResponseVisualizerRegistry()
         {
@@ -35,7 +35,7 @@ namespace Restless.Controls.ResponseVisualizers
 
         public static IEnumerable<IResponseVisualizer> GetVisualizers(ApiResponseModel model)
         {
-            var contentType = model.Headers.SingleOrDefault(x => x.Name == "Content-Type")?.Value;
+            var contentType = model.ContentType;
             if (contentType != null)
             {
                 contentType = contentType.Split(';').First();

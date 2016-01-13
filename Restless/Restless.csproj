@@ -158,6 +158,11 @@
     <Compile Include="App.cs" />
     <Compile Include="Controls\ApiPanel.cs" />
     <Compile Include="Controls\ApiResponsePanel.cs" />
+    <Compile Include="Controls\ResponseActions\IResponseAction.cs" />
+    <Compile Include="Controls\ResponseActions\PreviousPageResponseAction.cs" />
+    <Compile Include="Controls\ResponseActions\ResponseActionAttribute.cs" />
+    <Compile Include="Controls\ResponseActions\ResponseActionPredicateAttribute.cs" />
+    <Compile Include="Controls\ResponseActions\ResponseActionRegistry.cs" />
     <Compile Include="Controls\ResponseVisualizers\HtmlResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\ImageResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\IResponseVisualizer.cs" />
@@ -180,6 +185,7 @@
     <Compile Include="Styles\ButtonStyle.cs" />
     <Compile Include="Styles\GlobalStyles.cs" />
     <Compile Include="Templates\ButtonTemplate.cs" />
+    <Compile Include="Utils\ContentTypes.cs" />
     <Compile Include="ViewModels\ApiHeaderModel.cs" />
     <Compile Include="ViewModels\ApiModel.cs" />
     <Compile Include="ViewModels\ApiResponseModel.cs" />

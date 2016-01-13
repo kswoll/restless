@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Text;
 using System.Windows.Controls;
 using Newtonsoft.Json.Linq;
+using Restless.Utils;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
 
 namespace Restless.Controls.ResponseVisualizers
 {
-    [ResponseVisualizer("application/json")]
+    [ResponseVisualizer(ContentTypes.ApplicationJson)]
     public class JsonResponseVisualizer : RxDockPanel<ApiResponseModel>, IResponseVisualizer
     {
         public string Header => "Json";
 
-        private TreeView treeView;
+        private readonly TreeView treeView;
 
         public JsonResponseVisualizer()
         {
@@ -25,10 +25,7 @@ namespace Restless.Controls.ResponseVisualizers
             {
                 if (x != null)
                 {
-                    var s = Encoding.UTF8.GetString(x);
-                    var json = JToken.Parse(s);
-
-                    AddRootToken(json);                    
+                    AddRootToken(Model.JsonResponse);                    
                 }
             });
         }

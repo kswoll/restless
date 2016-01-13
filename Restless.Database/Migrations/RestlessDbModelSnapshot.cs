@@ -20,11 +20,9 @@ namespace Restless.Database.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Body");
-
                     b.Property<int>("Method");
 
-                    b.Property<string>("ResponseVisualizer");
+                    b.Property<byte[]>("RequestBody");
 
                     b.Property<string>("Title")
                         .IsRequired();
@@ -112,6 +110,24 @@ namespace Restless.Database.Migrations
                     b.HasAnnotation("Relational:TableName", "ApiHeader");
                 });
 
+            modelBuilder.Entity("Restless.Database.DbApiResponseComplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ApiId");
+
+                    b.Property<string>("ComplicationClass");
+
+                    b.Property<string>("ComplicationData");
+
+                    b.Property<int>("Priority");
+
+                    b.HasKey("Id");
+
+                    b.HasAnnotation("Relational:TableName", "ApiResponseVisualizer");
+                });
+
             modelBuilder.Entity("Restless.Database.DbApiCall", b =>
                 {
                     b.HasOne("Restless.Database.DbApi")
@@ -142,6 +158,13 @@ namespace Restless.Database.Migrations
                 });
 
             modelBuilder.Entity("Restless.Database.DbApiHeader", b =>
+                {
+                    b.HasOne("Restless.Database.DbApi")
+                        .WithMany()
+                        .HasForeignKey("ApiId");
+                });
+
+            modelBuilder.Entity("Restless.Database.DbApiResponseComplication", b =>
                 {
                     b.HasOne("Restless.Database.DbApi")
                         .WithMany()
