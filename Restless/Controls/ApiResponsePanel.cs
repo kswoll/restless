@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Restless.Controls.ResponseActions;
@@ -9,7 +10,7 @@ using SexyReact.Views;
 
 namespace Restless.Controls
 {
-    public class ApiResponsePanel : RxTabControl<ApiResponseModel>
+    public class ApiResponsePanel : RxDockPanel<ApiResponseModel>
     {
         public ApiResponsePanel()
         {
@@ -54,9 +55,20 @@ namespace Restless.Controls
             summaryPanel.Children.Add(contentLengthPanel);
             summaryTab.Content = summaryPanel;
 
-            Items.Add(bodyTab);
-            Items.Add(headersTab);
-            Items.Add(summaryTab);
+            var tabControl = new TabControl();
+
+            tabControl.Items.Add(bodyTab);
+            tabControl.Items.Add(headersTab);
+            tabControl.Items.Add(summaryTab);
+
+            var buttonPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Visibility = Visibility.Collapsed
+            };
+
+            this.Add(buttonPanel, Dock.Bottom);
+            this.Add(tabControl);
 
             this.Bind(x => x.Status).To(x =>
             {
@@ -65,11 +77,30 @@ namespace Restless.Controls
                     var visualizers = ResponseVisualizerRegistry.GetVisualizers(Model);
                     foreach (var visualizer in visualizers)
                     {
-                        Items.Insert(0, new TabItem
+                        tabControl.Items.Insert(0, new TabItem
                         {
                             Header = visualizer.Header,
                             Content = visualizer
                         });
+                    }
+
+                    var actions = ResponseActionRegistry.GetActions(Model).ToArray();
+                    if (actions.Any())
+                    {
+                        buttonPanel.Visibility = Visibility.Visible;
+
+                        foreach (var action in actions)
+                        {
+                            var button = new Button
+                            {
+                                Content = new Label { Content = action.Header, Focusable = false }
+                            };
+                            button.Click += async (sender, args) =>
+                            {
+                                await action.PerformAction(Model);
+                            };
+                            buttonPanel.Children.Add(button);
+                        }
                     }
                 }
             });

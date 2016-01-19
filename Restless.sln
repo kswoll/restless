@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restless.Database", "Restle
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restless.Models", "Restless.Models\Restless.Models.csproj", "{1815F43C-669C-469B-B81B-042AD0E28CC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restless.Tests", "Restless.Tests\Restless.Tests.csproj", "{270F686A-4D6E-4DE3-BCFF-30CB33296266}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1815F43C-669C-469B-B81B-042AD0E28CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1815F43C-669C-469B-B81B-042AD0E28CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1815F43C-669C-469B-B81B-042AD0E28CC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{270F686A-4D6E-4DE3-BCFF-30CB33296266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270F686A-4D6E-4DE3-BCFF-30CB33296266}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270F686A-4D6E-4DE3-BCFF-30CB33296266}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270F686A-4D6E-4DE3-BCFF-30CB33296266}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

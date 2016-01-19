@@ -13,11 +13,6 @@ namespace Restless.Controls
         private readonly NameValuePanel<TextBox> title;
         private ApiResponsePanel currentApiResponsePanel;
 
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
-
         public ApiPanel()
         {
             title = NameValuePanel.Create("Title", new TextBox());
@@ -37,12 +32,14 @@ namespace Restless.Controls
             urlAndMethod.Add(method, 0, 1);
 
             var sendButton = new Button { Content = new Label { Content = "Send" }, Focusable = false };
+            var resetButton = new Button { Content = new Label { Content = "Reset" }, Focusable = false };
 
             var buttonsPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal
             };
             buttonsPanel.Children.Add(sendButton);
+            buttonsPanel.Children.Add(resetButton);
 
             var statusLabel = new Label();
             var statusCodeLabel = new Label();
@@ -79,10 +76,26 @@ namespace Restless.Controls
             apiHeadersPanel.RowDefinitions.Add(new RowDefinition { SharedSizeGroup = "apiTabs" });
             apiHeadersPanel.Children.Add(apiHeadersGrid);
 
+            var apiInputsGrid = new RxDataGrid<ApiInputModel>
+            {
+                AutoGenerateColumns = false,
+                HeadersVisibility = DataGridHeadersVisibility.Column,
+                CanUserAddRows = false,
+                CanUserDeleteRows = false
+            };
+            apiInputsGrid.AddTextColumn("Name", x => x.Name, new DataGridLength(1, DataGridLengthUnitType.Star), true);
+            apiInputsGrid.AddTextColumn("Default Value", x => x.DefaultValue, new DataGridLength(2, DataGridLengthUnitType.Star));
+            apiInputsGrid.AddTextColumn("Value", x => x.Value, new DataGridLength(2, DataGridLengthUnitType.Star));
+            apiInputsGrid.AddTextColumn("Type", x => x.InputType, new DataGridLength(1, DataGridLengthUnitType.Star), true);
+            var apiInputsPanel = new Grid();
+            apiInputsPanel.RowDefinitions.Add(new RowDefinition { SharedSizeGroup = "apiTabs" });
+            apiInputsPanel.Children.Add(apiInputsGrid);
+
             var apiDetailsPanel = new TabControl();
             Grid.SetIsSharedSizeScope(apiDetailsPanel, true);
             apiDetailsPanel.Items.Add(new TabItem { Header = "General", Content = apiGeneralPanel });
             apiDetailsPanel.Items.Add(new TabItem { Header = "Headers", Content = apiHeadersPanel });
+            apiDetailsPanel.Items.Add(new TabItem { Header = "Inputs", Content = apiInputsPanel });
 
             var topPanel = new StackPanel();
             topPanel.Children.Add(apiDetailsPanel);
@@ -95,13 +108,14 @@ namespace Restless.Controls
             this.Bind(x => x.Url).Mate(url.Value);
             this.Bind(x => x.Methods).To(x => method.ItemsSource = x);
             this.Bind(x => x.Method).Mate(method);
+            this.Bind(x => x.Inputs).To(x => apiInputsGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Headers).To(x => apiHeadersGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Send).To(x => sendButton.Command = x);
+            this.Bind(x => x.Reset).To(x => resetButton.Command = x);
             this.Bind(x => x.Response).To(x =>
             {
                 if (currentApiResponsePanel != null)
                 {
-//                    currentApiResponsePanel.Dispose();
                     Children.Remove(currentApiResponsePanel);
                 }
                 currentApiResponsePanel = new ApiResponsePanel();

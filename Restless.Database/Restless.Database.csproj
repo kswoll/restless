@@ -139,10 +139,11 @@
     <Compile Include="DbApiCallRequestHeader.cs" />
     <Compile Include="DbApiCallResponseHeader.cs" />
     <Compile Include="DbApiHeader.cs" />
+    <Compile Include="DbApiInput.cs" />
     <Compile Include="DbApiResponseComplication.cs" />
-    <Compile Include="Migrations\20160112233706_InitialDb.cs" />
-    <Compile Include="Migrations\20160112233706_InitialDb.designer.cs">
-      <DependentUpon>20160112233706_InitialDb.cs</DependentUpon>
+    <Compile Include="Migrations\20160119155801_InitialDb.cs" />
+    <Compile Include="Migrations\20160119155801_InitialDb.designer.cs">
+      <DependentUpon>20160119155801_InitialDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\RestlessDbModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -5,11 +5,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Restless.Database;
 using Restless.Models;
+using Restless.Utils;
+using Restless.Utils.Inputs;
 using SexyReact;
 using SexyReact.Utils;
 
@@ -22,62 +23,53 @@ namespace Restless.ViewModels
         public string Url { get; set; }
         public ApiMethod Method { get; set; }
         public List<ApiMethod> Methods { get; }
+        public RxList<ApiInputModel> Inputs { get; }
         public RxList<ApiHeaderModel> Headers { get; }
         public IRxCommand Send { get; }
+        public IRxCommand Reset { get; }
         public ApiResponseModel Response { get; set; }
 
         private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
 
         public ApiModel(DbApi dbApi)
         {
+            SubscribeForInputs(this.ObservePropertyChange(x => x.Url), () => Url, ApiInputType.Url);
+            SubscribeForInputs(this.ObservePropertyChange(x => x.Headers).SelectMany(x => x.ObserveElementProperty(y => y.Name)).Merge(this.ObservePropertyChange(x => x.Headers).SelectMany(x => x.ObserveElementProperty(y => y.Value))), () => string.Join("\n", Headers.Select(x => x.Name + "=" + x.Value)), ApiInputType.Header);
+
             Id = dbApi.Id;
             Title = dbApi.Title;
             Url = dbApi.Url;
             Methods = httpMethods.ToList();
             Method = dbApi.Method;
+            Inputs = dbApi.Inputs == null ? new RxList<ApiInputModel>() : new RxList<ApiInputModel>(dbApi.Inputs.Select(x => new ApiInputModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                DefaultValue = x.DefaultValue,
+                InputType = x.InputType
+            }));
             Headers = dbApi.RequestHeaders == null ? new RxList<ApiHeaderModel>() : new RxList<ApiHeaderModel>(dbApi.RequestHeaders.Select(x => new ApiHeaderModel
             {
                 Id = x.Id,
                 Name = x.Name,
                 Value = x.Value
             }));
-            Send = RxCommand.CreateAsync(SendImpl);
+            Send = RxCommand.CreateAsync(OnSend);
+            Reset = RxCommand.Create(OnReset);
 
-            var semaphore = new Semaphore(1, 1);
-            Headers.ItemAdded.SubscribeAsync(async x =>
-            {
-                semaphore.WaitOne();
-                var db = new RestlessDb();
-                var dbApiHeader = new DbApiHeader
+            Inputs.SetUpSync(
+                x => new DbApiInput { ApiId = Id, Name = x.Name, DefaultValue = "", InputType = x.InputType },
+                (input, dbInput) =>
                 {
-                    ApiId = Id,
-                    Name = "",
-                    Value = ""
-                };
-                db.ApiHeaders.Add(dbApiHeader);
-                await db.SaveChangesAsync();
-                x.Id = dbApiHeader.Id;
-                semaphore.Release();
-            });
-            Headers.ItemRemoved.SubscribeAsync(async x =>
-            {
-                semaphore.WaitOne();
-                var db = new RestlessDb();
-                var dbApiHeader = await db.ApiHeaders.SingleAsync(y => y.Id == x.Id);
-                db.ApiHeaders.Remove(dbApiHeader);
-                await db.SaveChangesAsync();
-                semaphore.Release();
-            });
-            Headers.ObserveElementChange(x => x.Name, x => x.Value).SubscribeAsync(async x =>
-            {
-                semaphore.WaitOne();
-                var db = new RestlessDb();
-                var dbApiHeader = await db.ApiHeaders.SingleAsync(y => y.Id == x.Element.Id);
-                dbApiHeader.Name = x.Element.Name;
-                dbApiHeader.Value = x.Element.Value;
-                await db.SaveChangesAsync();
-                semaphore.Release();
-            });
+                    dbInput.DefaultValue = input.DefaultValue;
+                });
+            Headers.SetUpSync(
+                _ => new DbApiHeader { ApiId = Id, Name = "", Value = "" },
+                (header, dbHeader) =>
+                {
+                    dbHeader.Name = header.Name;
+                    dbHeader.Value = header.Value;
+                });
 
             this.ObservePropertiesChange(x => x.Title, x => x.Url, x => x.Method)
                 .Throttle(TimeSpan.FromSeconds(1))
@@ -92,7 +84,38 @@ namespace Restless.ViewModels
                 });
         }
 
-        private async Task SendImpl()
+        private void SubscribeForInputs<T>(IObservable<T> observable, Func<string> value, ApiInputType inputType)
+        {
+            observable.Throttle(TimeSpan.FromSeconds(1)).Subscribe(_ => CheckForInputs(inputType, value()));
+        }
+
+        private void CheckForInputs(ApiInputType inputType, string s)
+        {
+            var inputString = InputGrammar.Parse(s);
+            var inputVariables = inputString.Tokens.OfType<VariableInputToken>().ToArray();
+            var existingInputs = Inputs.Where(x => x.InputType == inputType).ToArray();
+            var obsoleteInputs = existingInputs.Where(x => !inputVariables.Any(y => x.Name == y.Variable)).ToArray();
+
+            foreach (var input in obsoleteInputs)
+            {
+                Inputs.Remove(input);
+            }
+
+            foreach (var variable in inputVariables)
+            {
+                if (!Inputs.Any(x => x.Name == variable.Variable))
+                {
+                    var insertionPoint = Inputs.BinarySearch(x => x.Name, variable.Variable);
+                    if (insertionPoint < 0)
+                    {
+                        insertionPoint = ~insertionPoint;
+                        Inputs.Insert(insertionPoint, new ApiInputModel { Name = variable.Variable, InputType = inputType });
+                    }
+                }
+            }
+        }
+
+        private async Task OnSend()
         {
             var request = CreateRequest();
             var responseModel = new ApiResponseModel { Api = this };
@@ -125,6 +148,14 @@ namespace Restless.ViewModels
             Response = responseModel;
         }
 
+        private void OnReset()
+        {
+            foreach (var input in Inputs)
+            {
+                input.Value = null;
+            }
+        }
+
         private static HttpClient CreateClient()
         {
             return new HttpClient(new HttpClientHandler
@@ -151,12 +182,23 @@ namespace Restless.ViewModels
             }
         }
 
+        private string Format(string s)
+        {
+            return InputGrammar.Parse(s).Format(name => Inputs.Single(x => x.Name == name).Value);
+        }
+
         private HttpRequestMessage CreateRequest()
         {
-            var request = new HttpRequestMessage(MapApiMethod(), Url);
+            foreach (var input in Inputs)
+            {
+                if (input.Value == null)
+                    input.Value = input.DefaultValue;
+            }
+
+            var request = new HttpRequestMessage(MapApiMethod(), Format(Url));
             foreach (var header in Headers)
             {
-                request.Headers.Add(header.Name, header.Value);
+                request.Headers.Add(Format(header.Name), Format(header.Value));
             }
             return request;
         }

@@ -8,7 +8,7 @@ using Restless.Database;
 namespace Restless.Database.Migrations
 {
     [DbContext(typeof(RestlessDb))]
-    [Migration("20160112233706_InitialDb")]
+    [Migration("20160119155801_InitialDb")]
     partial class InitialDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,6 +111,24 @@ namespace Restless.Database.Migrations
                     b.HasAnnotation("Relational:TableName", "ApiHeader");
                 });
 
+            modelBuilder.Entity("Restless.Database.DbApiInput", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ApiId");
+
+                    b.Property<string>("DefaultValue");
+
+                    b.Property<int>("InputType");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasAnnotation("Relational:TableName", "ApiInput");
+                });
+
             modelBuilder.Entity("Restless.Database.DbApiResponseComplication", b =>
                 {
                     b.Property<int>("Id")
@@ -159,6 +177,13 @@ namespace Restless.Database.Migrations
                 });
 
             modelBuilder.Entity("Restless.Database.DbApiHeader", b =>
+                {
+                    b.HasOne("Restless.Database.DbApi")
+                        .WithMany()
+                        .HasForeignKey("ApiId");
+                });
+
+            modelBuilder.Entity("Restless.Database.DbApiInput", b =>
                 {
                     b.HasOne("Restless.Database.DbApi")
                         .WithMany()

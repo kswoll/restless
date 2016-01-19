@@ -100,6 +100,10 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PEG, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PEG.1.0.3\lib\net45\PEG.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Remotion.Linq, Version=2.0.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
       <HintPath>..\packages\Remotion.Linq.2.0.1\lib\net45\Remotion.Linq.dll</HintPath>
       <Private>True</Private>
@@ -186,7 +190,14 @@
     <Compile Include="Styles\GlobalStyles.cs" />
     <Compile Include="Templates\ButtonTemplate.cs" />
     <Compile Include="Utils\ContentTypes.cs" />
+    <Compile Include="Utils\DatabaseSync.cs" />
+    <Compile Include="Utils\Inputs\InputGrammar.cs" />
+    <Compile Include="Utils\Inputs\InputString.cs" />
+    <Compile Include="Utils\Inputs\InputToken.cs" />
+    <Compile Include="Utils\Inputs\StringInputToken.cs" />
+    <Compile Include="Utils\Inputs\VariableInputToken.cs" />
     <Compile Include="ViewModels\ApiHeaderModel.cs" />
+    <Compile Include="ViewModels\ApiInputModel.cs" />
     <Compile Include="ViewModels\ApiModel.cs" />
     <Compile Include="ViewModels\ApiResponseModel.cs" />
     <Compile Include="ViewModels\BaseModel.cs" />

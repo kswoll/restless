@@ -17,24 +17,27 @@ namespace Restless.ViewModels
 
         public MainWindowModel()
         {
-            AddApi = RxFunction.CreateAsync(AddApiImpl);
+            AddApi = RxFunction.CreateAsync(OnAddApi);
             Title = "Restless";
             Items = new RxList<ApiModel>();
 
             Task.Run(async () =>
             {
                 var db = new RestlessDb();
-                var apis = await db.Apis.Include(x => x.RequestHeaders).ToArrayAsync();
+                var apis = await db.Apis
+                    .Include(x => x.RequestHeaders)
+                    .Include(x => x.Inputs)
+                    .ToArrayAsync();
                 foreach (var api in apis)
                 {
                     Items.Add(new ApiModel(api));
                 }
             });
 
-            DeleteSelectedItem = RxCommand.CreateAsync(DeleteSelectedItemImpl);
+            DeleteSelectedItem = RxCommand.CreateAsync(OnDeleteSelectedItem);
         }
 
-        private async Task<ApiModel> AddApiImpl()
+        private async Task<ApiModel> OnAddApi()
         {
             var db = new RestlessDb();
             var dbApi = new DbApi
@@ -50,7 +53,7 @@ namespace Restless.ViewModels
             return model;
         }
         
-        private async Task DeleteSelectedItemImpl()
+        private async Task OnDeleteSelectedItem()
         {
             var db = new RestlessDb();
             var dbApi = await db.Apis.SingleAsync(x => x.Id == SelectedItem.Id);

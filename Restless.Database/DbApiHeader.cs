@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Restless.Models;
 
 namespace Restless.Database
 {
     [Table("ApiHeader")]
-    public class DbApiHeader
+    public class DbApiHeader : IIdObject
     {
         public int Id { get; set; } 
         public int ApiId { get; set; }

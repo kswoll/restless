@@ -20,6 +20,7 @@ namespace Restless.Database
 
         public byte[] RequestBody { get; set; }
 
+        public List<DbApiInput> Inputs { get; set; }
         public List<DbApiHeader> RequestHeaders { get; set; }
         public List<DbApiResponseComplication> ResponseComplications { get; set; }
     }

@@ -6,3 +6,6 @@ Restless.Database/obj/
 Restless.Models/bin/
 Restless.Database/bin/
 Restless/obj/
+*.user
+Restless.Tests/bin/
+Restless.Tests/obj/
