@@ -68,13 +68,19 @@ namespace Restless.Controls
             var apiHeadersGrid = new RxDataGrid<ApiHeaderModel>
             {
                 AutoGenerateColumns = false,
-                HeadersVisibility = DataGridHeadersVisibility.Column
+                HeadersVisibility = DataGridHeadersVisibility.Column,
+                CanUserAddRows = true
             };
             apiHeadersGrid.AddTextColumn("Name", x => x.Name).Width = new DataGridLength(1, DataGridLengthUnitType.Star);
             apiHeadersGrid.AddTextColumn("Value", x => x.Value).Width = new DataGridLength(2, DataGridLengthUnitType.Star);
             var apiHeadersPanel = new Grid();
             apiHeadersPanel.RowDefinitions.Add(new RowDefinition { SharedSizeGroup = "apiTabs" });
             apiHeadersPanel.Children.Add(apiHeadersGrid);
+
+            var apiBodyTextBox = new TextBox();
+            var apiBodyPanel = new Grid();
+            apiBodyPanel.RowDefinitions.Add(new RowDefinition { SharedSizeGroup = "apiTabs" });
+            apiBodyPanel.Children.Add(apiBodyTextBox);
 
             var apiInputsGrid = new RxDataGrid<ApiInputModel>
             {
@@ -83,6 +89,7 @@ namespace Restless.Controls
                 CanUserAddRows = false,
                 CanUserDeleteRows = false
             };
+
             apiInputsGrid.AddTextColumn("Name", x => x.Name, new DataGridLength(1, DataGridLengthUnitType.Star), true);
             apiInputsGrid.AddTextColumn("Default Value", x => x.DefaultValue, new DataGridLength(2, DataGridLengthUnitType.Star));
             apiInputsGrid.AddTextColumn("Value", x => x.Value, new DataGridLength(2, DataGridLengthUnitType.Star));
@@ -95,6 +102,7 @@ namespace Restless.Controls
             Grid.SetIsSharedSizeScope(apiDetailsPanel, true);
             apiDetailsPanel.Items.Add(new TabItem { Header = "General", Content = apiGeneralPanel });
             apiDetailsPanel.Items.Add(new TabItem { Header = "Headers", Content = apiHeadersPanel });
+            apiDetailsPanel.Items.Add(new TabItem { Header = "Body", Content = apiBodyPanel });
             apiDetailsPanel.Items.Add(new TabItem { Header = "Inputs", Content = apiInputsPanel });
 
             var topPanel = new StackPanel();
@@ -106,10 +114,10 @@ namespace Restless.Controls
 
             this.Bind(x => x.Title).Mate(title.Value);
             this.Bind(x => x.Url).Mate(url.Value);
-            this.Bind(x => x.Methods).To(x => method.ItemsSource = x);
-            this.Bind(x => x.Method).Mate(method);
+            this.Bind(x => x.Method).Mate(method, x => x.Methods);
             this.Bind(x => x.Inputs).To(x => apiInputsGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Headers).To(x => apiHeadersGrid.ItemsSource = x?.ToObservableCollection());
+            this.Bind(x => x.StringBody).Mate(apiBodyTextBox);
             this.Bind(x => x.Send).To(x => sendButton.Command = x);
             this.Bind(x => x.Reset).To(x => resetButton.Command = x);
             this.Bind(x => x.Response).To(x =>

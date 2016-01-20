@@ -163,6 +163,7 @@
     <Compile Include="Controls\ApiPanel.cs" />
     <Compile Include="Controls\ApiResponsePanel.cs" />
     <Compile Include="Controls\ResponseActions\IResponseAction.cs" />
+    <Compile Include="Controls\ResponseActions\NextPageResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\PreviousPageResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\ResponseActionAttribute.cs" />
     <Compile Include="Controls\ResponseActions\ResponseActionPredicateAttribute.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="Templates\ButtonTemplate.cs" />
     <Compile Include="Utils\ContentTypes.cs" />
     <Compile Include="Utils\DatabaseSync.cs" />
+    <Compile Include="Utils\HttpHeaders.cs" />
     <Compile Include="Utils\Inputs\InputGrammar.cs" />
     <Compile Include="Utils\Inputs\InputString.cs" />
     <Compile Include="Utils\Inputs\InputToken.cs" />

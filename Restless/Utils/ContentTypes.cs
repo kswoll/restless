@@ -4,6 +4,7 @@ namespace Restless.Utils
 {
     public class ContentTypes
     {
+        public const string ContentType = "Content-Type";
         public const string ApplicationJson = "application/json";
         public const string ApplicationXml = "application/xml";
         public const string TextPlain = "text/plain";

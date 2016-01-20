@@ -18,7 +18,7 @@ namespace Restless.Tests.Utils.Inputs
         [Test]
         public void OneVariableToken()
         {
-            var s = "{one}";
+            var s = "%{one}";
             var inputs = InputGrammar.Parser.Parse(s);
             Assert.AreEqual("one", ((VariableInputToken)inputs.Tokens.Single()).Variable);
         }
@@ -26,7 +26,7 @@ namespace Restless.Tests.Utils.Inputs
         [Test]
         public void MixedTokens()
         {
-            var s = "{one}plus{two}equals{three}";
+            var s = "%{one}plus%{two}equals%{three}";
             var inputs = InputGrammar.Parser.Parse(s);
             Assert.AreEqual("one", ((VariableInputToken)inputs.Tokens[0]).Variable);
             Assert.AreEqual("plus", ((StringInputToken)inputs.Tokens[1]).Value);

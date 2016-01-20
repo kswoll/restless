@@ -9,3 +9,5 @@ Restless/obj/
 *.user
 Restless.Tests/bin/
 Restless.Tests/obj/
+Restless.SampleApi/bin/
+Restless.SampleApi/obj/

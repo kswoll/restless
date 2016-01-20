@@ -18,7 +18,7 @@ namespace Restless.ViewModels
         public string Status { get; set; }
         public string Reason { get; set; }
 
-        public string ContentType => Headers.SingleOrDefault(x => x.Name == "Content-Type")?.Value.Split(';').First();
+        public string ContentType => Headers.SingleOrDefault(x => x.Name == ContentTypes.ContentType)?.Value.Split(';').First();
         public string StringResponse => stringResponse.Value;
         public JToken JsonResponse => jsonResponse.Value;
 

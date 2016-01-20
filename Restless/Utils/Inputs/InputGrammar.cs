@@ -30,12 +30,12 @@ namespace Restless.Utils.Inputs
         [Ast(typeof(VariableInputToken))]
         public virtual Expression VariableToken()
         {
-            return '{' + VariableName() + '}';
+            return "%{" + VariableName() + '}';
         }
 
         public virtual Expression VariableName()
         {
-            return +(!('{'._() | '}') + Any);
+            return +(!("%{"._() | '}') + Any);
         }
     }
 }
