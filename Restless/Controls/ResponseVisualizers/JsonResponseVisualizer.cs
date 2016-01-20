@@ -55,7 +55,11 @@ namespace Restless.Controls.ResponseVisualizers
 
         private TreeViewItem CreateChildNode(JObject obj)
         {
-            var objectNode = new TreeViewItem { Header = $"{{object with {obj.Count} properties}}" };
+            var objectNode = new TreeViewItem
+            {
+                Header = $"{{object with {obj.Count} properties}}",
+                IsExpanded = true
+            };
             foreach (var token in obj)
             {
                 var propertyNode = CreateChildNode(token.Value);
@@ -67,7 +71,11 @@ namespace Restless.Controls.ResponseVisualizers
 
         private TreeViewItem CreateChildNode(JArray array)
         {
-            var arrayNode = new TreeViewItem { Header = $"{{array with {array.Count} elements}}" };
+            var arrayNode = new TreeViewItem
+            {
+                Header = $"{{array with {array.Count} elements}}",
+                IsExpanded = true
+            };
             for (var i = 0; i < array.Count; i++)
             {
                 var token = array[i];

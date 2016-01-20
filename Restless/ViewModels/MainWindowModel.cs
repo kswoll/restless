@@ -27,6 +27,7 @@ namespace Restless.ViewModels
                 var apis = await db.Apis
                     .Include(x => x.RequestHeaders)
                     .Include(x => x.Inputs)
+                    .Include(x => x.Outputs)
                     .ToArrayAsync();
                 foreach (var api in apis)
                 {

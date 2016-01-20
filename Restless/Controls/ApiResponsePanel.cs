@@ -70,9 +70,9 @@ namespace Restless.Controls
             this.Add(buttonPanel, Dock.Bottom);
             this.Add(tabControl);
 
-            this.Bind(x => x.Status).To(x =>
+            this.Bind(x => x.Status).To(status =>
             {
-                if (x != null)
+                if (status != null)
                 {
                     var visualizers = ResponseVisualizerRegistry.GetVisualizers(Model);
                     foreach (var visualizer in visualizers)
@@ -84,16 +84,23 @@ namespace Restless.Controls
                         });
                     }
 
-                    var actions = ResponseActionRegistry.GetActions(Model).ToArray();
+                    var actions = ResponseActionRegistry.GetActions(Model).ToList();
                     if (actions.Any())
                     {
                         buttonPanel.Visibility = Visibility.Visible;
 
-                        foreach (var action in actions)
+                        actions.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+                        foreach (var item in actions)
                         {
+                            var action = item.Item1;
+                            var state = item.Item2;
+                            if (state == ResponseActionState.Hidden)
+                                continue;
+
                             var button = new Button
                             {
-                                Content = new Label { Content = action.Header, Focusable = false }
+                                Content = new Label { Content = action.Header, Focusable = false },
+                                IsEnabled = state == ResponseActionState.Enabled
                             };
                             button.Click += async (sender, args) =>
                             {

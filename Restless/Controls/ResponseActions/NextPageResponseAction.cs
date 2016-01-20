@@ -1,35 +1,34 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using Restless.ViewModels;
+﻿using Restless.ViewModels;
 
 namespace Restless.Controls.ResponseActions
 {
-    public class NextPageResponseAction : IResponseAction
+    public class NextPageResponseAction : PageResponseAction
     {
-        public string Header => "Next Page";
+        public override string Header => "Next Page";
 
-        [ResponseActionPredicate]
-        public static bool IsActionApplicableToResponse(ApiResponseModel response)
+        public override int CompareTo(IResponseAction other)
         {
-            var json = response.JsonResponse as JObject;
-            if (json != null)
-            {
-//                if (json.Property(""))
-            }
-            return true;
+            if (other is PreviousPageResponseAction)
+                return 1;
+            else
+                return 0;
         }
 
-        public Task PerformAction(ApiResponseModel response)
+        [ResponseActionPredicate]
+        public static ResponseActionState IsActionApplicableToResponse(ApiResponseModel response)
         {
-            var limit = int.Parse(response.Api.Inputs.Single(x => x.Name == "limit").Value);
-            var offsetInput = response.Api.Inputs.Single(x => x.Name == "offset");
-            var offset = int.Parse(offsetInput.Value);
-            offset += limit;
-            offsetInput.Value = offset.ToString();
+            var totalCount = GetTotalCount(response);
+            if (totalCount == null)
+                return ResponseActionState.Hidden;
 
-            return response.Api.Send.InvokeAsync();
+            var offset = GetOffset(response);
+            var limit = GetLimit(response);
+            return offset + limit < totalCount ? ResponseActionState.Enabled : ResponseActionState.Disabled;
+        }
+
+        protected override int AdjustOffset(int offset, int limit)
+        {
+            return offset + limit;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace Restless.ViewModels
         public ApiMethod Method { get; set; }
         public List<ApiMethod> Methods { get; }
         public RxList<ApiInputModel> Inputs { get; }
+        public RxList<ApiOutputModel> Outputs { get; }
         public RxList<ApiHeaderModel> Headers { get; }
         public IRxCommand Send { get; }
         public IRxCommand Reset { get; }
@@ -37,6 +38,7 @@ namespace Restless.ViewModels
         public ApiModel(DbApi dbApi)
         {
             Inputs = new RxList<ApiInputModel>();
+            Outputs = new RxList<ApiOutputModel>();
             Headers = new RxList<ApiHeaderModel>();
 
             SubscribeForInputs(this.ObservePropertyChange(x => x.Url), () => Url, ApiInputType.Url);
@@ -57,6 +59,13 @@ namespace Restless.ViewModels
                     DefaultValue = x.DefaultValue,
                     InputType = x.InputType
                 }));
+            if (dbApi.Outputs != null)
+                Outputs.AddRange(dbApi.Outputs.Select(x => new ApiOutputModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Expression = x.Expression
+                }));
             if (dbApi.RequestHeaders != null)
                 Headers.AddRange(dbApi.RequestHeaders.Select(x => new ApiHeaderModel
                 {
@@ -72,6 +81,13 @@ namespace Restless.ViewModels
                 (input, dbInput) =>
                 {
                     dbInput.DefaultValue = input.DefaultValue;
+                });
+            Outputs.SetUpSync(
+                x => new DbApiOutput { ApiId = Id, Name = x.Name, Expression = "" },
+                (output, dbOutput) =>
+                {
+                    dbOutput.Name = output.Name;
+                    dbOutput.Expression = output.Expression;
                 });
             Headers.SetUpSync(
                 _ => new DbApiHeader { ApiId = Id, Name = "", Value = "" },
@@ -180,6 +196,10 @@ namespace Restless.ViewModels
             foreach (var input in Inputs)
             {
                 input.Value = null;
+            }
+            foreach (var output in Outputs)
+            {
+                output.Value = null;
             }
         }
 

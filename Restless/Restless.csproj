@@ -164,10 +164,12 @@
     <Compile Include="Controls\ApiResponsePanel.cs" />
     <Compile Include="Controls\ResponseActions\IResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\NextPageResponseAction.cs" />
+    <Compile Include="Controls\ResponseActions\PageResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\PreviousPageResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\ResponseActionAttribute.cs" />
     <Compile Include="Controls\ResponseActions\ResponseActionPredicateAttribute.cs" />
     <Compile Include="Controls\ResponseActions\ResponseActionRegistry.cs" />
+    <Compile Include="Controls\ResponseActions\ResponseActionState.cs" />
     <Compile Include="Controls\ResponseVisualizers\HtmlResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\ImageResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\IResponseVisualizer.cs" />
@@ -198,9 +200,14 @@
     <Compile Include="Utils\Inputs\InputToken.cs" />
     <Compile Include="Utils\Inputs\StringInputToken.cs" />
     <Compile Include="Utils\Inputs\VariableInputToken.cs" />
+    <Compile Include="Utils\Outputs\Json\JsonPathExpression.cs" />
+    <Compile Include="Utils\Outputs\Json\JsonPathGrammar.cs" />
+    <Compile Include="Utils\Outputs\Json\JsonPathIndexerExpression.cs" />
+    <Compile Include="Utils\Outputs\Json\JsonPathPropertyExpression.cs" />
     <Compile Include="ViewModels\ApiHeaderModel.cs" />
     <Compile Include="ViewModels\ApiInputModel.cs" />
     <Compile Include="ViewModels\ApiModel.cs" />
+    <Compile Include="ViewModels\ApiOutputModel.cs" />
     <Compile Include="ViewModels\ApiResponseModel.cs" />
     <Compile Include="ViewModels\BaseModel.cs" />
     <Compile Include="ViewModels\MainWindowModel.cs" />

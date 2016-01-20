@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Restless.ViewModels;
 
 namespace Restless.Controls.ResponseActions
 {
-    public interface IResponseAction
+    public interface IResponseAction : IComparable<IResponseAction>
     {
         string Header { get; }
         Task PerformAction(ApiResponseModel response);

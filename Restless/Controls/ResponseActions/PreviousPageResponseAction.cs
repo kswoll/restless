@@ -5,24 +5,32 @@ using Restless.ViewModels;
 
 namespace Restless.Controls.ResponseActions
 {
-    public class PreviousPageResponseAction : IResponseAction
+    public class PreviousPageResponseAction : PageResponseAction
     {
-        public string Header => "Previous Page";
+        public override string Header => "Previous Page";
 
-        [ResponseActionPredicate]
-        public static bool IsActionApplicableToResponse(ApiResponseModel response)
+        public override int CompareTo(IResponseAction other)
         {
-            var json = response.JsonResponse as JObject;
-            if (json != null)
-            {
-//                if (json.Property(""))
-            }
-            return true;
+            if (other is NextPageResponseAction)
+                return -1;
+            else
+                return 0;
         }
 
-        public Task PerformAction(ApiResponseModel response)
+        [ResponseActionPredicate]
+        public static ResponseActionState IsActionApplicableToResponse(ApiResponseModel response)
         {
-            throw new NotImplementedException();
+            var totalCount = GetTotalCount(response);
+            if (totalCount == null)
+                return ResponseActionState.Hidden;
+
+            var offset = GetOffset(response);
+            return offset > 0 ? ResponseActionState.Enabled : ResponseActionState.Disabled;
+        }
+
+        protected override int AdjustOffset(int offset, int limit)
+        {
+            return Math.Max(0, offset - limit);
         }
     }
 }

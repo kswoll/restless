@@ -140,6 +140,7 @@
     <Compile Include="DbApiCallResponseHeader.cs" />
     <Compile Include="DbApiHeader.cs" />
     <Compile Include="DbApiInput.cs" />
+    <Compile Include="DbApiOutput.cs" />
     <Compile Include="DbApiResponseComplication.cs" />
     <Compile Include="Migrations\20160119155801_InitialDb.cs" />
     <Compile Include="Migrations\20160119155801_InitialDb.designer.cs">
