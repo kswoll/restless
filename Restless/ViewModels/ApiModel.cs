@@ -166,32 +166,48 @@ namespace Restless.ViewModels
 
             using (var client = CreateClient())
             {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var response = await client.SendAsync(request);
-                var responseBody = await response.Content.ReadAsByteArrayAsync();
-                stopwatch.Stop();
+                try
+                {
+                    var stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    var response = await client.SendAsync(request);
+                    var responseBody = await response.Content.ReadAsByteArrayAsync();
+                    stopwatch.Stop();
 
-                responseModel.ContentLength = responseBody.Length;
-                responseModel.Elapsed = stopwatch.Elapsed;
-                responseModel.Response = responseBody;
-                responseModel.Status = response.StatusCode.ToString();
-                responseModel.StatusCode = (int)response.StatusCode;
-                responseModel.Reason = response.ReasonPhrase;
-                responseModel.Headers = response.Headers
-                    .Concat(response.Content == null ? Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>() : response.Content.Headers)
-                    .Select(x => new ApiHeaderModel
+                    responseModel.ContentLength = responseBody.Length;
+                    responseModel.Elapsed = stopwatch.Elapsed;
+                    responseModel.Response = responseBody;
+                    responseModel.Status = response.StatusCode.ToString();
+                    responseModel.StatusCode = (int)response.StatusCode;
+                    responseModel.Reason = response.ReasonPhrase;
+                    responseModel.Headers = response.Headers
+                        .Concat(response.Content == null ? Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>() : response.Content.Headers)
+                        .Select(x => new ApiHeaderModel
+                        {
+                            Name = x.Key,
+                            Value = string.Join(", ", x.Value)
+                        })
+                        .OrderBy(x => x.Name)
+                        .ToList();
+
+                    foreach (var output in Outputs)
                     {
-                        Name = x.Key,
-                        Value = string.Join(", ", x.Value)
-                    })
-                    .OrderBy(x => x.Name)
-                    .ToList();
-            }
-
-            foreach (var output in Outputs)
-            {
-                await OutputProcessorRegistry.GetProcessor(output.Type).ProcessOutput(responseModel, output);
+                        await OutputProcessorRegistry.GetProcessor(output.Type).ProcessOutput(responseModel, output);
+                    }
+                }
+                catch (Exception e)
+                {
+                    responseModel.StatusCode = 0;
+                    responseModel.Reason = e.Message;
+                    responseModel.Status = "Client Error";
+                    responseModel.Headers = new List<ApiHeaderModel>();
+                    responseModel.Headers.Add(new ApiHeaderModel
+                    {
+                        Name = "Content-Type",
+                        Value = "text/plain"
+                    });
+                    responseModel.Response = Encoding.UTF8.GetBytes(e.Message);
+                }
             }
 
             Response = responseModel;
