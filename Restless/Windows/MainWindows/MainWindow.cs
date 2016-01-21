@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Drawing;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Restless.Controls;
+using Restless.Properties;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
@@ -16,8 +18,7 @@ namespace Restless.Windows.MainWindows
 
         public MainWindow()
         {
-            Height = 550;
-            Width = 725;
+            ConfigureWindowStateAndPosition();
 
             var apiListItemTemplate = new FrameworkElementFactory(typeof(TextBlock));
 
@@ -69,6 +70,36 @@ namespace Restless.Windows.MainWindows
                 Model.SelectedItem = apiModel;
                 ((ApiPanel)this.content).InitNew();
             });            
+        }
+
+        private void ConfigureWindowStateAndPosition()
+        {
+            WindowState = Settings.Default.WindowState;
+            var windowPosition = Settings.Default.WindowPosition;
+            if (windowPosition != null)
+            {
+                Left = windowPosition.Value.Left;
+                Top = windowPosition.Value.Top;
+                Width = windowPosition.Value.Width;
+                Height = windowPosition.Value.Height;
+            }
+            else
+            {
+                Height = 550;
+                Width = 725;
+            }
+            StateChanged += (sender, args) =>
+            {
+                Settings.Default.WindowState = WindowState;
+                Settings.Default.Save();
+            };
+            EventHandler positionChanged = (sender, args) =>
+            {
+                Settings.Default.WindowPosition = new Rectangle((int)Left, (int)Top, (int)Width, (int)Height);
+                Settings.Default.Save();
+            };
+            LocationChanged += positionChanged;
+            SizeChanged += (sender, args) => positionChanged(sender, args);
         }
 
         private void ShowContent(FrameworkElement content)
