@@ -276,7 +276,7 @@ namespace Restless.ViewModels
                     request.Headers.Add(name, value);
             }
 
-            if (Body != null)
+            if (Body != null && Method != ApiMethod.Get)
             {
                 var contentType = Headers.SingleOrDefault(x => x.Name == ContentTypes.ContentType)?.Value;
                 if (contentType != null && ContentTypes.IsText(contentType))

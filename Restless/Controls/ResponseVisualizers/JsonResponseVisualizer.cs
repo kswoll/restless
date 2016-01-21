@@ -57,7 +57,7 @@ namespace Restless.Controls.ResponseVisualizers
         {
             var objectNode = new TreeViewItem
             {
-                Header = $"{{object with {obj.Count} properties}}",
+                Header = $"{{object with {obj.Count} propert{(obj.Count == 1 ? "y" : "ies")}}}",
                 IsExpanded = true
             };
             foreach (var token in obj)
@@ -73,7 +73,7 @@ namespace Restless.Controls.ResponseVisualizers
         {
             var arrayNode = new TreeViewItem
             {
-                Header = $"{{array with {array.Count} elements}}",
+                Header = $"{{array with {array.Count} element{(array.Count != 1 ? "s" : "")}}}",
                 IsExpanded = true
             };
             for (var i = 0; i < array.Count; i++)

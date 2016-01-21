@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.24627.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restless", "Restless\Restless.csproj", "{A42A4B2C-D71F-4220-A73E-582A771CB858}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB011DBD-EEF4-4D7E-AD90-C3C339011865} = {FB011DBD-EEF4-4D7E-AD90-C3C339011865}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restless.Database", "Restless.Database\Restless.Database.csproj", "{CE1BFB96-C6C2-4764-833B-4E450EE2B0E1}"
 EndProject

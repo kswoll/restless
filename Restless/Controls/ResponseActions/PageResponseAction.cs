@@ -37,7 +37,7 @@ namespace Restless.Controls.ResponseActions
         protected static int? GetTotalCount(ApiResponseModel response)
         {
             var output = response.Api.Outputs.SingleOrDefault(x => x.Name == "total");
-            if (output == null)
+            if (output == null || output.Value == null)
                 return null;
             return int.Parse(output.Value);
         }
