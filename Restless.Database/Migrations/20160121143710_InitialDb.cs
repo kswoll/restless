@@ -84,6 +84,27 @@ namespace Restless.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
             migrationBuilder.CreateTable(
+                name: "ApiOutput",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ApiId = table.Column<int>(nullable: false),
+                    Expression = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Type = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DbApiOutput", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DbApiOutput_DbApi_ApiId",
+                        column: x => x.ApiId,
+                        principalTable: "Api",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+            migrationBuilder.CreateTable(
                 name: "ApiResponseVisualizer",
                 columns: table => new
                 {
@@ -168,6 +189,7 @@ namespace Restless.Database.Migrations
             migrationBuilder.DropTable("ApiCallResponseHeader");
             migrationBuilder.DropTable("ApiHeader");
             migrationBuilder.DropTable("ApiInput");
+            migrationBuilder.DropTable("ApiOutput");
             migrationBuilder.DropTable("ApiResponseVisualizer");
             migrationBuilder.DropTable("ApiCall");
             migrationBuilder.DropTable("Api");

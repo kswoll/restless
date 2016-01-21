@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using Restless.ViewModels;
 
 namespace Restless.Controls.ResponseActions
@@ -21,10 +19,11 @@ namespace Restless.Controls.ResponseActions
         public static ResponseActionState IsActionApplicableToResponse(ApiResponseModel response)
         {
             var totalCount = GetTotalCount(response);
-            if (totalCount == null)
+            var offset = GetOffset(response);
+            var limit = GetLimit(response);
+            if (totalCount == null || offset == null || limit == null)
                 return ResponseActionState.Hidden;
 
-            var offset = GetOffset(response);
             return offset > 0 ? ResponseActionState.Enabled : ResponseActionState.Disabled;
         }
 

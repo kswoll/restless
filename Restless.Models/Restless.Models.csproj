@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ApiInputType.cs" />
     <Compile Include="ApiMethod.cs" />
+    <Compile Include="ApiOutputType.cs" />
     <Compile Include="ApiResponseComplicationType.cs" />
     <Compile Include="IIdObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -128,6 +128,24 @@ namespace Restless.Database.Migrations
                     b.HasAnnotation("Relational:TableName", "ApiInput");
                 });
 
+            modelBuilder.Entity("Restless.Database.DbApiOutput", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ApiId");
+
+                    b.Property<string>("Expression");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasAnnotation("Relational:TableName", "ApiOutput");
+                });
+
             modelBuilder.Entity("Restless.Database.DbApiResponseComplication", b =>
                 {
                     b.Property<int>("Id")
@@ -183,6 +201,13 @@ namespace Restless.Database.Migrations
                 });
 
             modelBuilder.Entity("Restless.Database.DbApiInput", b =>
+                {
+                    b.HasOne("Restless.Database.DbApi")
+                        .WithMany()
+                        .HasForeignKey("ApiId");
+                });
+
+            modelBuilder.Entity("Restless.Database.DbApiOutput", b =>
                 {
                     b.HasOne("Restless.Database.DbApi")
                         .WithMany()

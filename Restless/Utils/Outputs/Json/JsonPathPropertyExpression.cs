@@ -13,8 +13,15 @@ namespace Restless.Utils.Outputs.Json
 
         public override JToken Evaluate(JToken token)
         {
-            var target = (JObject)Target.Evaluate(token);
-            return target[Name];
+            if (Target != null)
+            {
+                var target = (JObject)Target.Evaluate(token);
+                return target[Name];
+            }
+            else
+            {
+                return ((JObject)token)[Name];
+            }
         }
     }
 }

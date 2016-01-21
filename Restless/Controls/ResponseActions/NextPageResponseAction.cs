@@ -18,11 +18,11 @@ namespace Restless.Controls.ResponseActions
         public static ResponseActionState IsActionApplicableToResponse(ApiResponseModel response)
         {
             var totalCount = GetTotalCount(response);
-            if (totalCount == null)
-                return ResponseActionState.Hidden;
-
             var offset = GetOffset(response);
             var limit = GetLimit(response);
+            if (totalCount == null || offset == null || limit == null)
+                return ResponseActionState.Hidden;
+
             return offset + limit < totalCount ? ResponseActionState.Enabled : ResponseActionState.Disabled;
         }
 

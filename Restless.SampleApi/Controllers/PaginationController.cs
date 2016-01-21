@@ -10,7 +10,7 @@ namespace Restless.SampleApi.Controllers
     {
         [HttpGet, Route]
         public Page GetPage(int offset = 0, int limit = 25)
-        {
+        {   
             const int totalCount = 150;
             var random = new Random(1);
             for (var i = 0; i < offset; i++)

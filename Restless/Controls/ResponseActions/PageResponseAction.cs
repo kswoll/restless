@@ -14,27 +14,32 @@ namespace Restless.Controls.ResponseActions
 
         protected static ApiInputModel GetOffsetInput(ApiResponseModel response)
         {
-            var offsetInput = response.Api.Inputs.Single(x => x.Name == "offset");
+            var offsetInput = response.Api.Inputs.SingleOrDefault(x => x.Name == "offset");
             return offsetInput;
         }
 
-        protected static int GetOffset(ApiResponseModel response)
+        protected static int? GetOffset(ApiResponseModel response)
         {
-            return int.Parse(GetOffsetInput(response).Value);
+            var input = GetOffsetInput(response);
+            if (input == null)
+                return null;
+            return int.Parse(input.Value);
         }
 
-        protected static int GetLimit(ApiResponseModel response)
+        protected static int? GetLimit(ApiResponseModel response)
         {
-            return int.Parse(response.Api.Inputs.Single(x => x.Name == "limit").Value);
+            var input = response.Api.Inputs.SingleOrDefault(x => x.Name == "limit");
+            if (input == null)
+                return null;
+            return int.Parse(input.Value);
         }
 
         protected static int? GetTotalCount(ApiResponseModel response)
         {
-            var json = response.JsonResponse as JObject;
-            if (json != null)
-                return int.Parse((string)json["TotalCount"]);
-            else
+            var output = response.Api.Outputs.SingleOrDefault(x => x.Name == "total");
+            if (output == null)
                 return null;
+            return int.Parse(output.Value);
         }
 
         public Task PerformAction(ApiResponseModel response)

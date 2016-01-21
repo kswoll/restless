@@ -100,6 +100,18 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nito.AsyncEx, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PEG, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\PEG.1.0.3\lib\net45\PEG.dll</HintPath>
       <Private>True</Private>
@@ -200,10 +212,14 @@
     <Compile Include="Utils\Inputs\InputToken.cs" />
     <Compile Include="Utils\Inputs\StringInputToken.cs" />
     <Compile Include="Utils\Inputs\VariableInputToken.cs" />
+    <Compile Include="Utils\Outputs\DefaultOutputProcessor.cs" />
+    <Compile Include="Utils\Outputs\IOutputProcessor.cs" />
+    <Compile Include="Utils\Outputs\JsonPathOutputProcessor.cs" />
     <Compile Include="Utils\Outputs\Json\JsonPathExpression.cs" />
     <Compile Include="Utils\Outputs\Json\JsonPathGrammar.cs" />
     <Compile Include="Utils\Outputs\Json\JsonPathIndexerExpression.cs" />
     <Compile Include="Utils\Outputs\Json\JsonPathPropertyExpression.cs" />
+    <Compile Include="Utils\Outputs\OutputProcessorRegistry.cs" />
     <Compile Include="ViewModels\ApiHeaderModel.cs" />
     <Compile Include="ViewModels\ApiInputModel.cs" />
     <Compile Include="ViewModels\ApiModel.cs" />

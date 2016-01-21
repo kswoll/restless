@@ -13,6 +13,7 @@ using Restless.Database;
 using Restless.Models;
 using Restless.Utils;
 using Restless.Utils.Inputs;
+using Restless.Utils.Outputs;
 using SexyReact;
 using SexyReact.Utils;
 using HttpHeaders = Restless.Utils.HttpHeaders;
@@ -21,11 +22,11 @@ namespace Restless.ViewModels
 {
     public class ApiModel : BaseModel
     {
+        public MainWindowModel MainWindow { get; }
         public int Id { get; set; }
         public string Title { get; set; }
         public string Url { get; set; }
         public ApiMethod Method { get; set; }
-        public List<ApiMethod> Methods { get; }
         public RxList<ApiInputModel> Inputs { get; }
         public RxList<ApiOutputModel> Outputs { get; }
         public RxList<ApiHeaderModel> Headers { get; }
@@ -33,10 +34,9 @@ namespace Restless.ViewModels
         public IRxCommand Reset { get; }
         public ApiResponseModel Response { get; set; }
 
-        private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
-
-        public ApiModel(DbApi dbApi)
+        public ApiModel(MainWindowModel mainWindow, DbApi dbApi)
         {
+            MainWindow = mainWindow;
             Inputs = new RxList<ApiInputModel>();
             Outputs = new RxList<ApiOutputModel>();
             Headers = new RxList<ApiHeaderModel>();
@@ -48,7 +48,6 @@ namespace Restless.ViewModels
             Id = dbApi.Id;
             Title = dbApi.Title;
             Url = dbApi.Url;
-            Methods = httpMethods.ToList();
             Method = dbApi.Method;
             Body = dbApi.RequestBody;
             if (dbApi.Inputs != null)
@@ -64,7 +63,8 @@ namespace Restless.ViewModels
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Expression = x.Expression
+                    Expression = x.Expression,
+                    Type = x.Type
                 }));
             if (dbApi.RequestHeaders != null)
                 Headers.AddRange(dbApi.RequestHeaders.Select(x => new ApiHeaderModel
@@ -88,6 +88,7 @@ namespace Restless.ViewModels
                 {
                     dbOutput.Name = output.Name;
                     dbOutput.Expression = output.Expression;
+                    dbOutput.Type = output.Type;
                 });
             Headers.SetUpSync(
                 _ => new DbApiHeader { ApiId = Id, Name = "", Value = "" },
@@ -186,6 +187,11 @@ namespace Restless.ViewModels
                     })
                     .OrderBy(x => x.Name)
                     .ToList();
+            }
+
+            foreach (var output in Outputs)
+            {
+                await OutputProcessorRegistry.GetProcessor(output.Type).ProcessOutput(responseModel, output);
             }
 
             Response = responseModel;

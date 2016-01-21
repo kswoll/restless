@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Restless.Database;
 using Restless.Models;
@@ -12,18 +14,26 @@ namespace Restless.ViewModels
         public IRxFunction<ApiModel> AddApi { get; }
         public RxList<ApiModel> Items { get; }
         public ApiModel SelectedItem { get; set; }
+        public List<ApiMethod> Methods { get; }
+        public List<ApiOutputType> OutputTypes { get; }
 
         public IRxCommand DeleteSelectedItem { get; }
+
+        private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
+        private static readonly ApiOutputType[] outputTypes = { ApiOutputType.Default, ApiOutputType.JsonPath };
 
         public MainWindowModel()
         {
             AddApi = RxFunction.CreateAsync(OnAddApi);
             Title = "Restless";
             Items = new RxList<ApiModel>();
+            Methods = httpMethods.ToList();
+            OutputTypes = outputTypes.ToList();
 
             Task.Run(async () =>
             {
                 var db = new RestlessDb();
+                db.Database.Migrate();
                 var apis = await db.Apis
                     .Include(x => x.RequestHeaders)
                     .Include(x => x.Inputs)
@@ -31,7 +41,7 @@ namespace Restless.ViewModels
                     .ToArrayAsync();
                 foreach (var api in apis)
                 {
-                    Items.Add(new ApiModel(api));
+                    Items.Add(new ApiModel(this, api));
                 }
             });
 
@@ -49,7 +59,7 @@ namespace Restless.ViewModels
             db.Apis.Add(dbApi);
             await db.SaveChangesAsync();
 
-            var model = new ApiModel(dbApi);
+            var model = new ApiModel(this, dbApi);
             Items.Add(model);
             return model;
         }
