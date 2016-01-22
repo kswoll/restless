@@ -8,5 +8,8 @@
     <Setting Name="WindowPosition" Type="System.Nullable&lt;System.Drawing.Rectangle&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="MainWindowSplitterPosition" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

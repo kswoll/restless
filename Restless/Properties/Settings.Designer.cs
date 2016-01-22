@@ -45,5 +45,17 @@ namespace Restless.Properties {
                 this["WindowPosition"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public int MainWindowSplitterPosition {
+            get {
+                return ((int)(this["MainWindowSplitterPosition"]));
+            }
+            set {
+                this["MainWindowSplitterPosition"] = value;
+            }
+        }
     }
 }

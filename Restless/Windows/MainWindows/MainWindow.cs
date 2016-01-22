@@ -32,8 +32,7 @@ namespace Restless.Windows.MainWindows
             grid.AddRow(1, GridUnitType.Star);
 
             grid.Add(apiList, 0, 0);
-            grid.AddVerticalSplitter(0, 1);
-
+            var splitter = grid.AddVerticalSplitter(0, 1);
             var apiListContextMenu = new ContextMenu();
             var apiDeleteMenuItem = apiListContextMenu.Add("_Delete");
             apiList.ContextMenu = apiListContextMenu;
@@ -62,6 +61,7 @@ namespace Restless.Windows.MainWindows
                 else
                     HideContent();
             });
+            this.Bind(x => x.SplitterPosition).Mate(grid.ColumnDefinitions[0], ColumnDefinition.WidthProperty);
 
             var addApi = this.Bind(x => x.AddApi);
             addApi.To(x => newApiMenuItem.Command = x);
