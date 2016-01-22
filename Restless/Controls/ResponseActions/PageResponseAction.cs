@@ -12,6 +12,8 @@ namespace Restless.Controls.ResponseActions
 
         protected abstract int AdjustOffset(int offset, int limit);
 
+        public bool IsThisPrimary(IResponseAction other) => false;
+
         protected static ApiInputModel GetOffsetInput(ApiResponseModel response)
         {
             var offsetInput = response.Api.Inputs.SingleOrDefault(x => x.Name == "offset");
@@ -39,7 +41,7 @@ namespace Restless.Controls.ResponseActions
             var output = response.Api.Outputs.SingleOrDefault(x => x.Name == "total");
             if (output == null || output.Value == null)
                 return null;
-            return int.Parse(output.Value);
+            return int.Parse(output.Value.ToString());
         }
 
         public Task PerformAction(ApiResponseModel response)

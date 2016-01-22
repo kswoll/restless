@@ -2,7 +2,7 @@
 {
     public class Page
     {
-        public string[] Data { get; set; } 
+        public Row[] Data { get; set; } 
         public int TotalCount { get; set; }
     }
 }

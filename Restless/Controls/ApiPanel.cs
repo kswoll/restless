@@ -1,7 +1,5 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Threading;
 using Restless.Models;
 using Restless.ViewModels;
@@ -148,13 +146,12 @@ namespace Restless.Controls
             this.Bind(x => x.Reset).To(x => resetButton.Command = x);
             this.Bind(x => x.Response).To(x =>
             {
-                if (currentApiResponsePanel != null)
+                if (currentApiResponsePanel == null)
                 {
-                    Children.Remove(currentApiResponsePanel);
+                    currentApiResponsePanel = new ApiResponsePanel();
+                    this.Add(currentApiResponsePanel, 2, 0);
                 }
-                currentApiResponsePanel = new ApiResponsePanel();
                 currentApiResponsePanel.Model = x;
-                this.Add(currentApiResponsePanel, 2, 0);
             });
             this.Bind(x => x.Response).To(x => statusPanel.Visibility = x == null ? Visibility.Hidden : Visibility.Visible);
             this.Bind(x => x.Response.StatusCode).To(x => statusCodeLabel.Content = x);

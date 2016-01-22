@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Restless.Controls.ResponseActions;
 using Restless.Controls.ResponseVisualizers;
+using Restless.Utils;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
@@ -14,52 +14,7 @@ namespace Restless.Controls
     {
         public ApiResponsePanel()
         {
-            Visibility = Visibility.Hidden;
-
-            var bodyTab = new TabItem
-            {
-                Header = "Body"
-            };
-
-            var bodyText = new TextBox();
-            bodyText.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            bodyText.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            bodyText.IsReadOnly = true;
-            bodyTab.Content = bodyText;
-
-            var headersTab = new TabItem
-            {
-                Header = "Headers"
-            };
-            var headersGrid = new RxDataGrid<ApiHeaderModel>()
-            {
-                AutoGenerateColumns = false,
-                IsReadOnly = true,
-                HeadersVisibility = DataGridHeadersVisibility.None,
-                SelectionUnit = DataGridSelectionUnit.Cell
-            };
-            headersGrid.AddTextColumn("Name", x => x.Name).Width = new DataGridLength(1, DataGridLengthUnitType.Star);
-            headersGrid.AddTextColumn("Value", x => x.Value).Width = new DataGridLength(2, DataGridLengthUnitType.Star);
-            headersTab.Content = headersGrid;
-
-            var summaryTab = new TabItem
-            {
-                Header = "Summary"
-            };
-            var summaryPanel = new StackPanel();
-
-            var elapsedPanel = NameValuePanel.Create("Elapsed", new Label());
-            summaryPanel.Children.Add(elapsedPanel);
-
-            var contentLengthPanel = NameValuePanel.Create("Content Length", new Label());
-            summaryPanel.Children.Add(contentLengthPanel);
-            summaryTab.Content = summaryPanel;
-
             var tabControl = new TabControl();
-
-            tabControl.Items.Add(bodyTab);
-            tabControl.Items.Add(headersTab);
-            tabControl.Items.Add(summaryTab);
 
             var buttonPanel = new StackPanel
             {
@@ -70,14 +25,19 @@ namespace Restless.Controls
             this.Add(buttonPanel, Dock.Bottom);
             this.Add(tabControl);
 
-            this.Bind(x => x.Status).To(status =>
+            this.Bind(x => x).To(model =>
             {
-                if (status != null)
+                Visibility = model?.Status != null ? Visibility.Visible : Visibility.Hidden;
+                tabControl.Items.Clear();
+                buttonPanel.Children.Clear();
+
+                if (model?.Status != null)
                 {
-                    var visualizers = ResponseVisualizerRegistry.GetVisualizers(Model);
+                    var visualizers = ResponseVisualizerRegistry.GetVisualizers(Model).ToList();
+                    visualizers.Sort(x => x);
                     foreach (var visualizer in visualizers)
                     {
-                        tabControl.Items.Insert(0, new TabItem
+                        tabControl.Items.Add(new TabItem
                         {
                             Header = visualizer.Header,
                             Content = visualizer
@@ -89,7 +49,7 @@ namespace Restless.Controls
                     {
                         buttonPanel.Visibility = Visibility.Visible;
 
-                        actions.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+                        actions.Sort(x => x.Item1);
                         foreach (var item in actions)
                         {
                             var action = item.Item1;
@@ -104,21 +64,17 @@ namespace Restless.Controls
                             };
                             button.Click += async (sender, args) =>
                             {
+                                var selectedTab = ((TabItem)tabControl.SelectedItem).Header;
                                 await action.PerformAction(Model);
+                                var recoveredTab = tabControl.Items.Cast<TabItem>().SingleOrDefault(x => x.Header == selectedTab);
+                                if (recoveredTab != null)
+                                    tabControl.SelectedItem = recoveredTab;
                             };
                             buttonPanel.Children.Add(button);
                         }
                     }
                 }
             });
-            this.Bind(x => x.Headers).To(x => headersGrid.ItemsSource = x);
-            this.Bind(x => x.Response).To(x =>
-            {
-                Visibility = x == null ? Visibility.Hidden : Visibility.Visible;
-                bodyText.Text = x == null ? "" : Encoding.UTF8.GetString(x);
-            });
-            this.Bind(x => x.ContentLength).To(x => contentLengthPanel.Value.Content = x);
-            this.Bind(x => x.Elapsed).To(x => elapsedPanel.Value.Content = x);
         }
     }
 }

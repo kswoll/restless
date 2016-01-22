@@ -17,6 +17,7 @@ namespace Restless.ViewModels
         public int StatusCode { get; set; }
         public string Status { get; set; }
         public string Reason { get; set; }
+//        public DateTime Finished { get; set; }
 
         public string ContentType => Headers.SingleOrDefault(x => x.Name == ContentTypes.ContentType)?.Value.Split(';').First();
         public string StringResponse => stringResponse.Value;

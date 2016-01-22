@@ -12,6 +12,8 @@ namespace Restless.Controls.ResponseVisualizers
     public class JsonResponseVisualizer : RxDockPanel<ApiResponseModel>, IResponseVisualizer
     {
         public string Header => "Json";
+        public int CompareTo(IResponseVisualizer other) => 0;
+        public bool IsThisPrimary(IResponseVisualizer other) => false;
 
         private readonly TreeView treeView;
 

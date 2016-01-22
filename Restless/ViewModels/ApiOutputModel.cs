@@ -8,6 +8,6 @@ namespace Restless.ViewModels
         public string Name { get; set; }
         public string Expression { get; set; }
         public ApiOutputType Type { get; set; }
-        public string Value { get; set; }
+        public object Value { get; set; }
     }
 }

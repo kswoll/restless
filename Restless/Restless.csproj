@@ -183,12 +183,17 @@
     <Compile Include="Controls\ResponseActions\ResponseActionPredicateAttribute.cs" />
     <Compile Include="Controls\ResponseActions\ResponseActionRegistry.cs" />
     <Compile Include="Controls\ResponseActions\ResponseActionState.cs" />
+    <Compile Include="Controls\ResponseVisualizers\GridResponseVisualizer.cs" />
+    <Compile Include="Controls\ResponseVisualizers\HeadersResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\HtmlResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\ImageResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\IResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\JsonResponseVisualizer.cs" />
     <Compile Include="Controls\ResponseVisualizers\ResponseVisualizerAttribute.cs" />
+    <Compile Include="Controls\ResponseVisualizers\ResponseVisualizerPredicateAttribute.cs" />
     <Compile Include="Controls\ResponseVisualizers\ResponseVisualizerRegistry.cs" />
+    <Compile Include="Controls\ResponseVisualizers\SummaryResponseVisualizer.cs" />
+    <Compile Include="Controls\ResponseVisualizers\TextBodyVisualizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -205,9 +210,11 @@
     <Compile Include="Styles\ButtonStyle.cs" />
     <Compile Include="Styles\GlobalStyles.cs" />
     <Compile Include="Templates\ButtonTemplate.cs" />
+    <Compile Include="Utils\CompareToExtensions.cs" />
     <Compile Include="Utils\ContentTypes.cs" />
     <Compile Include="Utils\DatabaseSync.cs" />
     <Compile Include="Utils\HttpHeaders.cs" />
+    <Compile Include="Utils\ICompareTo.cs" />
     <Compile Include="Utils\Inputs\InputGrammar.cs" />
     <Compile Include="Utils\Inputs\InputString.cs" />
     <Compile Include="Utils\Inputs\InputToken.cs" />

@@ -11,7 +11,7 @@ namespace Restless.Utils.Outputs
         {
             var expression = JsonPathGrammar.Parse(output.Expression);
             var value = expression.Evaluate(response.JsonResponse);
-            output.Value = value?.ToString();
+            output.Value = value;
 
             return TaskConstants.Completed;
         }

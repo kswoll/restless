@@ -31,6 +31,8 @@ namespace Restless.Controls.ResponseVisualizers
         }
 
         public string Header => "Html";
+        public bool IsThisPrimary(IResponseVisualizer other) => false;
+        public int CompareTo(IResponseVisualizer other) => 0;
 
         /// <summary>
         ///     Insert a base href tag into the header part of the HTML
