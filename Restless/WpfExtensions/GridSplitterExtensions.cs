@@ -18,5 +18,19 @@ namespace Restless.WpfExtensions
             grid.Add(splitter, row, column);
             return splitter;
         }
+
+        public static GridSplitter AddHorizontalSplitter(this Grid grid, int row, int column, int height = 4)
+        {
+            var splitter = new GridSplitter
+            {
+                Height = height,
+                ResizeDirection = GridResizeDirection.Rows,
+                ResizeBehavior = GridResizeBehavior.BasedOnAlignment,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch
+            };
+            grid.Add(splitter, row, column);
+            return splitter;
+        }
     }
 }

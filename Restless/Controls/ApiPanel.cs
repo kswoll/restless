@@ -8,7 +8,7 @@ using SexyReact.Views;
 
 namespace Restless.Controls
 {
-    public class ApiPanel : RxDockPanel<ApiModel>
+    public class ApiPanel : RxGrid<ApiModel>
     {
         private readonly NameValuePanel<TextBox> title;
         private ApiResponsePanel currentApiResponsePanel;
@@ -120,12 +120,16 @@ namespace Restless.Controls
             apiDetailsPanel.Items.Add(new TabItem { Header = "Inputs", Content = apiInputsPanel });
             apiDetailsPanel.Items.Add(new TabItem { Header = "Outputs", Content = apiOutputsPanel });
 
-            var topPanel = new StackPanel();
-            topPanel.Children.Add(apiDetailsPanel);
-            topPanel.Children.Add(buttonsAndStatusPanel);
-            topPanel.Children.Add(new Separator { Margin = new Thickness(0, 0, 0, 0) });
+            var topPanel = new DockPanel();
+            topPanel.Add(buttonsAndStatusPanel, Dock.Bottom);
+            topPanel.Add(apiDetailsPanel);
 
-            this.Add(topPanel, Dock.Top);
+            this.AddRow(GridLength.Auto);
+            this.AddRow(4);
+            this.AddRow(new GridLength(1, GridUnitType.Star));
+
+            this.Add(topPanel, 0, 0);
+            this.AddHorizontalSplitter(1, 0);
 
             this.Bind(x => x.Title).Mate(title.Value);
             this.Bind(x => x.Url).Mate(url.Value);
@@ -144,7 +148,7 @@ namespace Restless.Controls
                 }
                 currentApiResponsePanel = new ApiResponsePanel();
                 currentApiResponsePanel.Model = x;
-                this.Add(currentApiResponsePanel);
+                this.Add(currentApiResponsePanel, 2, 0);
             });
             this.Bind(x => x.Response).To(x => statusPanel.Visibility = x == null ? Visibility.Hidden : Visibility.Visible);
             this.Bind(x => x.Response.StatusCode).To(x => statusCodeLabel.Content = x);

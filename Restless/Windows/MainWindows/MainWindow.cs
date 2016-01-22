@@ -32,7 +32,7 @@ namespace Restless.Windows.MainWindows
             grid.AddRow(1, GridUnitType.Star);
 
             grid.Add(apiList, 0, 0);
-            var splitter = grid.AddVerticalSplitter(0, 1);
+            grid.AddVerticalSplitter(0, 1);
             var apiListContextMenu = new ContextMenu();
             var apiDeleteMenuItem = apiListContextMenu.Add("_Delete");
             apiList.ContextMenu = apiListContextMenu;
