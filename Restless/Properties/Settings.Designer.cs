@@ -57,5 +57,17 @@ namespace Restless.Properties {
                 this["MainWindowSplitterPosition"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ApiPanelSplitterPosition {
+            get {
+                return ((int)(this["ApiPanelSplitterPosition"]));
+            }
+            set {
+                this["ApiPanelSplitterPosition"] = value;
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Restless.WpfExtensions
             {
                 Width = width,
                 ResizeDirection = GridResizeDirection.Columns,
-                ResizeBehavior = GridResizeBehavior.BasedOnAlignment,
+                ResizeBehavior = GridResizeBehavior.PreviousAndNext,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
             };
@@ -25,7 +25,7 @@ namespace Restless.WpfExtensions
             {
                 Height = height,
                 ResizeDirection = GridResizeDirection.Rows,
-                ResizeBehavior = GridResizeBehavior.BasedOnAlignment,
+                ResizeBehavior = GridResizeBehavior.PreviousAndNext,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
             };

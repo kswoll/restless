@@ -20,6 +20,7 @@ namespace Restless.ViewModels
         public List<ApiMethod> Methods { get; }
         public List<ApiOutputType> OutputTypes { get; }
         public int SplitterPosition { get; set; }
+        public int ApiSplitterPosition { get; set; }
 
         public IRxCommand DeleteSelectedItem { get; }
 
@@ -35,9 +36,15 @@ namespace Restless.ViewModels
             OutputTypes = outputTypes.ToList();
 
             SplitterPosition = Settings.Default.MainWindowSplitterPosition;
+            ApiSplitterPosition = Settings.Default.ApiPanelSplitterPosition;
             this.ObservePropertyChange(x => x.SplitterPosition).Throttle(TimeSpan.FromSeconds(1)).Subscribe(x =>
             {
                 Settings.Default.MainWindowSplitterPosition = x;
+                Settings.Default.Save();
+            });
+            this.ObservePropertyChange(x => x.ApiSplitterPosition).Throttle(TimeSpan.FromSeconds(1)).Subscribe(x =>
+            {
+                Settings.Default.ApiPanelSplitterPosition = x;
                 Settings.Default.Save();
             });
 

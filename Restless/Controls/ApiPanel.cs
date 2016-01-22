@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Threading;
+using Restless.Models;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact;
@@ -113,10 +116,11 @@ namespace Restless.Controls
             apiOutputsPanel.Children.Add(apiOutputsGrid);
 
             var apiDetailsPanel = new TabControl();
-            Grid.SetIsSharedSizeScope(apiDetailsPanel, true);
+            var bodyTab = new TabItem { Header = "Body", Content = apiBodyPanel };
+            SetIsSharedSizeScope(apiDetailsPanel, true);
             apiDetailsPanel.Items.Add(new TabItem { Header = "General", Content = apiGeneralPanel });
             apiDetailsPanel.Items.Add(new TabItem { Header = "Headers", Content = apiHeadersPanel });
-            apiDetailsPanel.Items.Add(new TabItem { Header = "Body", Content = apiBodyPanel });
+            apiDetailsPanel.Items.Add(bodyTab);
             apiDetailsPanel.Items.Add(new TabItem { Header = "Inputs", Content = apiInputsPanel });
             apiDetailsPanel.Items.Add(new TabItem { Header = "Outputs", Content = apiOutputsPanel });
 
@@ -124,10 +128,12 @@ namespace Restless.Controls
             topPanel.Add(buttonsAndStatusPanel, Dock.Bottom);
             topPanel.Add(apiDetailsPanel);
 
-            this.AddRow(GridLength.Auto);
+            topPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+            var topRow = this.AddRow((int)topPanel.DesiredSize.Height);
             this.AddRow(4);
             this.AddRow(new GridLength(1, GridUnitType.Star));
-
+            topRow.MinHeight = topPanel.DesiredSize.Height;
             this.Add(topPanel, 0, 0);
             this.AddHorizontalSplitter(1, 0);
 
@@ -154,6 +160,8 @@ namespace Restless.Controls
             this.Bind(x => x.Response.StatusCode).To(x => statusCodeLabel.Content = x);
             this.Bind(x => x.Response.Status).To(x => statusLabel.Content = x);
             this.Bind(x => x.MainWindow.OutputTypes).To(outputTypeColumn);
+            this.Bind(x => x.MainWindow.ApiSplitterPosition).Mate(topRow, RowDefinition.HeightProperty);
+            this.Bind(x => x.Method).To(x => bodyTab.Visibility = x.IsBodyAllowed() ? Visibility.Visible : Visibility.Collapsed);
         }
 
         public void InitNew()

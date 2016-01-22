@@ -44,20 +44,24 @@ namespace Restless.WpfExtensions
             });
         }
 
-        public static void AddRow(this Grid grid, int height, GridUnitType unit = GridUnitType.Pixel)
+        public static RowDefinition AddRow(this Grid grid, int height, GridUnitType unit = GridUnitType.Pixel)
         {
-            grid.RowDefinitions.Add(new RowDefinition
+            var row = new RowDefinition
             {
                 Height = new GridLength(height, unit)
-            });
+            };
+            grid.RowDefinitions.Add(row);
+            return row;
         }
 
-        public static void AddRow(this Grid grid, GridLength height)
+        public static RowDefinition AddRow(this Grid grid, GridLength height)
         {
-            grid.RowDefinitions.Add(new RowDefinition
+            var row = new RowDefinition
             {
                 Height = height
-            });
+            };
+            grid.RowDefinitions.Add(row);
+            return row;
         }
     }
 }

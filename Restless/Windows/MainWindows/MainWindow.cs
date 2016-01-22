@@ -30,7 +30,6 @@ namespace Restless.Windows.MainWindows
             grid.AddColumn(4);
             grid.AddColumn(1, GridUnitType.Star);
             grid.AddRow(1, GridUnitType.Star);
-
             grid.Add(apiList, 0, 0);
             grid.AddVerticalSplitter(0, 1);
             var apiListContextMenu = new ContextMenu();
