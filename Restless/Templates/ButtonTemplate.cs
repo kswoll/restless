@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -11,7 +12,7 @@ namespace Restless.Templates
     {
         public override void EndInit()
         {
-            var button = (Button)TemplatedParent;
+            var button = (ButtonBase)TemplatedParent;
 
             Background = button.Background;
 
@@ -22,6 +23,7 @@ namespace Restless.Templates
             var mouseOverState = commonStates.CreateState("MouseOver");
             var pressedState = commonStates.CreateState("Pressed");
             var disabledState = commonStates.CreateState("Disabled");
+            var checkedState = commonStates.CreateState("Checked");
 
             var focusStates = new VisualStateGroup();
             var focusedState = focusStates.CreateState("Focused");
@@ -66,6 +68,11 @@ namespace Restless.Templates
             var focusedStoryboard = new Storyboard();
             focusedStoryboard.AddDoubleAnimation(focusContent, x => x.Opacity, 1);
             focusedState.Storyboard = focusedStoryboard;
+
+            var checkedStoryboard = new Storyboard();
+            checkedStoryboard.AddColorAnimation(this, x => ((SolidColorBrush)x.Background).Color, 
+                Color.FromArgb(0xFF, 0x6D, 0xBD, 0xD1));
+            checkedState.Storyboard = checkedStoryboard;
 
             var contentPresenter = new ContentPresenter
             {

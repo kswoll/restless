@@ -209,6 +209,7 @@
     </Compile>
     <Compile Include="Styles\ButtonStyle.cs" />
     <Compile Include="Styles\GlobalStyles.cs" />
+    <Compile Include="Styles\ToggleButtonStyle.cs" />
     <Compile Include="Templates\ButtonTemplate.cs" />
     <Compile Include="Utils\CompareToExtensions.cs" />
     <Compile Include="Utils\ContentTypes.cs" />

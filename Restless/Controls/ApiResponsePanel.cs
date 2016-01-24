@@ -14,7 +14,10 @@ namespace Restless.Controls
     {
         public ApiResponsePanel()
         {
-            var tabControl = new TabControl();
+            var tabControl = new TabControl
+            {
+                Padding = new Thickness(0)
+            };
 
             var buttonPanel = new StackPanel
             {

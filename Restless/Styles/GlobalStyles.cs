@@ -7,6 +7,7 @@ namespace Restless.Styles
         public static void RegisterStyles(ResourceDictionary resources)
         {
             ButtonStyle.Register(resources);
+            ToggleButtonStyle.Register(resources);
         }
     }
 }
