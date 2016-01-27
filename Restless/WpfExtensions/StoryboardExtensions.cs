@@ -34,10 +34,41 @@ namespace Restless.WpfExtensions
         }
 
         public static void AddColorAnimation<T, TValue>(this Storyboard storyboard, T target, Expression<Func<T, TValue>> targetProperty,
-            Color fromValue, Color toValue, Duration? duration = null)
+            Color fromValue, Color toValue, Duration? duration = null
+        )
             where T : DependencyObject
         {
             storyboard.AddAnimation(new ColorAnimation(fromValue, toValue, duration ?? new Duration(TimeSpan.FromSeconds(0))), target, targetProperty);
+        }
+
+        public static void AddObjectAnimationUsingKeyFrames<T, TValue>(this Storyboard storyboard, T target, Expression<Func<T, TValue>> targetProperty,
+            Duration? duration, params ObjectKeyFrame[] keyFrames
+        )
+            where T : DependencyObject
+        {
+            var animation = new ObjectAnimationUsingKeyFrames();
+            animation.Duration = duration ?? new Duration(TimeSpan.FromSeconds(0));
+            foreach (var keyFrame in keyFrames)
+            {
+                animation.KeyFrames.Add(keyFrame);
+            }
+            storyboard.AddAnimation(animation, target, targetProperty);
+        }
+
+        public static void AddObjectAnimationUsingKeyFrames<T, TValue>(this Storyboard storyboard, T target, Expression<Func<T, TValue>> targetProperty,
+            params ObjectKeyFrame[] keyFrames
+        )
+            where T : DependencyObject
+        {
+            storyboard.AddObjectAnimationUsingKeyFrames(target, targetProperty, null, keyFrames);
+        }
+
+        public static void AddObjectAnimationUsingKeyFrames<T, TValue>(this Storyboard storyboard, T target, Expression<Func<T, TValue>> targetProperty,
+            params object[] keyFrames
+        )
+            where T : DependencyObject
+        {
+            storyboard.AddObjectAnimationUsingKeyFrames(target, targetProperty, null, keyFrames.Select(x => new DiscreteObjectKeyFrame(x, KeyTime.FromPercent(0))).ToArray());
         }
 
         public static void AddAnimation<T, TValue>(this Storyboard storyboard, Timeline animation, T target, Expression<Func<T, TValue>> targetProperty)

@@ -12,6 +12,8 @@ namespace Restless.Templates
     {
         public override void EndInit()
         {
+            base.EndInit();
+
             var button = (ButtonBase)TemplatedParent;
 
             Background = button.Background;

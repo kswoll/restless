@@ -1,5 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Xml;
 using Newtonsoft.Json.Linq;
 using Restless.Utils;
 using Restless.ViewModels;
@@ -23,11 +27,16 @@ namespace Restless.Controls.ResponseVisualizers
 
             this.Add(treeView);
 
-            this.Bind(x => x.Response).To(x =>
+            this.Bind(x => x.Response).To(response =>
             {
-                if (x != null)
+                if (response != null)
                 {
-                    AddRootToken(Model.JsonResponse);                    
+                    AddRootToken(Model.JsonResponse);
+                    var writer = XmlWriter.Create(@"c:\temp\treeviewitem.xaml", new XmlWriterSettings { Indent = true });
+                    XamlWriter.Save(((TreeViewItem)treeView.Items[0]).Template, writer);
+//                    File.WriteAllText(@"c:\temp\treeviewitem.xaml", s);
+
+//                    treeView.Filter(x => ((string)x.Header).Contains("12"));
                 }
             });
         }

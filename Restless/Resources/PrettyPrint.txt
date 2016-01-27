@@ -1,0 +1,39 @@
+<Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <Canvas Name="svg3372" Width="99.999997" Height="87.500007">
+    <Canvas.RenderTransform>
+      <TranslateTransform X="0" Y="0"/>
+    </Canvas.RenderTransform>
+    <Canvas.Resources/>
+    <!--Unknown tag: sodipodi:namedview-->
+    <!--Unknown tag: metadata-->
+    <Canvas Name="layer1">
+      <Canvas.RenderTransform>
+        <TranslateTransform X="-264.28571" Y="-360.04077"/>
+      </Canvas.RenderTransform>
+      <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4" Fill="#FF010101">
+        <Path.Data>
+          <PathGeometry Figures="m 276.78571 366.29078 c 0 3.455 -2.795 6.25 -6.25 6.25 -3.455 0 -6.25 -2.795 -6.25 -6.25 0 -3.455 2.795 -6.25 6.25 -6.25 3.455 0 6.25 2.795 6.25 6.25 z" FillRule="NonZero"/>
+        </Path.Data>
+      </Path>
+      <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path6" Fill="#FF010101">
+        <Path.Data>
+          <PathGeometry Figures="m 301.78571 441.29078 c 0 3.455 -2.795 6.25 -6.25 6.25 -3.455 0 -6.25 -2.795 -6.25 -6.25 0 -3.455 2.795 -6.25 6.25 -6.25 3.455 0 6.25 2.795 6.25 6.25 z" FillRule="NonZero"/>
+        </Path.Data>
+      </Path>
+      <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path8" Fill="#FF010101">
+        <Path.Data>
+          <PathGeometry Figures="m 301.78571 391.29078 c 0 3.455 -2.795 6.25 -6.25 6.25 -3.455 0 -6.25 -2.795 -6.25 -6.25 0 -3.455 2.795 -6.25 6.25 -6.25 3.455 0 6.25 2.795 6.25 6.25 z" FillRule="NonZero"/>
+        </Path.Data>
+      </Path>
+      <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path10" Fill="#FF010101">
+        <Path.Data>
+          <PathGeometry Figures="m 326.78571 416.29078 c 0 3.455 -2.795 6.25 -6.25 6.25 -3.455 0 -6.25 -2.795 -6.25 -6.25 0 -3.455 2.795 -6.25 6.25 -6.25 3.455 0 6.25 2.795 6.25 6.25 z" FillRule="NonZero"/>
+        </Path.Data>
+      </Path>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="289.28571" Canvas.Top="360.04077" Width="75" Height="12.5" Name="rect12" Fill="#FF010101"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="314.28571" Canvas.Top="385.04077" Width="50" Height="12.5" Name="rect14" Fill="#FF010101"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="314.28571" Canvas.Top="435.04077" Width="50" Height="12.5" Name="rect16" Fill="#FF010101"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="339.28571" Canvas.Top="410.04077" Width="25" Height="12.5" Name="rect18" Fill="#FF010101"/>
+    </Canvas>
+  </Canvas>
+</Viewbox>
