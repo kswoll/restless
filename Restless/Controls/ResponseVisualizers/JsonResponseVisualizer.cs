@@ -32,8 +32,8 @@ namespace Restless.Controls.ResponseVisualizers
                 if (response != null)
                 {
                     AddRootToken(Model.JsonResponse);
-                    var writer = XmlWriter.Create(@"c:\temp\treeviewitem.xaml", new XmlWriterSettings { Indent = true });
-                    XamlWriter.Save(((TreeViewItem)treeView.Items[0]).Template, writer);
+//                    var writer = XmlWriter.Create(@"c:\temp\treeviewitem.xaml", new XmlWriterSettings { Indent = true });
+//                    XamlWriter.Save(((TreeViewItem)treeView.Items[0]).Template, writer);
 //                    File.WriteAllText(@"c:\temp\treeviewitem.xaml", s);
 
 //                    treeView.Filter(x => ((string)x.Header).Contains("12"));

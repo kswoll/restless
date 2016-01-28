@@ -226,6 +226,7 @@
     <Compile Include="Utils\CompareToExtensions.cs" />
     <Compile Include="Utils\ContentTypes.cs" />
     <Compile Include="Utils\DatabaseSync.cs" />
+    <Compile Include="Utils\ExpressionExtensions.cs" />
     <Compile Include="Utils\HttpHeaders.cs" />
     <Compile Include="Utils\ICompareTo.cs" />
     <Compile Include="Utils\Icons.cs" />
@@ -259,6 +260,8 @@
     <Compile Include="WpfExtensions\NameValuePanel.cs" />
     <Compile Include="WpfExtensions\StoryboardExtensions.cs" />
     <Compile Include="WpfExtensions\TreeViewExtensions.cs" />
+    <Compile Include="WpfExtensions\UndoableAction.cs" />
+    <Compile Include="WpfExtensions\UndoableAssignment.cs" />
     <Compile Include="WpfExtensions\VisualStateExtensions.cs" />
     <EmbeddedResource Include="Properties\IconResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

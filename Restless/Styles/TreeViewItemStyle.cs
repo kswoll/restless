@@ -9,6 +9,7 @@ namespace Restless.Styles
         public static void Register(ResourceDictionary resources)
         {
             var treeViewItemTemplate = new FrameworkElementFactory(typeof(TreeViewItemTemplate));
+            treeViewItemTemplate.AppendChild(new FrameworkElementFactory(typeof(ItemsPresenter), "ItemsHost"));
 
             var controlTemplate = new ControlTemplate(typeof(TreeViewItem));
             controlTemplate.VisualTree = treeViewItemTemplate;
