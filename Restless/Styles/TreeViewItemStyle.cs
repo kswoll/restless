@@ -10,6 +10,7 @@ namespace Restless.Styles
         {
             var treeViewItemTemplate = new FrameworkElementFactory(typeof(TreeViewItemTemplate));
             treeViewItemTemplate.AppendChild(new FrameworkElementFactory(typeof(ItemsPresenter), "ItemsHost"));
+            treeViewItemTemplate.AppendChild(new FrameworkElementFactory(typeof(ContentPresenter), "PART_Header"));
 
             var controlTemplate = new ControlTemplate(typeof(TreeViewItem));
             controlTemplate.VisualTree = treeViewItemTemplate;

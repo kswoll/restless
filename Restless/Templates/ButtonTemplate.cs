@@ -18,22 +18,6 @@ namespace Restless.Templates
 
             Background = button.Background;
 
-            var stateGroups = this.GetVisualStateGroups();
-
-            var commonStates = new VisualStateGroup();
-            commonStates.CreateState("Normal");
-            var mouseOverState = commonStates.CreateState("MouseOver");
-            var pressedState = commonStates.CreateState("Pressed");
-            var disabledState = commonStates.CreateState("Disabled");
-            var checkedState = commonStates.CreateState("Checked");
-
-            var focusStates = new VisualStateGroup();
-            var focusedState = focusStates.CreateState("Focused");
-            focusStates.CreateState("Unfocused");
-
-            stateGroups.Add(commonStates);
-            stateGroups.Add(focusStates);
-
             var disabledContent = new Rectangle
             {
                 Fill = new SolidColorBrush(((SolidColorBrush)button.Background).Color),
@@ -52,6 +36,22 @@ namespace Restless.Templates
                 Opacity = 0,
                 IsHitTestVisible = false
             };
+
+            var stateGroups = this.GetVisualStateGroups();
+
+            var commonStates = new VisualStateGroup();
+            commonStates.CreateState("Normal");
+            var mouseOverState = commonStates.CreateState("MouseOver");
+            var pressedState = commonStates.CreateState("Pressed");
+            var disabledState = commonStates.CreateState("Disabled");
+            var checkedState = commonStates.CreateState("Checked");
+
+            var focusStates = new VisualStateGroup();
+            var focusedState = focusStates.CreateState("Focused");
+            focusStates.CreateState("Unfocused");
+
+            stateGroups.Add(commonStates);
+            stateGroups.Add(focusStates);
 
             var disabledStoryboard = new Storyboard();
             disabledStoryboard.AddDoubleAnimation(disabledContent, x => x.Opacity, .55D);

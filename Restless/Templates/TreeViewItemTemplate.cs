@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
@@ -14,22 +12,19 @@ namespace Restless.Templates
     public class TreeViewItemTemplate : Grid, IAddChild
     {
         private ItemsPresenter itemsHost;
-
-        public TreeViewItemTemplate()
-        {
-            Children.Add(new Label { Name = "Foo" });
-        }
+        private ContentPresenter header;
 
         void IAddChild.AddChild(object value)
         {
             if (value is ItemsPresenter)
                 itemsHost = (ItemsPresenter)value;
+            else if (value is ContentPresenter)
+                header = (ContentPresenter)value;
         }
 
         public override void EndInit()
         {
             var item = (TreeViewItem)TemplatedParent;
-            var template = item.Template;
 //            template.
 //            item.Padding = new Thickness(3);
 //            item.HorizontalContentAlignment = HorizontalAlignment.Left;
@@ -58,16 +53,12 @@ namespace Restless.Templates
             };
             Children.Add(expander);
 
-            var borderContent = new ContentPresenter
-            {
-                Content = item.Header,
-                ContentTemplate = item.HeaderTemplate,
-                ContentStringFormat = item.HeaderStringFormat,
-                ContentSource = "Header",
-                Name = "PART_Header",
-                HorizontalAlignment = item.HorizontalContentAlignment,
-                SnapsToDevicePixels = item.SnapsToDevicePixels
-            };
+            header.Content = item.Header;
+            header.ContentTemplate = item.HeaderTemplate;
+            header.ContentStringFormat = item.HeaderStringFormat;
+            header.ContentSource = "Header";
+            header.HorizontalAlignment = item.HorizontalContentAlignment;
+            header.SnapsToDevicePixels = item.SnapsToDevicePixels;
             var border = new Border
             {
                 BorderThickness = item.BorderThickness,
@@ -77,44 +68,64 @@ namespace Restless.Templates
                 SnapsToDevicePixels = true
             };
             SetColumn(border, 1);
-            border.Child = borderContent;
+            border.Child = header;
             Children.Add(border);
 
             SetColumnSpan(itemsHost, 2);
             this.Add(itemsHost, 1, 1);
 
-            var collapsedAction = new UndoableAction();
-            collapsedAction.Set(itemsHost, x => x.Visibility, Visibility.Collapsed);
+            var stateGroups = this.GetVisualStateGroups();
 
-            var hasItemsAction = new UndoableAction();
-            hasItemsAction.Set(expander, x => x.Visibility, Visibility.Hidden);
+            var commonStates = new VisualStateGroup();
+            commonStates.CreateState("Normal");
+            var disabledState = commonStates.CreateState("Disabled");
+            stateGroups.Add(commonStates);
 
-            var selectedAction = new UndoableAction();
-            selectedAction.Set(border, x => x.Background, SystemColors.HighlightBrush);
-            selectedAction.Set(item, x => x.Foreground, SystemColors.HighlightTextBrush);
+            var hasItemsStates = new VisualStateGroup();
+            hasItemsStates.CreateState("HasItems");
+            var noItemsState = hasItemsStates.CreateState("NoItems");
+            stateGroups.Add(hasItemsStates);
 
-            var unfocusedSelectedAction = new UndoableAction();
-            unfocusedSelectedAction.Set(border, x => x.Background, SystemColors.InactiveSelectionHighlightBrush);
-            unfocusedSelectedAction.Set(item, x => x.Foreground, SystemColors.InactiveSelectionHighlightTextBrush);
+            var expandedStates = new VisualStateGroup();
+            expandedStates.CreateState("Expanded");
+            var collapsedState = expandedStates.CreateState("Collapsed");
+            stateGroups.Add(expandedStates);
 
-            var disabledAction = new UndoableAction();
-            disabledAction.Set(item, x => x.Foreground, SystemColors.GrayTextBrush);
+            var selectedStates = new VisualStateGroup();
+            selectedStates.CreateState("Unselected");
+            var selectedState = selectedStates.CreateState("Selected");
+            var selectedInactiveState = selectedStates.CreateState("SelectedInactive");
+            stateGroups.Add(selectedStates);
 
-            item.Collapsed += (sender, args) => collapsedAction.Do();
-            item.Expanded += (sender, args) => collapsedAction.Do();
+            var disabledStoryboard = new Storyboard();
+            disabledStoryboard.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.GrayTextBrush);
+            disabledState.Storyboard = disabledStoryboard;
 
-            item.IsEnabledChanged += (sender, args) =>
-            {
-                if ((bool)args.NewValue)
-                    disabledAction.Undo();
-                else
-                    disabledAction.Do();
-            };
+            var noItemsStoryboard = new Storyboard();
+            noItemsStoryboard.AddObjectAnimationUsingKeyFrames(expander, x => x.Visibility, Visibility.Hidden);
+            noItemsState.Storyboard = noItemsStoryboard;
+
+            var collapsedStoryboard = new Storyboard();
+            collapsedStoryboard.AddObjectAnimationUsingKeyFrames(itemsHost, x => x.Visibility, Visibility.Collapsed);
+            collapsedState.Storyboard = collapsedStoryboard;
+
+            var selectedStoryboard = new Storyboard();
+            selectedStoryboard.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.HighlightBrush);
+            selectedStoryboard.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.HighlightTextBrush);
+            selectedState.Storyboard = selectedStoryboard;
+
+            var selectedInactiveStoryboard = new Storyboard();
+            selectedInactiveStoryboard.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.InactiveSelectionHighlightBrush);
+            selectedInactiveStoryboard.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.InactiveSelectionHighlightTextBrush);
+            selectedInactiveState.Storyboard = selectedInactiveStoryboard;
+
+            expander.Checked += (sender, args) => item.IsExpanded = true;
+            expander.Unchecked += (sender, args) => item.IsExpanded = false;
 
             base.EndInit();
         }
 
-        private class ExpanderButtonTemplate : Grid
+        private class ExpanderButtonTemplate : Border
         {
             public override void EndInit()
             {
@@ -134,14 +145,11 @@ namespace Restless.Templates
                     Data = Geometry.Parse("M0,0L0,6L6,0z"),
                     RenderTransform = new RotateTransform(135, 3, 3)
                 };
-                var border = new Border
-                {
-                    Padding = new Thickness(5),
-                    Background = new SolidColorBrush(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF)),
-                    Width = 16,
-                    Height = 16
-                };
-                border.Child = expandPath;
+                Padding = new Thickness(5);
+                Background = new SolidColorBrush(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF));
+                Width = 16;
+                Height = 16;
+                Child = expandPath;
 
                 var checkedAction = new UndoableAction();
                 checkedAction.Set(expandPath, x => x.RenderTransform, new RotateTransform(180, 3, 3));

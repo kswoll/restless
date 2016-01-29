@@ -64,11 +64,11 @@ namespace Restless.WpfExtensions
         }
 
         public static void AddObjectAnimationUsingKeyFrames<T, TValue>(this Storyboard storyboard, T target, Expression<Func<T, TValue>> targetProperty,
-            params object[] keyFrames
+            TValue keyFrame
         )
             where T : DependencyObject
         {
-            storyboard.AddObjectAnimationUsingKeyFrames(target, targetProperty, null, keyFrames.Select(x => new DiscreteObjectKeyFrame(x, KeyTime.FromPercent(0))).ToArray());
+            storyboard.AddObjectAnimationUsingKeyFrames(target, targetProperty, (Duration?)null, new DiscreteObjectKeyFrame(keyFrame, KeyTime.FromPercent(0)));
         }
 
         public static void AddAnimation<T, TValue>(this Storyboard storyboard, Timeline animation, T target, Expression<Func<T, TValue>> targetProperty)
