@@ -25,16 +25,6 @@ namespace Restless.Templates
         public override void EndInit()
         {
             var item = (TreeViewItem)TemplatedParent;
-//            template.
-//            item.Padding = new Thickness(3);
-//            item.HorizontalContentAlignment = HorizontalAlignment.Left;
-//            item.VerticalContentAlignment = VerticalAlignment.Top;
-//            item.Background = Brushes.Transparent;
-//            item.BorderThickness = new Thickness(1);
-//            item.Cursor = Cursors.Arrow;
-//            item.Margin = new Thickness(0, 1, 0, 0);
-
-//            Background = null;
 
             this.AddRow(GridLength.Auto);
             RowDefinitions.Add(new RowDefinition());
@@ -97,30 +87,15 @@ namespace Restless.Templates
             var selectedInactiveState = selectedStates.CreateState("SelectedInactive");
             stateGroups.Add(selectedStates);
 
-            var disabledStoryboard = new Storyboard();
-            disabledStoryboard.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.GrayTextBrush);
-            disabledState.Storyboard = disabledStoryboard;
+            disabledState.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.GrayTextBrush);
+            noItemsState.AddObjectAnimationUsingKeyFrames(expander, x => x.Visibility, Visibility.Hidden);
+            collapsedState.AddObjectAnimationUsingKeyFrames(itemsHost, x => x.Visibility, Visibility.Collapsed);
+            selectedState.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.HighlightBrush);
+            selectedState.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.HighlightTextBrush);
+            selectedInactiveState.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.InactiveSelectionHighlightBrush);
+            selectedInactiveState.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.InactiveSelectionHighlightTextBrush);
 
-            var noItemsStoryboard = new Storyboard();
-            noItemsStoryboard.AddObjectAnimationUsingKeyFrames(expander, x => x.Visibility, Visibility.Hidden);
-            noItemsState.Storyboard = noItemsStoryboard;
-
-            var collapsedStoryboard = new Storyboard();
-            collapsedStoryboard.AddObjectAnimationUsingKeyFrames(itemsHost, x => x.Visibility, Visibility.Collapsed);
-            collapsedState.Storyboard = collapsedStoryboard;
-
-            var selectedStoryboard = new Storyboard();
-            selectedStoryboard.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.HighlightBrush);
-            selectedStoryboard.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.HighlightTextBrush);
-            selectedState.Storyboard = selectedStoryboard;
-
-            var selectedInactiveStoryboard = new Storyboard();
-            selectedInactiveStoryboard.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.InactiveSelectionHighlightBrush);
-            selectedInactiveStoryboard.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.InactiveSelectionHighlightTextBrush);
-            selectedInactiveState.Storyboard = selectedInactiveStoryboard;
-
-            expander.Checked += (sender, args) => item.IsExpanded = true;
-            expander.Unchecked += (sender, args) => item.IsExpanded = false;
+            item.PairExpanded(expander, ToggleButton.CheckedEvent, ToggleButton.UncheckedEvent, ToggleButton.IsCheckedProperty);
 
             base.EndInit();
         }
@@ -151,50 +126,24 @@ namespace Restless.Templates
                 Height = 16;
                 Child = expandPath;
 
-                var checkedAction = new UndoableAction();
-                checkedAction.Set(expandPath, x => x.RenderTransform, new RotateTransform(180, 3, 3));
-                checkedAction.Set(expandPath, x => x.Fill, new SolidColorBrush(Color.FromArgb(0xFF, 0x59, 0x59, 0x59)));
-                checkedAction.Set(expandPath, x => x.Stroke, new SolidColorBrush(Color.FromArgb(0xFF, 0x26, 0x26, 0x26)));
+                var stateGroups = this.GetVisualStateGroups();
 
-                var mouseOverAction = new UndoableAction();
-                mouseOverAction.Set(expandPath, x => x.Stroke, new SolidColorBrush(Color.FromArgb(0xFF, 0x27, 0xC7, 0xF7)));
-                mouseOverAction.Set(expandPath, x => x.Fill, new SolidColorBrush(Color.FromArgb(0xFF, 0xCC, 0xEE, 0xFB)));
+                var commonStates = new VisualStateGroup();
+                commonStates.CreateState("Normal");
+                var mouseOverState = commonStates.CreateState("MouseOver");
+                stateGroups.Add(commonStates);
 
-                var mouseOverAndCheckedAction = new UndoableAction();
-                mouseOverAndCheckedAction.Set(expandPath, x => x.Stroke, new SolidColorBrush(Color.FromArgb(0xFF, 0x1C, 0xC4, 0xF7)));
-                mouseOverAndCheckedAction.Set(expandPath, x => x.Fill, new SolidColorBrush(Color.FromArgb(0xFF, 0x82, 0xDF, 0xFB)));
+                var checkedStates = new VisualStateGroup();
+                var checkedState = checkedStates.CreateState("Checked");
+                checkedStates.CreateState("Unchecked");
+                stateGroups.Add(checkedStates);
 
-                button.Checked += (sender, args) =>
-                {
-                    if (button.IsMouseDirectlyOver)
-                        mouseOverAndCheckedAction.Do();
-                    else
-                        checkedAction.Do();
-                };
-                button.Unchecked += (sender, args) =>
-                {
-                    if (button.IsMouseDirectlyOver)
-                        mouseOverAndCheckedAction.Undo();
-                    else 
-                        checkedAction.Undo();
-                };
-                button.IsMouseDirectlyOverChanged += (sender, args) =>
-                {
-                    if (button.IsMouseDirectlyOver)
-                    {
-                        if (button.IsChecked ?? false)
-                            mouseOverAndCheckedAction.Do();
-                        else
-                            mouseOverAction.Do();
-                    }
-                    else
-                    {
-                        if (button.IsChecked ?? false)
-                            mouseOverAndCheckedAction.Undo();
-                        else
-                            mouseOverAction.Undo();
-                    }
-                };
+                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x27, 0xC7, 0xF7));
+                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0xCC, 0xEE, 0xFB));
+
+                checkedState.AddObjectAnimationUsingKeyFrames(expandPath, x => x.RenderTransform, new RotateTransform(180, 3, 3));
+                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x59, 0x59, 0x59));
+                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0x26, 0x26, 0x26));
             }
         }
 
@@ -236,13 +185,8 @@ namespace Restless.Templates
                 var stateGroups = this.GetVisualStateGroups();
                 stateGroups.Add(commonStates);
 
-                var pressedStoryboard = new Storyboard();
-                pressedStoryboard.AddDoubleAnimation(hover, x => x.Opacity, .5);
-                pressedState.Storyboard = pressedStoryboard;
-
-                var disabledStoryboard = new Storyboard();
-                disabledStoryboard.AddDoubleAnimation(this, x => x.Opacity, .55);
-                disabledState.Storyboard = disabledStoryboard;
+                pressedState.AddDoubleAnimation(hover, x => x.Opacity, .5);
+                disabledState.AddDoubleAnimation(this, x => x.Opacity, .55);
             }
         }
     }

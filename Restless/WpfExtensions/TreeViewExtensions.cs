@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace Restless.WpfExtensions
 {
@@ -64,6 +65,37 @@ namespace Restless.WpfExtensions
                 item.Visibility = Visibility.Visible;
                 VisualStateManager.GoToElementState(item, "Normal", true);
             }
+        }
+
+        public static RoutedEventHandler AddSelfExpanded(this TreeViewItem item, RoutedEventHandler handler)
+        {
+            RoutedEventHandler itemOnExpanded = (sender, args) =>
+            {
+                if (sender == args.Source)
+                    handler(sender, args);
+            };
+            item.Expanded += itemOnExpanded;
+            return itemOnExpanded;
+        }
+
+        public static RoutedEventHandler AddSelfCollapsed(this TreeViewItem item, RoutedEventHandler handler)
+        {
+            RoutedEventHandler itemOnCollapsed = (sender, args) =>
+            {
+                if (sender == args.Source)
+                    handler(sender, args);
+            };
+            item.Collapsed += itemOnCollapsed;
+            return itemOnCollapsed;
+        }
+
+        public static void PairExpanded(this TreeViewItem item, UIElement pairToObject, RoutedEvent pairToExpandEvent, RoutedEvent pairToCollapseEvent, DependencyProperty pairToProperty)
+        {
+            item.AddSelfExpanded((sender, args) => pairToObject.SetValue(pairToProperty, true));
+            item.AddSelfCollapsed((sender, args) => pairToObject.SetValue(pairToProperty, false));
+            pairToObject.SetValue(pairToProperty, item.IsExpanded);
+            pairToObject.AddHandler(pairToExpandEvent, new RoutedEventHandler((sender, args) => item.IsExpanded = true));
+            pairToObject.AddHandler(pairToCollapseEvent, new RoutedEventHandler((sender, args) => item.IsExpanded = false));
         }
     }
 }
