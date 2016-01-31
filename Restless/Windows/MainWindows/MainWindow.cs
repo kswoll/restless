@@ -18,6 +18,8 @@ namespace Restless.Windows.MainWindows
 
         public MainWindow()
         {
+            SnapsToDevicePixels = true;
+
             ConfigureWindowStateAndPosition();
 
             var apiListItemTemplate = new FrameworkElementFactory(typeof(TextBlock));
