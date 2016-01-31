@@ -160,21 +160,6 @@ namespace Restless.Templates
                 {
                     setters.Set(expandPath, x => x.RenderTransform, new RotateTransform(135, 3, 3));
                 });
-
-//                var stateGroups = this.GetVisualStateGroups();
-//
-//                var commonStates = new VisualStateGroup();
-//                commonStates.CreateState("Normal");
-//                var mouseOverState = commonStates.CreateState("MouseOver");
-//                var checkedState = commonStates.CreateState("Checked");
-//                stateGroups.Add(commonStates);
-//
-//                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x27, 0xC7, 0xF7));
-//                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0xCC, 0xEE, 0xFB));
-//
-//                checkedState.AddObjectAnimationUsingKeyFrames(expandPath, x => x.RenderTransform, new RotateTransform(180, 3, 3));
-//                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x59, 0x59, 0x59));
-//                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0x26, 0x26, 0x26));
             }
         }
 
