@@ -34,7 +34,9 @@ namespace Restless.WpfExtensions.CodeTriggers
         {
             var actor = new CodeTriggerActor<T>();
             setters(actor);
-            conditionalActions.Add(new ConditionalCodeTriggerAction<T>(Element, predicate, actor));
+            var action = new ConditionalCodeTriggerAction<T>(Element, predicate, actor);
+            conditionalActions.Add(action);
+            action.Apply();
         }
 
         protected void OnTrigger(DependencyProperty property)
@@ -47,7 +49,7 @@ namespace Restless.WpfExtensions.CodeTriggers
                     return;
                 }
             }
-            lastAppliedAction.Unapply();
+            lastAppliedAction?.Unapply();
         }
     }
 }

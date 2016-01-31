@@ -131,13 +131,34 @@ namespace Restless.Templates
                 Height = 16;
                 Child = expandPath;
 
-                var trigger = button.AddTrigger();
-                trigger.AddProperty(x => x.IsChecked);
-                trigger.AddProperty(x => x.IsMouseOver);
-                trigger.AddConditionalAction(x => x.IsMouseOver && (x.IsChecked ?? false), setters =>
+                var strokeAndFillTrigger = button.AddTrigger();
+                strokeAndFillTrigger.AddProperty(x => x.IsChecked);
+                strokeAndFillTrigger.AddProperty(x => x.IsMouseOver);
+                strokeAndFillTrigger.AddConditionalAction(x => x.IsMouseOver && (x.IsChecked ?? false), setters =>
                 {
                     setters.Set(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0x1C, 0xC4, 0xF7));
                     setters.Set(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x82, 0xDF, 0xFB));
+                });
+                strokeAndFillTrigger.AddConditionalAction(x => x.IsChecked ?? false, setters =>
+                {
+                    setters.Set(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x59, 0x59, 0x59));
+                    setters.Set(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0x26, 0x26, 0x26));
+                });
+                strokeAndFillTrigger.AddConditionalAction(x => x.IsMouseOver, setters =>
+                {
+                    setters.Set(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x27, 0xC7, 0xF7));
+                    setters.Set(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0xCC, 0xEE, 0xFB));
+                });
+
+                var rotationTrigger = button.AddTrigger();
+                rotationTrigger.AddProperty(x => x.IsChecked);
+                rotationTrigger.AddConditionalAction(x => x.IsChecked ?? false, setters =>
+                {
+                    setters.Set(expandPath, x => x.RenderTransform, new RotateTransform(180, 3, 3));
+                });
+                rotationTrigger.AddConditionalAction(x => !x.IsChecked ?? false, setters =>
+                {
+                    setters.Set(expandPath, x => x.RenderTransform, new RotateTransform(135, 3, 3));
                 });
 
 //                var stateGroups = this.GetVisualStateGroups();
