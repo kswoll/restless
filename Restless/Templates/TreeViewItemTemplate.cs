@@ -1,11 +1,15 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Restless.WpfExtensions;
+using Restless.WpfExtensions.CodeTriggers;
 
 namespace Restless.Templates
 {
@@ -34,6 +38,7 @@ namespace Restless.Templates
 
             var expanderButtonTemplate = new ControlTemplate(typeof(ToggleButton));
             expanderButtonTemplate.VisualTree = new FrameworkElementFactory(typeof(ExpanderButtonTemplate));
+
             var expander = new ToggleButton
             {
                 Name = "Expander",
@@ -126,24 +131,29 @@ namespace Restless.Templates
                 Height = 16;
                 Child = expandPath;
 
-                var stateGroups = this.GetVisualStateGroups();
+                var trigger = button.AddTrigger();
+                trigger.AddProperty(x => x.IsChecked);
+                trigger.AddProperty(x => x.IsMouseOver);
+                trigger.AddConditionalAction(x => x.IsMouseOver && (x.IsChecked ?? false), setters =>
+                {
+                    setters.Set(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0x1C, 0xC4, 0xF7));
+                    setters.Set(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x82, 0xDF, 0xFB));
+                });
 
-                var commonStates = new VisualStateGroup();
-                commonStates.CreateState("Normal");
-                var mouseOverState = commonStates.CreateState("MouseOver");
-                stateGroups.Add(commonStates);
-
-                var checkedStates = new VisualStateGroup();
-                var checkedState = checkedStates.CreateState("Checked");
-                checkedStates.CreateState("Unchecked");
-                stateGroups.Add(checkedStates);
-
-                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x27, 0xC7, 0xF7));
-                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0xCC, 0xEE, 0xFB));
-
-                checkedState.AddObjectAnimationUsingKeyFrames(expandPath, x => x.RenderTransform, new RotateTransform(180, 3, 3));
-                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x59, 0x59, 0x59));
-                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0x26, 0x26, 0x26));
+//                var stateGroups = this.GetVisualStateGroups();
+//
+//                var commonStates = new VisualStateGroup();
+//                commonStates.CreateState("Normal");
+//                var mouseOverState = commonStates.CreateState("MouseOver");
+//                var checkedState = commonStates.CreateState("Checked");
+//                stateGroups.Add(commonStates);
+//
+//                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x27, 0xC7, 0xF7));
+//                mouseOverState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0xCC, 0xEE, 0xFB));
+//
+//                checkedState.AddObjectAnimationUsingKeyFrames(expandPath, x => x.RenderTransform, new RotateTransform(180, 3, 3));
+//                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Fill).Color, Color.FromArgb(0xFF, 0x59, 0x59, 0x59));
+//                checkedState.AddColorAnimation(expandPath, x => ((SolidColorBrush)x.Stroke).Color, Color.FromArgb(0xFF, 0x26, 0x26, 0x26));
             }
         }
 

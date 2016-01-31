@@ -253,15 +253,20 @@
     <Compile Include="Windows\MainWindows\ApiItemControl.cs" />
     <Compile Include="Windows\MainWindows\MainWindow.cs" />
     <Compile Include="WpfExtensions\ButtonExtensions.cs" />
+    <Compile Include="WpfExtensions\CodeTriggers\CodeTrigger.cs" />
+    <Compile Include="WpfExtensions\CodeTriggers\CodeTriggerActor.cs" />
+    <Compile Include="WpfExtensions\CodeTriggers\CodeTriggerExtensions.cs" />
+    <Compile Include="WpfExtensions\CodeTriggers\CodeTriggerSetter.cs" />
+    <Compile Include="WpfExtensions\CodeTriggers\ConditionalCodeTriggerAction.cs" />
+    <Compile Include="WpfExtensions\CodeTriggers\ICodeTriggerSetter.cs" />
     <Compile Include="WpfExtensions\DockPanelExtensions.cs" />
     <Compile Include="WpfExtensions\GridExtensions.cs" />
     <Compile Include="WpfExtensions\GridSplitterExtensions.cs" />
     <Compile Include="WpfExtensions\MenuExtensions.cs" />
     <Compile Include="WpfExtensions\NameValuePanel.cs" />
+    <Compile Include="WpfExtensions\PropertyPathGenerator.cs" />
     <Compile Include="WpfExtensions\StoryboardExtensions.cs" />
     <Compile Include="WpfExtensions\TreeViewExtensions.cs" />
-    <Compile Include="WpfExtensions\UndoableAction.cs" />
-    <Compile Include="WpfExtensions\UndoableAssignment.cs" />
     <Compile Include="WpfExtensions\VisualStateExtensions.cs" />
     <EmbeddedResource Include="Properties\IconResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

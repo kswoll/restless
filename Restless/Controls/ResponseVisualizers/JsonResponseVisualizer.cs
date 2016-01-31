@@ -36,7 +36,7 @@ namespace Restless.Controls.ResponseVisualizers
 //                    XamlWriter.Save(((TreeViewItem)treeView.Items[0]).Template, writer);
 //                    File.WriteAllText(@"c:\temp\treeviewitem.xaml", s);
 
-//                    treeView.Filter(x => ((string)x.Header).Contains("12"));
+                    treeView.Filter(x => ((string)x.Header).Contains("12"));
                 }
             });
         }
