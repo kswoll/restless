@@ -74,7 +74,12 @@ namespace Restless.Templates
             {
                 setters.Set(item, x => x.Foreground, SystemColors.GrayTextBrush);
             });
-            colorTrigger.AddConditionalAction(x => (bool)x.GetValue(TreeViewItemFilter.IsFilteredProperty), setters =>
+            colorTrigger.AddConditionalAction(x => TreeViewItemFilter.GetIsFiltered(x) && x.IsSelected, setters =>
+            {
+                setters.Set(item, x => x.Foreground, SystemColors.GrayTextBrush);
+                setters.Set(border, x => x.Background, SystemColors.InactiveSelectionHighlightBrush);
+            });
+            colorTrigger.AddConditionalAction(x => TreeViewItemFilter.GetIsFiltered(x), setters =>
             {
                 setters.Set(item, x => x.Foreground, SystemColors.GrayTextBrush);
             });

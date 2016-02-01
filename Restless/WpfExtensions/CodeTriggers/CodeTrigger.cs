@@ -41,20 +41,22 @@ namespace Restless.WpfExtensions.CodeTriggers
             setters(actor);
             var action = new ConditionalCodeTriggerAction<T>(Element, predicate, actor);
             conditionalActions.Add(action);
-            action.Apply();
+            action.Apply(null);
         }
 
         protected void OnTrigger(DependencyProperty property)
         {
+            var appliedSetters = lastAppliedAction == null ? null : new HashSet<object>();
             foreach (var action in conditionalActions)
             {
-                if (action.Apply())
+                if (action.Apply(appliedSetters))
                 {
+                    lastAppliedAction?.Unapply(appliedSetters);
                     lastAppliedAction = action;
                     return;
                 }
             }
-            lastAppliedAction?.Unapply();
+            lastAppliedAction?.Unapply(null);
         }
     }
 }

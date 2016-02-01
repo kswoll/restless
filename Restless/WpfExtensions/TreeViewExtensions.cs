@@ -50,7 +50,7 @@ namespace Restless.WpfExtensions
             if (itemAccepted)
                 return true;
             else if (descendentAccepted)
-                item.SetValue(TreeViewItemFilter.IsFilteredProperty, true);
+                TreeViewItemFilter.SetIsFiltered(item, true);
             else
                 item.Visibility = Visibility.Collapsed;
 

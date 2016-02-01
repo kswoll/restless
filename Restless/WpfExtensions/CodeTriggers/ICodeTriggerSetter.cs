@@ -2,6 +2,7 @@
 {
     public interface ICodeTriggerSetter
     {
+        object Key { get; }
         void Set();
         void Unset();
     }

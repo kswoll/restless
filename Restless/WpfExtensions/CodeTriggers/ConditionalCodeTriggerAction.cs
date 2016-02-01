@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace Restless.WpfExtensions.CodeTriggers
@@ -17,13 +18,14 @@ namespace Restless.WpfExtensions.CodeTriggers
             this.actor = actor;
         }
 
-        public bool Apply()
+        public bool Apply(HashSet<object> appliedSetters)
         {
             if (predicate(element))
             {
                 foreach (var setter in actor)
                 {
                     setter.Set();
+                    appliedSetters?.Add(setter.Key);
                 }
                 return true;
             }
@@ -33,11 +35,12 @@ namespace Restless.WpfExtensions.CodeTriggers
             }
         }
 
-        public void Unapply()
+        public void Unapply(HashSet<object> appliedSetters)
         {
             foreach (var setter in actor)
             {
-                setter.Unset();
+                if (!appliedSetters?.Contains(setter.Key) ?? true)
+                    setter.Unset();
             }
         }
     }
