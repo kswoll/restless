@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace Restless.WpfExtensions
 {
@@ -51,7 +50,7 @@ namespace Restless.WpfExtensions
             if (itemAccepted)
                 return true;
             else if (descendentAccepted)
-                VisualStateManager.GoToElementState(item, "Disabled", true);
+                item.SetValue(TreeViewItemFilter.IsFilteredProperty, true);
             else
                 item.Visibility = Visibility.Collapsed;
 
@@ -63,7 +62,7 @@ namespace Restless.WpfExtensions
             foreach (TreeViewItem item in treeView.Items)
             {
                 item.Visibility = Visibility.Visible;
-                VisualStateManager.GoToElementState(item, "Normal", true);
+                item.SetValue(TreeViewItemFilter.IsFilteredProperty, false);
             }
         }
 

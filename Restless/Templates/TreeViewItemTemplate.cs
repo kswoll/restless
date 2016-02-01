@@ -1,12 +1,8 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Restless.WpfExtensions;
 using Restless.WpfExtensions.CodeTriggers;
@@ -69,36 +65,37 @@ namespace Restless.Templates
             SetColumnSpan(itemsHost, 2);
             this.Add(itemsHost, 1, 1);
 
-            var stateGroups = this.GetVisualStateGroups();
+            var colorTrigger = item.AddTrigger();
+            colorTrigger.AddProperty(x => x.IsSelected);
+            colorTrigger.AddProperty(x => x.IsSelectionActive);
+            colorTrigger.AddProperty(x => x.IsEnabled);
+            colorTrigger.AddProperty(TreeViewItemFilter.IsFilteredProperty);
+            colorTrigger.AddConditionalAction(x => !x.IsEnabled, setters =>
+            {
+                setters.Set(item, x => x.Foreground, SystemColors.GrayTextBrush);
+            });
+            colorTrigger.AddConditionalAction(x => (bool)x.GetValue(TreeViewItemFilter.IsFilteredProperty), setters =>
+            {
+                setters.Set(item, x => x.Foreground, SystemColors.GrayTextBrush);
+            });
+            colorTrigger.AddConditionalAction(x => x.IsSelected && !x.IsSelectionActive, setters =>
+            {
+                setters.Set(item, x => x.Foreground, SystemColors.InactiveSelectionHighlightTextBrush);
+                setters.Set(border, x => x.Background, SystemColors.InactiveSelectionHighlightBrush);
+            });
+            colorTrigger.AddConditionalAction(x => x.IsSelected, setters =>
+            {
+                setters.Set(item, x => x.Foreground, SystemColors.HighlightTextBrush);
+                setters.Set(border, x => x.Background, SystemColors.HighlightBrush);
+            });
 
-            var commonStates = new VisualStateGroup();
-            commonStates.CreateState("Normal");
-            var disabledState = commonStates.CreateState("Disabled");
-            stateGroups.Add(commonStates);
+            var expanderTrigger = item.AddTrigger();
+            expanderTrigger.AddProperty(x => x.HasItems);
+            expanderTrigger.AddConditionalAction(x => !x.HasItems, setters => setters.Set(expander, x => x.Visibility, Visibility.Hidden));
 
-            var hasItemsStates = new VisualStateGroup();
-            hasItemsStates.CreateState("HasItems");
-            var noItemsState = hasItemsStates.CreateState("NoItems");
-            stateGroups.Add(hasItemsStates);
-
-            var expandedStates = new VisualStateGroup();
-            expandedStates.CreateState("Expanded");
-            var collapsedState = expandedStates.CreateState("Collapsed");
-            stateGroups.Add(expandedStates);
-
-            var selectedStates = new VisualStateGroup();
-            selectedStates.CreateState("Unselected");
-            var selectedState = selectedStates.CreateState("Selected");
-            var selectedInactiveState = selectedStates.CreateState("SelectedInactive");
-            stateGroups.Add(selectedStates);
-
-            disabledState.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.GrayTextBrush);
-            noItemsState.AddObjectAnimationUsingKeyFrames(expander, x => x.Visibility, Visibility.Hidden);
-            collapsedState.AddObjectAnimationUsingKeyFrames(itemsHost, x => x.Visibility, Visibility.Collapsed);
-            selectedState.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.HighlightBrush);
-            selectedState.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.HighlightTextBrush);
-            selectedInactiveState.AddObjectAnimationUsingKeyFrames(border, x => x.Background, SystemColors.InactiveSelectionHighlightBrush);
-            selectedInactiveState.AddObjectAnimationUsingKeyFrames(item, x => x.Foreground, SystemColors.InactiveSelectionHighlightTextBrush);
+            var noItemsTrigger = item.AddTrigger();
+            noItemsTrigger.AddProperty(x => x.IsExpanded);
+            noItemsTrigger.AddConditionalAction(x => !x.IsExpanded, setters => setters.Set(itemsHost, x => x.Visibility, Visibility.Collapsed));
 
             item.PairExpanded(expander, ToggleButton.CheckedEvent, ToggleButton.UncheckedEvent, ToggleButton.IsCheckedProperty);
 
@@ -160,49 +157,6 @@ namespace Restless.Templates
                 {
                     setters.Set(expandPath, x => x.RenderTransform, new RotateTransform(135, 3, 3));
                 });
-            }
-        }
-
-        private class HeaderButtonTemplate : Grid
-        {
-            public override void EndInit()
-            {
-                base.EndInit();
-
-                var button = (Button)TemplatedParent;
-
-                Background = button.Background;
-
-                var hover = new Rectangle
-                {
-                    Opacity = 0,
-                    Fill = new SolidColorBrush(Color.FromArgb(0xFF, 0xBA, 0xDD, 0xE9)),
-                    Stroke = new SolidColorBrush(Color.FromArgb(0xFF, 0x6D, 0xBD, 0xD1)),
-                    StrokeThickness = 1,
-                    IsHitTestVisible = false,
-                    RadiusX = 2,
-                    RadiusY = 2
-                };
-                Children.Add(hover);
-                var content = new ContentPresenter
-                {
-                    Cursor = button.Cursor,
-                    Content = button.Content,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    Margin = button.Padding
-                };
-                Children.Add(content);
-
-                var commonStates = new VisualStateGroup();
-                commonStates.CreateState("Normal");
-                var pressedState = commonStates.CreateState("Pressed");
-                var disabledState = commonStates.CreateState("Disabled");
-
-                var stateGroups = this.GetVisualStateGroups();
-                stateGroups.Add(commonStates);
-
-                pressedState.AddDoubleAnimation(hover, x => x.Opacity, .5);
-                disabledState.AddDoubleAnimation(this, x => x.Opacity, .55);
             }
         }
     }

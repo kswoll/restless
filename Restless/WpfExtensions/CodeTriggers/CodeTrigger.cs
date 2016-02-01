@@ -25,9 +25,14 @@ namespace Restless.WpfExtensions.CodeTriggers
         public void AddProperty<TValue>(Expression<Func<T, TValue>> property)
         {
             var dependencyProperty = property.GetDependencyProperty();
+            AddProperty(dependencyProperty);
+        }
+
+        public void AddProperty(DependencyProperty property)
+        {
             DependencyPropertyDescriptor
-                .FromProperty(dependencyProperty, dependencyProperty.OwnerType)
-                .AddValueChanged(Element, (sender, args) => OnTrigger(dependencyProperty));
+                .FromProperty(property, property.OwnerType)
+                .AddValueChanged(Element, (sender, args) => OnTrigger(property));
         }
 
         public void AddConditionalAction(Func<T, bool> predicate, Action<CodeTriggerActor<T>> setters)

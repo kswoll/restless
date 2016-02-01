@@ -6,9 +6,9 @@ namespace Restless.WpfExtensions.CodeTriggers
     public class ConditionalCodeTriggerAction<T>
         where T : UIElement
     {
-        private T element;
-        private Func<T, bool> predicate;
-        private CodeTriggerActor<T> actor;
+        private readonly T element;
+        private readonly Func<T, bool> predicate;
+        private readonly CodeTriggerActor<T> actor;
 
         public ConditionalCodeTriggerAction(T element, Func<T, bool> predicate, CodeTriggerActor<T> actor)
         {
