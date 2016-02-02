@@ -61,9 +61,18 @@ namespace Restless.WpfExtensions
         {
             foreach (TreeViewItem item in treeView.Items)
             {
-                item.Visibility = Visibility.Visible;
-                item.SetValue(TreeViewItemFilter.IsFilteredProperty, false);
+                item.ClearFilter();
             }
+        }
+
+        public static void ClearFilter(this TreeViewItem item)
+        {
+            item.Visibility = Visibility.Visible;
+            item.SetValue(TreeViewItemFilter.IsFilteredProperty, false);
+            foreach (TreeViewItem child in item.Items)
+            {
+                child.ClearFilter();
+            }            
         }
 
         public static RoutedEventHandler AddSelfExpanded(this TreeViewItem item, RoutedEventHandler handler)

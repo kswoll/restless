@@ -1,29 +1,42 @@
 ﻿using System;
-using System.IO;
-using System.Windows;
+using System.Reactive.Linq;
 using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Xml;
 using Newtonsoft.Json.Linq;
 using Restless.Utils;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
+using SexyReact;
+using SexyReact.Utils;
 
 namespace Restless.Controls.ResponseVisualizers
 {
-    [ResponseVisualizer(ContentTypes.ApplicationJson)]
+    [ResponseVisualizer(ContentTypes.ApplicationJson), Rx]
     public class JsonResponseVisualizer : RxDockPanel<ApiResponseModel>, IResponseVisualizer
     {
         public string Header => "Json";
         public int CompareTo(IResponseVisualizer other) => 0;
         public bool IsThisPrimary(IResponseVisualizer other) => false;
+        public string FilterText { get; set; }
 
         private readonly TreeView treeView;
+        private readonly TextBox filterTextBox = new TextBox();
+        private bool isFiltered;
 
         public JsonResponseVisualizer()
         {
             treeView = new TreeView();
+
+            filterTextBox.TextChanged += (sender, args) => FilterText = filterTextBox.Text;
+            this.ObserveProperty(x => x.FilterText).Throttle(TimeSpan.FromSeconds(1)).SubscribeOnUiThread(_ => Filter());
+
+            var clearFilterButton = new Button { Content = new Label { Content = "Clear" }};
+            clearFilterButton.Click += (sender, args) => ClearFilter();
+
+            var toolBar = new DockPanel();
+            toolBar.Add(clearFilterButton, Dock.Right);
+            toolBar.Add(filterTextBox);
+            this.Add(toolBar, Dock.Top);
 
             this.Add(treeView);
 
@@ -32,13 +45,28 @@ namespace Restless.Controls.ResponseVisualizers
                 if (response != null)
                 {
                     AddRootToken(Model.JsonResponse);
-//                    var writer = XmlWriter.Create(@"c:\temp\treeviewitem.xaml", new XmlWriterSettings { Indent = true });
-//                    XamlWriter.Save(((TreeViewItem)treeView.Items[0]).Template, writer);
-//                    File.WriteAllText(@"c:\temp\treeviewitem.xaml", s);
-
-                    treeView.Filter(x => ((string)x.Header).Contains("12"));
                 }
             });
+        }
+
+        private void Filter()
+        {
+            if (!string.IsNullOrEmpty(FilterText))
+            {
+                treeView.Filter(x => ((string)x.Header).Contains(FilterText));
+                isFiltered = true;                
+            }
+            else if (isFiltered)
+            {
+                ClearFilter();
+            }
+        }
+
+        private void ClearFilter()
+        {
+            filterTextBox.Text = "";
+            treeView.ClearFilter();
+            isFiltered = false;
         }
 
         private void AddRootToken(JToken token)
