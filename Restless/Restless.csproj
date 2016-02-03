@@ -222,9 +222,11 @@
     </Compile>
     <Compile Include="Styles\ButtonStyle.cs" />
     <Compile Include="Styles\GlobalStyles.cs" />
+    <Compile Include="Styles\TextBoxStyle.cs" />
     <Compile Include="Styles\ToggleButtonStyle.cs" />
     <Compile Include="Styles\TreeViewItemStyle.cs" />
     <Compile Include="Templates\ButtonTemplate.cs" />
+    <Compile Include="Templates\TextBoxTemplate.cs" />
     <Compile Include="Templates\TreeViewItemTemplate.cs" />
     <Compile Include="Utils\CompareToExtensions.cs" />
     <Compile Include="Utils\ContentTypes.cs" />
@@ -266,6 +268,7 @@
     <Compile Include="WpfExtensions\GridSplitterExtensions.cs" />
     <Compile Include="WpfExtensions\MenuExtensions.cs" />
     <Compile Include="WpfExtensions\NameValuePanel.cs" />
+    <Compile Include="WpfExtensions\Placeholder.cs" />
     <Compile Include="WpfExtensions\PropertyPathGenerator.cs" />
     <Compile Include="WpfExtensions\StoryboardExtensions.cs" />
     <Compile Include="WpfExtensions\TreeViewExtensions.cs" />
@@ -322,6 +325,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\RemoveFilter.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Filter.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.29.0\build\Fody.targets" Condition="Exists('..\packages\Fody.1.29.0\build\Fody.targets')" />

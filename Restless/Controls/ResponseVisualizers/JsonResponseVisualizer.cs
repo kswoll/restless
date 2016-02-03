@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Newtonsoft.Json.Linq;
 using Restless.Properties;
 using Restless.Utils;
@@ -18,7 +20,6 @@ namespace Restless.Controls.ResponseVisualizers
         public string Header => "Json";
         public int CompareTo(IResponseVisualizer other) => 0;
         public bool IsThisPrimary(IResponseVisualizer other) => false;
-        public string FilterText { get; set; }
 
         private readonly TreeView treeView;
         private readonly TextBox filterTextBox = new TextBox();
@@ -28,18 +29,33 @@ namespace Restless.Controls.ResponseVisualizers
         {
             treeView = new TreeView();
 
-            filterTextBox.TextChanged += (sender, args) => FilterText = filterTextBox.Text;
-            this.ObserveProperty(x => x.FilterText).Throttle(TimeSpan.FromSeconds(.3)).SubscribeOnUiThread(_ => Filter());
+            filterTextBox.VerticalContentAlignment = VerticalAlignment.Center;
+            Placeholder.SetPlaceholder(filterTextBox, "Type here and press enter to filter the results");
+            filterTextBox.KeyDown += (sender, args) =>
+            {
+                if (args.Key == Key.Enter)
+                    Filter();
+            };
+
+            var filterButton = new Button
+            {
+                Content = Icons.Get(IconResources.Filter),
+                Focusable = false,
+                ToolTip = "Apply Filter"
+            };
+            filterButton.Click += (sender, args) => Filter();
 
             var clearFilterButton = new Button
             {
                 Content = Icons.Get(IconResources.RemoveFilter),
-                Focusable = false
+                Focusable = false,
+                ToolTip = "Clear Filter"
             };
             clearFilterButton.Click += (sender, args) => ClearFilter();
 
             var toolBar = new DockPanel();
             toolBar.Add(clearFilterButton, Dock.Right);
+            toolBar.Add(filterButton, Dock.Right);
             toolBar.Add(filterTextBox);
             this.Add(toolBar, Dock.Top);
 
@@ -56,9 +72,9 @@ namespace Restless.Controls.ResponseVisualizers
 
         private void Filter()
         {
-            if (!string.IsNullOrEmpty(FilterText))
+            if (!string.IsNullOrEmpty(filterTextBox.Text))
             {
-                treeView.Filter(x => ((string)x.Header).ToUpper().Contains(FilterText.ToUpper()));
+                treeView.Filter(x => ((string)x.Header).ToUpper().Contains(filterTextBox.Text.ToUpper()));
                 isFiltered = true;                
             }
             else if (isFiltered)

@@ -9,6 +9,7 @@ namespace Restless.Styles
             ButtonStyle.Register(resources);
             ToggleButtonStyle.Register(resources);
             TreeViewItemStyle.Register(resources);
+            TextBoxStyle.Register(resources);
         }
     }
 }

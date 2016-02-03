@@ -61,6 +61,25 @@ namespace Restless.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;!--This file is NOT compatible with Silverlight--&gt;
+        ///&lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
+        ///  &lt;Canvas Name=&quot;svg3359&quot; Width=&quot;744.09448819&quot; Height=&quot;1052.3622047&quot;&gt;
+        ///    &lt;Canvas.RenderTransform&gt;
+        ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
+        ///    &lt;/Canvas.RenderTransform&gt;
+        ///    &lt;Canvas.Resources/&gt;
+        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
+        ///    &lt;!--Unknown tag: metadata--&gt;
+        ///    &lt;Canvas Name=&quot;layer1&quot;&gt;
+        ///      &lt;Path xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Filter {
+            get {
+                return ResourceManager.GetString("Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;&gt;
         ///  &lt;Canvas Name=&quot;svg3372&quot; Width=&quot;99.999997&quot; Height=&quot;87.500007&quot;&gt;
         ///    &lt;Canvas.RenderTransform&gt;
@@ -83,16 +102,17 @@ namespace Restless.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
-        ///  &lt;Canvas Name=&quot;Layer_1&quot; Canvas.Left=&quot;0&quot; Canvas.Top=&quot;0&quot; Width=&quot;153&quot; Height=&quot;204&quot;&gt;
+        ///  &lt;Canvas Name=&quot;svg3373&quot; Width=&quot;744.09448819&quot; Height=&quot;1052.3622047&quot;&gt;
         ///    &lt;Canvas.RenderTransform&gt;
         ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
         ///    &lt;/Canvas.RenderTransform&gt;
         ///    &lt;Canvas.Resources/&gt;
-        ///    &lt;!--Unknown tag: metadata--&gt;
         ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
-        ///    &lt;Canvas Name=&quot;g3337&quot;&gt;
-        ///      &lt;Path xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; Name=&quot;path3339&quot; Fill=&quot;#000000&quot;&gt;
-        ///   [rest of string was truncated]&quot;;.
+        ///    &lt;!--Unknown tag: metadata--&gt;
+        ///    &lt;Canvas Name=&quot;layer1&quot;&gt;
+        ///      &lt;Canvas Name=&quot;g3350&quot;&gt;
+        ///        &lt;Canvas.RenderTransform&gt;
+        ///          &lt;TranslateTransform X=&quot;-397.26981&quot; Y=&quot;-58 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string RemoveFilter {
             get {
