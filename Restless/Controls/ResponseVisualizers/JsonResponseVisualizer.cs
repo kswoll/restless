@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using System.Windows.Controls;
 using Newtonsoft.Json.Linq;
+using Restless.Properties;
 using Restless.Utils;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
@@ -28,9 +29,13 @@ namespace Restless.Controls.ResponseVisualizers
             treeView = new TreeView();
 
             filterTextBox.TextChanged += (sender, args) => FilterText = filterTextBox.Text;
-            this.ObserveProperty(x => x.FilterText).Throttle(TimeSpan.FromSeconds(1)).SubscribeOnUiThread(_ => Filter());
+            this.ObserveProperty(x => x.FilterText).Throttle(TimeSpan.FromSeconds(.3)).SubscribeOnUiThread(_ => Filter());
 
-            var clearFilterButton = new Button { Content = new Label { Content = "Clear" }};
+            var clearFilterButton = new Button
+            {
+                Content = Icons.Get(IconResources.RemoveFilter),
+                Focusable = false
+            };
             clearFilterButton.Click += (sender, args) => ClearFilter();
 
             var toolBar = new DockPanel();
@@ -53,7 +58,7 @@ namespace Restless.Controls.ResponseVisualizers
         {
             if (!string.IsNullOrEmpty(FilterText))
             {
-                treeView.Filter(x => ((string)x.Header).Contains(FilterText));
+                treeView.Filter(x => ((string)x.Header).ToUpper().Contains(FilterText.ToUpper()));
                 isFiltered = true;                
             }
             else if (isFiltered)

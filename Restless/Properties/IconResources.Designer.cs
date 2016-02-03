@@ -82,6 +82,25 @@ namespace Restless.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
+        ///  &lt;Canvas Name=&quot;Layer_1&quot; Canvas.Left=&quot;0&quot; Canvas.Top=&quot;0&quot; Width=&quot;153&quot; Height=&quot;204&quot;&gt;
+        ///    &lt;Canvas.RenderTransform&gt;
+        ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
+        ///    &lt;/Canvas.RenderTransform&gt;
+        ///    &lt;Canvas.Resources/&gt;
+        ///    &lt;!--Unknown tag: metadata--&gt;
+        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
+        ///    &lt;Canvas Name=&quot;g3337&quot;&gt;
+        ///      &lt;Path xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; Name=&quot;path3339&quot; Fill=&quot;#000000&quot;&gt;
+        ///   [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string RemoveFilter {
+            get {
+                return ResourceManager.GetString("RemoveFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;&gt;
         ///  &lt;Canvas Name=&quot;svg3421&quot; Width=&quot;89.999999&quot; Height=&quot;81.999997&quot;&gt;
         ///    &lt;Canvas.RenderTransform&gt;

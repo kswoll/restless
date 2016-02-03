@@ -48,9 +48,16 @@ namespace Restless.WpfExtensions
                 descendentAccepted = descendentAccepted | child.Filter(predicate);
             }
             if (itemAccepted)
+            {
+                item.Visibility = Visibility.Visible;
+                TreeViewItemFilter.SetIsFiltered(item, false);
                 return true;
+            }
             else if (descendentAccepted)
+            {
+                item.Visibility = Visibility.Visible;
                 TreeViewItemFilter.SetIsFiltered(item, true);
+            }
             else
                 item.Visibility = Visibility.Collapsed;
 
