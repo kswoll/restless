@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Reactive.Linq;
+using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using Restless.Controls;
 using Restless.Properties;
 using Restless.ViewModels;
@@ -19,6 +21,7 @@ namespace Restless.Windows.MainWindows
         public MainWindow()
         {
             SnapsToDevicePixels = true;
+            Icon = BitmapFrame.Create(Application.GetResourceStream(new Uri("/Icon.ico", UriKind.Relative)).Stream);
 
             ConfigureWindowStateAndPosition();
 
