@@ -329,6 +329,18 @@
   <ItemGroup>
     <None Include="Resources\Filter.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PageLeft.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PageRight.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Send.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Reset.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.29.0\build\Fody.targets" Condition="Exists('..\packages\Fody.1.29.0\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

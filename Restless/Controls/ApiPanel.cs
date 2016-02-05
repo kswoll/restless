@@ -2,6 +2,8 @@
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Restless.Models;
+using Restless.Properties;
+using Restless.Utils;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact;
@@ -32,8 +34,8 @@ namespace Restless.Controls
             urlAndMethod.Add(url, 0, 0);
             urlAndMethod.Add(method, 0, 1);
 
-            var sendButton = new Button { Content = new Label { Content = "Send" }, Focusable = false };
-            var resetButton = new Button { Content = new Label { Content = "Reset" }, Focusable = false };
+            var sendButton = new Button { Content = Icons.Get(IconResources.Send, 22, 18), Focusable = false, ToolTip = "Send the request to the server" };
+            var resetButton = new Button { Content = Icons.Get(IconResources.Reset, 22, 14), Focusable = false, ToolTip = "Reset transient data back to their default state", Padding = new Thickness(3) };
 
             var buttonsPanel = new StackPanel
             {

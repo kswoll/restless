@@ -61,9 +61,8 @@ namespace Restless.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!--This file is NOT compatible with Silverlight--&gt;
-        ///&lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
-        ///  &lt;Canvas Name=&quot;svg3359&quot; Width=&quot;744.09448819&quot; Height=&quot;1052.3622047&quot;&gt;
+        ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
+        ///  &lt;Canvas Name=&quot;svg3374&quot; Width=&quot;86.966262&quot; Height=&quot;90.015002&quot;&gt;
         ///    &lt;Canvas.RenderTransform&gt;
         ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
         ///    &lt;/Canvas.RenderTransform&gt;
@@ -71,11 +70,47 @@ namespace Restless.Properties {
         ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
         ///    &lt;!--Unknown tag: metadata--&gt;
         ///    &lt;Canvas Name=&quot;layer1&quot;&gt;
-        ///      &lt;Path xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/ [rest of string was truncated]&quot;;.
+        ///      &lt;Canvas.RenderTransform&gt;
+        ///        &lt;TranslateTransform X=&quot;-305.0883&quot; Y=&quot;-441.64042&quot;/&gt;
+        ///      &lt;/Canvas.RenderTransfo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Filter {
             get {
                 return ResourceManager.GetString("Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
+        ///  &lt;Canvas Name=&quot;Layer_1&quot; Width=&quot;716.6001&quot; Height=&quot;900&quot; Canvas.Left=&quot;0&quot; Canvas.Top=&quot;0&quot;&gt;
+        ///    &lt;Canvas.RenderTransform&gt;
+        ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
+        ///    &lt;/Canvas.RenderTransform&gt;
+        ///    &lt;Canvas.Resources/&gt;
+        ///    &lt;!--Unknown tag: metadata--&gt;
+        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
+        ///    &lt;Rectangle xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; Canvas.Left=&quot;83.400002&quot; Canvas.Top=&quot;146.70001&quot; Width=&quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string PageLeft {
+            get {
+                return ResourceManager.GetString("PageLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
+        ///  &lt;Canvas Name=&quot;Layer_1&quot; Width=&quot;716.6001&quot; Height=&quot;900&quot; Canvas.Left=&quot;0&quot; Canvas.Top=&quot;0&quot;&gt;
+        ///    &lt;Canvas.RenderTransform&gt;
+        ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
+        ///    &lt;/Canvas.RenderTransform&gt;
+        ///    &lt;Canvas.Resources/&gt;
+        ///    &lt;!--Unknown tag: metadata--&gt;
+        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
+        ///    &lt;Rectangle xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; Canvas.Left=&quot;83.400002&quot; Canvas.Top=&quot;146.70001&quot; Width=&quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string PageRight {
+            get {
+                return ResourceManager.GetString("PageRight", resourceCulture);
             }
         }
         
@@ -102,7 +137,27 @@ namespace Restless.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
-        ///  &lt;Canvas Name=&quot;svg3373&quot; Width=&quot;744.09448819&quot; Height=&quot;1052.3622047&quot;&gt;
+        ///  &lt;Canvas Name=&quot;Layer_1&quot; Width=&quot;739.47534&quot; Height=&quot;754.50354&quot; Canvas.Left=&quot;0&quot; Canvas.Top=&quot;0&quot;&gt;
+        ///    &lt;Canvas.RenderTransform&gt;
+        ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
+        ///    &lt;/Canvas.RenderTransform&gt;
+        ///    &lt;Canvas.Resources/&gt;
+        ///    &lt;!--Unknown tag: metadata--&gt;
+        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
+        ///    &lt;Canvas Name=&quot;g3337&quot;&gt;
+        ///      &lt;Canvas.RenderTransform&gt;
+        ///        &lt;TranslateTransform X=&quot;-398.675&quot; Y=&quot;-646.8&quot;/&gt;
+        ///    [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string RemoveFilter {
+            get {
+                return ResourceManager.GetString("RemoveFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
+        ///  &lt;Canvas Name=&quot;svg3362&quot; Width=&quot;80.626801&quot; Height=&quot;79.4475&quot;&gt;
         ///    &lt;Canvas.RenderTransform&gt;
         ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
         ///    &lt;/Canvas.RenderTransform&gt;
@@ -110,13 +165,33 @@ namespace Restless.Properties {
         ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
         ///    &lt;!--Unknown tag: metadata--&gt;
         ///    &lt;Canvas Name=&quot;layer1&quot;&gt;
-        ///      &lt;Canvas Name=&quot;g3350&quot;&gt;
-        ///        &lt;Canvas.RenderTransform&gt;
-        ///          &lt;TranslateTransform X=&quot;-397.26981&quot; Y=&quot;-58 [rest of string was truncated]&quot;;.
+        ///      &lt;Canvas.RenderTransform&gt;
+        ///        &lt;TranslateTransform X=&quot;-336.82946&quot; Y=&quot;-472.63845&quot;/&gt;
+        ///      &lt;/Canvas.RenderTransfor [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string RemoveFilter {
+        internal static string Reset {
             get {
-                return ResourceManager.GetString("RemoveFilter", resourceCulture);
+                return ResourceManager.GetString("Reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
+        ///  &lt;Canvas Name=&quot;svg3493&quot; Width=&quot;97.991998&quot; Height=&quot;79.597001&quot;&gt;
+        ///    &lt;Canvas.RenderTransform&gt;
+        ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
+        ///    &lt;/Canvas.RenderTransform&gt;
+        ///    &lt;Canvas.Resources/&gt;
+        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
+        ///    &lt;!--Unknown tag: metadata--&gt;
+        ///    &lt;Canvas Name=&quot;layer1&quot;&gt;
+        ///      &lt;Canvas.RenderTransform&gt;
+        ///        &lt;TranslateTransform X=&quot;-225.28971&quot; Y=&quot;-372.5637&quot;/&gt;
+        ///      &lt;/Canvas.RenderTransfo [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
             }
         }
         

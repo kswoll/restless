@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
+using Microsoft.Win32;
 using Restless.Styles;
 using Restless.ViewModels;
 using Restless.Windows.MainWindows;
@@ -28,9 +29,22 @@ namespace Restless
 
             var mainWindow = new MainWindow
             {
-                Model = new MainWindowModel()
+                Model = new MainWindowModel(SelectFile)
             };
             mainWindow.Show();
+        }
+
+        private string SelectFile()
+        {
+            var dialog = new SaveFileDialog();
+            if (dialog.ShowDialog() ?? true)
+            {
+                return dialog.FileName;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

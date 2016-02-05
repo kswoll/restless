@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Restless.Database;
 using Restless.Models;
 using Restless.Properties;
@@ -15,6 +18,7 @@ namespace Restless.ViewModels
     {
         public string Title { get; set; }
         public IRxFunction<ApiModel> AddApi { get; }
+        public IRxCommand ExportAll { get; }
         public RxList<ApiModel> Items { get; }
         public ApiModel SelectedItem { get; set; }
         public List<ApiMethod> Methods { get; }
@@ -24,12 +28,17 @@ namespace Restless.ViewModels
 
         public IRxCommand DeleteSelectedItem { get; }
 
+        private Func<string> selectFile;
+
         private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
         private static readonly ApiOutputType[] outputTypes = { ApiOutputType.Default, ApiOutputType.JsonPath };
 
-        public MainWindowModel()
+        public MainWindowModel(Func<string> selectFile)
         {
+            this.selectFile = selectFile;
+
             AddApi = RxFunction.CreateAsync(OnAddApi);
+            ExportAll = RxCommand.Create(OnExportAll);
             Title = "Restless";
             Items = new RxList<ApiModel>();
             Methods = httpMethods.ToList();
@@ -81,7 +90,41 @@ namespace Restless.ViewModels
             Items.Add(model);
             return model;
         }
-        
+
+        private void OnExportAll()
+        {
+            var destination = selectFile();
+            if (destination == null)
+                return;
+
+            var json = JArray.FromObject(Items
+                .Select(x => new
+                {
+                    x.Title,
+                    x.Url,
+                    Method = x.Method.ToString(),
+                    Inputs = x.Inputs.Select(y => new
+                    {
+                        y.Name,
+                        InputType = y.InputType.ToString(),
+                        y.DefaultValue
+                    }).ToArray(),
+                    Outputs = x.Outputs.Select(y => new
+                    {
+                        y.Name,
+                        y.Expression,
+                        Type = y.Type.ToString()
+                    }).ToArray(),
+                    Headers = x.Headers.Select(y => new
+                    {
+                        y.Name,
+                        y.Value
+                    }).ToArray(),
+                    Body = x.Body == null ? null : Convert.ToBase64String(x.Body)
+                }));
+            File.WriteAllText(destination, json.ToString());
+        }
+
         private async Task OnDeleteSelectedItem()
         {
             var db = new RestlessDb();

@@ -1,11 +1,14 @@
 ﻿using System;
+using Restless.Properties;
+using Restless.Utils;
 using Restless.ViewModels;
 
 namespace Restless.Controls.ResponseActions
 {
     public class PreviousPageResponseAction : PageResponseAction
     {
-        public override string Header => "Previous Page";
+        public override object Header => Icons.Get(IconResources.PageLeft);
+        public override string ToolTip => "Navigate to the previous page of results";
 
         public override int CompareTo(IResponseAction other)
         {

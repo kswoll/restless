@@ -7,7 +7,8 @@ namespace Restless.Controls.ResponseActions
 {
     public interface IResponseAction : ICompareTo<IResponseAction>
     {
-        string Header { get; }
+        object Header { get; }
+        string ToolTip { get; }
         Task PerformAction(ApiResponseModel response);
     }
 }

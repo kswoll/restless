@@ -1,0 +1,65 @@
+<Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+  <Canvas Name="Layer_1" Width="470.20001" Height="390.70001" Canvas.Left="0" Canvas.Top="0">
+    <Canvas.RenderTransform>
+      <TranslateTransform X="0" Y="0"/>
+    </Canvas.RenderTransform>
+    <Canvas.Resources/>
+    <!--Unknown tag: metadata-->
+    <!--Unknown tag: sodipodi:namedview-->
+    <Canvas Name="g3339">
+      <Canvas.RenderTransform>
+        <TranslateTransform X="-321.7" Y="-684"/>
+      </Canvas.RenderTransform>
+      <Canvas Name="g3343">
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3345" StrokeThickness="60" Stroke="#FF000000" StrokeMiterLimit="10">
+          <Path.Data>
+            <PathGeometry Figures="M 397.7 991 C 469.9 873.4 576.3 778.9 701.1 720.8" FillRule="NonZero"/>
+          </Path.Data>
+        </Path>
+        <Canvas Name="g3347">
+          <Canvas Name="g3349">
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3351" Fill="#FF000000">
+              <Path.Data>
+                <PathGeometry Figures="m 398.7 997.2 c -23.4 9.9 -49 14.5 -74.3 14.5 l 54.3 -84.4 c 26.5 1 52.9 -7 76.7 -18.2 l -56.7 88.1 z" FillRule="NonZero"/>
+              </Path.Data>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3353" Fill="#FF000000">
+              <Path.Data>
+                <PathGeometry Figures="m 455.4 909 c -0.7 26.4 4 53.4 15.2 77.3 l -54.2 84.2 c -10.6 -23.6 -17.1 -48.1 -17.7 -73.4 L 455.4 909 Z" FillRule="NonZero"/>
+              </Path.Data>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3355" Fill="#000000">
+              <Path.Data>
+                <PathGeometry Figures="m 381.9 922.4 c 26.5 1 52.9 -7 76.7 -18.2 -0.7 26.4 4 53.3 15.2 77.3 l -7.3 11.3 c -10.5 -23.6 -17.1 -48.1 -17.7 -73.4 -23.5 9.9 -49 14.5 -74.3 14.5 l 7.4 -11.5 z" FillRule="NonZero"/>
+              </Path.Data>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3357" Fill="#000000">
+              <Path.Data>
+                <PathGeometry Figures="m 364.3 949.7 c 26.5 1 52.9 -7 76.7 -18.2 -0.7 26.4 4.1 53.3 15.2 77.3 l -7.3 11.3 c -10.6 -23.6 -17.1 -48.1 -17.7 -73.4 -23.4 9.9 -49 14.5 -74.3 14.5 l 7.4 -11.5 z" FillRule="NonZero"/>
+              </Path.Data>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3359" Fill="#000000">
+              <Path.Data>
+                <PathGeometry Figures="m 346.7 977 c 26.5 1 52.9 -7 76.7 -18.2 -0.7 26.4 4.1 53.3 15.2 77.3 l -7.3 11.3 c -10.6 -23.6 -17.1 -48.1 -17.7 -73.4 -23.5 9.9 -49 14.5 -74.3 14.5 l 7.4 -11.5 z" FillRule="NonZero"/>
+              </Path.Data>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3361" Fill="#000000">
+              <Path.Data>
+                <PathGeometry Figures="m 329.1 1004.3 c 26.4 1 52.9 -7 76.7 -18.2 -0.7 26.4 4.1 53.3 15.2 77.3 l -7.3 11.3 c -10.6 -23.6 -17.1 -48.1 -17.7 -73.4 -23.5 9.9 -49 14.5 -74.3 14.5 l 7.4 -11.5 z" FillRule="NonZero"/>
+              </Path.Data>
+            </Path>
+          </Canvas>
+        </Canvas>
+        <Canvas Name="g3363">
+          <Canvas Name="g3365">
+            <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="791.9,685.9 672.5,806.3 694.7,725.8 622.4,684 " Name="polygon3367" FillRule="NonZero" Fill="#000000"/>
+            <Canvas Name="g3369">
+              <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="684.3,785.8 777.4,691.9 701.7,722.9 " Name="polygon3371" FillRule="NonZero" Fill="#FF000000"/>
+              <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="645.2,690.4 777.4,691.9 701.7,722.9 " Name="polygon3373" FillRule="NonZero" Fill="#FF000000"/>
+            </Canvas>
+          </Canvas>
+        </Canvas>
+      </Canvas>
+    </Canvas>
+  </Canvas>
+</Viewbox>

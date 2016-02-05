@@ -1,10 +1,13 @@
-﻿using Restless.ViewModels;
+﻿using Restless.Properties;
+using Restless.Utils;
+using Restless.ViewModels;
 
 namespace Restless.Controls.ResponseActions
 {
     public class NextPageResponseAction : PageResponseAction
     {
-        public override string Header => "Next Page";
+        public override object Header => Icons.Get(IconResources.PageRight);
+        public override string ToolTip => "Navigate to the next page of results";
 
         public override int CompareTo(IResponseAction other)
         {

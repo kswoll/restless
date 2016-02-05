@@ -138,6 +138,7 @@
     <Compile Include="DbApi.cs" />
     <Compile Include="DbApiCallRequestHeader.cs" />
     <Compile Include="DbApiCallResponseHeader.cs" />
+    <Compile Include="DbApiCollection.cs" />
     <Compile Include="DbApiHeader.cs" />
     <Compile Include="DbApiInput.cs" />
     <Compile Include="DbApiOutput.cs" />

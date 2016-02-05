@@ -62,7 +62,9 @@ namespace Restless.Controls
 
                             var button = new Button
                             {
-                                Content = new Label { Content = action.Header, Focusable = false },
+                                Content = action.Header,
+                                ToolTip = action.ToolTip,
+                                Focusable = false,
                                 IsEnabled = state == ResponseActionState.Enabled
                             };
                             button.Click += async (sender, args) =>
