@@ -1,4 +1,6 @@
-﻿namespace Restless.Models
+﻿using Restless.Utils;
+
+namespace Restless.Models
 {
     public class ApiHeader : IdObject, IHeader
     {

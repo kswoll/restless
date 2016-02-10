@@ -47,7 +47,8 @@ namespace Restless.Windows.MainWindows
             var menu = new Menu();
             var fileMenu = menu.Add("_File");
             var newApiMenuItem = fileMenu.Add("_New Api");
-            var exportAllMenuItem = fileMenu.Add("_Export All");
+            var exportAllMenuItem = fileMenu.Add("_Export");
+            var importMenuItem = fileMenu.Add("_Import");
 
             var content = new DockPanel { LastChildFill = true };
             content.Add(menu, Dock.Top);
@@ -81,8 +82,8 @@ namespace Restless.Windows.MainWindows
                 ((ApiPanel)this.content).InitNew();
             });
 
-            var exportAll = this.Bind(x => x.Export);
-            exportAll.To(x => exportAllMenuItem.Command = x);
+            this.Bind(x => x.Export).To(x => exportAllMenuItem.Command = x);
+            this.Bind(x => x.Import).To(x => importMenuItem.Command = x);
         }
 
         private void ConfigureWindowStateAndPosition()

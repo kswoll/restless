@@ -9,27 +9,7 @@ namespace Restless.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ApiCollection",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    CollectionId = table.Column<int>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    Title = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DbApiCollection", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DbApiCollection_DbApiCollection_CollectionId",
-                        column: x => x.CollectionId,
-                        principalTable: "ApiCollection",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-            migrationBuilder.CreateTable(
-                name: "Api",
+                name: "ApiItem",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -39,15 +19,16 @@ namespace Restless.Database.Migrations
                     Method = table.Column<int>(nullable: false),
                     RequestBody = table.Column<byte[]>(nullable: true),
                     Title = table.Column<string>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
                     Url = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DbApi", x => x.Id);
+                    table.PrimaryKey("PK_DbApiItem", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApi_DbApiCollection_CollectionId",
+                        name: "FK_DbApiItem_DbApiItem_CollectionId",
                         column: x => x.CollectionId,
-                        principalTable: "ApiCollection",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -64,9 +45,9 @@ namespace Restless.Database.Migrations
                 {
                     table.PrimaryKey("PK_DbApiCall", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApiCall_DbApi_ApiId",
+                        name: "FK_DbApiCall_DbApiItem_ApiId",
                         column: x => x.ApiId,
-                        principalTable: "Api",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -84,9 +65,9 @@ namespace Restless.Database.Migrations
                 {
                     table.PrimaryKey("PK_DbApiHeader", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApiHeader_DbApi_ApiId",
+                        name: "FK_DbApiHeader_DbApiItem_ApiId",
                         column: x => x.ApiId,
-                        principalTable: "Api",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -105,9 +86,9 @@ namespace Restless.Database.Migrations
                 {
                     table.PrimaryKey("PK_DbApiInput", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApiInput_DbApi_ApiId",
+                        name: "FK_DbApiInput_DbApiItem_ApiId",
                         column: x => x.ApiId,
-                        principalTable: "Api",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -126,9 +107,9 @@ namespace Restless.Database.Migrations
                 {
                     table.PrimaryKey("PK_DbApiOutput", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApiOutput_DbApi_ApiId",
+                        name: "FK_DbApiOutput_DbApiItem_ApiId",
                         column: x => x.ApiId,
-                        principalTable: "Api",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -147,9 +128,9 @@ namespace Restless.Database.Migrations
                 {
                     table.PrimaryKey("PK_DbApiResponseComplication", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApiResponseComplication_DbApi_ApiId",
+                        name: "FK_DbApiResponseComplication_DbApiItem_ApiId",
                         column: x => x.ApiId,
-                        principalTable: "Api",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -169,9 +150,9 @@ namespace Restless.Database.Migrations
                 {
                     table.PrimaryKey("PK_DbApiCallRequestHeader", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApiCallRequestHeader_DbApi_ApiId",
+                        name: "FK_DbApiCallRequestHeader_DbApiItem_ApiId",
                         column: x => x.ApiId,
-                        principalTable: "Api",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -197,9 +178,9 @@ namespace Restless.Database.Migrations
                 {
                     table.PrimaryKey("PK_DbApiCallResponseHeader", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DbApiCallResponseHeader_DbApi_ApiId",
+                        name: "FK_DbApiCallResponseHeader_DbApiItem_ApiId",
                         column: x => x.ApiId,
-                        principalTable: "Api",
+                        principalTable: "ApiItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -220,8 +201,7 @@ namespace Restless.Database.Migrations
             migrationBuilder.DropTable("ApiOutput");
             migrationBuilder.DropTable("ApiResponseVisualizer");
             migrationBuilder.DropTable("ApiCall");
-            migrationBuilder.DropTable("Api");
-            migrationBuilder.DropTable("ApiCollection");
+            migrationBuilder.DropTable("ApiItem");
         }
     }
 }

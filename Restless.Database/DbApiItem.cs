@@ -23,7 +23,7 @@ namespace Restless.Database
 
         public string Url { get; set; }
 
-        public byte[] RequestBody { get; set; }
+        public string RequestBody { get; set; }
 
         public ApiItemType Type { get; set; }
 

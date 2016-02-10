@@ -1,4 +1,4 @@
-﻿namespace Restless.Models
+﻿namespace Restless.Utils
 {
     public interface IHeader
     {

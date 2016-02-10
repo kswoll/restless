@@ -17,7 +17,7 @@ namespace Restless.Utils
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var json = JObject.Load(reader);
-            var type = (ApiItemType)JsonConvert.DeserializeObject(json.GetValue(nameof(ApiItem.Type)).ToString(), typeof(ApiItemType));
+            var type = (ApiItemType)JsonConvert.DeserializeObject(json.GetValue(nameof(ApiItem.Type)).ToString(Formatting.Indented), typeof(ApiItemType));
             ApiItem item;
             switch (type)
             {

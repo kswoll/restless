@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Restless.Database;
 using Restless.Database.Repositories;
 using Restless.Models;
@@ -31,13 +32,14 @@ namespace Restless.ViewModels
         public int ApiSplitterPosition { get; set; }
 
         public IRxCommand DeleteSelectedItem { get; }
+        public DbRepository Repository { get; }
 
-        private readonly Func<SelectFileType, string, string> selectFile;
+        private readonly Func<SelectFileType, string, string, string> selectFile;
 
         private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
         private static readonly ApiOutputType[] outputTypes = { ApiOutputType.Default, ApiOutputType.JsonPath };
 
-        public MainWindowModel(Func<SelectFileType, string, string> selectFile)
+        public MainWindowModel(Func<SelectFileType, string, string, string> selectFile)
         {
             this.selectFile = selectFile;
 
@@ -67,10 +69,12 @@ namespace Restless.ViewModels
                 Settings.Default.Save();
             });
 
+            Repository = new DbRepository(() => new RestlessDb());
+
             Task.Run(async () =>
             {
-                await DbRepository.Initialize();
-                var apiItems = await DbRepository.GetApiItems();
+                await Repository.Initialize();
+                var apiItems = await Repository.GetApiItems();
                 foreach (var apiItem in apiItems)
                 {
                     if (apiItem is Api)
@@ -85,48 +89,31 @@ namespace Restless.ViewModels
 
         private async Task<ApiModel> OnAddApi(ApiCollectionModel parent)
         {
-            int id;
-            using (var db = new RestlessDb())
+            var api = new Api
             {
-                var dbApi = new DbApiItem
-                {
-                    Title = "(New Api)",
-                    Method = ApiMethod.Get,
-                    Created = DateTime.UtcNow,
-                    Type = ApiItemType.Api
-                };
-                db.ApiItems.Add(dbApi);
-                await db.SaveChangesAsync();
+                Title = "(New Api)",
+                Method = ApiMethod.Get,
+                Created = DateTime.UtcNow,
+                Type = ApiItemType.Api
+            };
+            await Repository.InsertApiItem(api);
 
-                id = dbApi.Id;
-            }
-
-            var apiItem = await DbRepository.GetApiItem(id);
-
-            var model = new ApiModel(this, parent, (Api)apiItem);
+            var model = new ApiModel(this, parent, api);
             Items.Add(model);
             return model;
         }
 
         private async Task<ApiCollectionModel> OnAddApiCollection(ApiCollectionModel parent)
         {
-            int id;
-            using (var db = new RestlessDb())
+            var apiCollection = new ApiCollection
             {
-                var dbApiCollection = new DbApiItem
-                {
-                    Title = "(New Api Collection)",
-                    Created = DateTime.UtcNow,
-                    Type = ApiItemType.Collection
-                };
-                db.ApiItems.Add(dbApiCollection);
-                await db.SaveChangesAsync();
+                Title = "(New Api Collection)",
+                Created = DateTime.UtcNow,
+                Type = ApiItemType.Collection
+            };
+            await Repository.InsertApiItem(apiCollection);
 
-                id = dbApiCollection.Id;
-            }
-
-            var apiCollection = await DbRepository.GetApiItem(id);
-            var model = new ApiCollectionModel(this, parent, (ApiCollection)apiCollection);
+            var model = new ApiCollectionModel(this, parent, apiCollection);
 
             Items.Add(model);
             return model;
@@ -134,12 +121,15 @@ namespace Restless.ViewModels
 
         private static readonly JsonSerializerSettings importExportJsonSettings = new JsonSerializerSettings
         {
-            Converters = { new ApiItemJsonConverter() }
+            Converters = { new ApiItemJsonConverter(), new StringEnumConverter() },
+            Formatting = Formatting.Indented
         };
+
+        private const string JsonExtension = "Json Files (*.json)|*.json";
 
         private void OnExport()
         {
-            var destination = selectFile(SelectFileType.Save, "Provide a file to which your apis will be exported");
+            var destination = selectFile(SelectFileType.Save, JsonExtension, "Provide a file to which your apis will be exported");
             if (destination == null)
                 return;
 
@@ -149,12 +139,12 @@ namespace Restless.ViewModels
 
         private void OnImport()
         {
-            var file = selectFile(SelectFileType.Open, "Choose a file to import");
+            var file = selectFile(SelectFileType.Open, JsonExtension, "Choose a file to import");
             if (file == null)
                 return;
 
             var json = File.ReadAllText(file);
-            var data = JsonConvert.DeserializeObject<ApiItem[]>(json);
+            var data = JsonConvert.DeserializeObject<ApiItem[]>(json, importExportJsonSettings);
             Items.AddRange(data.Select(x => ApiItemModel.Import(this, null, x)));
         }
 

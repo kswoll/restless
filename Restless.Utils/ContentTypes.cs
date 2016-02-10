@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Restless.Models
+namespace Restless.Utils
 {
     public static class ContentTypes
     {

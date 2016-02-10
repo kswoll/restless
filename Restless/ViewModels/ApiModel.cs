@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Restless.Database;
-using Restless.Database.Repositories;
 using Restless.Models;
 using Restless.Utils;
 using Restless.Utils.Inputs;
@@ -23,6 +22,7 @@ namespace Restless.ViewModels
 {
     public class ApiModel : ApiItemModel
     {
+        public Api Api { get; set; }
         public string Url { get; set; }
         public DateTime Created { get; set; }
         public ApiMethod Method { get; set; }
@@ -42,9 +42,10 @@ namespace Restless.ViewModels
             Headers = new RxList<ApiHeaderModel>();
 
             SubscribeForInputs(this.ObservePropertyChange(x => x.Url), () => Url, ApiInputType.Url);
-            SubscribeForInputs(this.ObservePropertyChange(x => x.StringBody), () => StringBody, ApiInputType.Body);
+            SubscribeForInputs(this.ObservePropertyChange(x => x.Body).Where(x => ContentTypes.IsText(ContentType)), () => Body, ApiInputType.Body);
             SubscribeForInputs(this.ObservePropertyChange(x => x.Headers).SelectMany(x => x.ObserveElementProperty(y => y.Name)).Merge(this.ObservePropertyChange(x => x.Headers).SelectMany(x => x.ObserveElementProperty(y => y.Value))), () => string.Join("\n", Headers.Select(x => x.Name + "=" + x.Value)), ApiInputType.Header);
 
+            Api = api;
             Id = api.Id;
             Title = api.Title;
             Url = api.Url;
@@ -96,14 +97,7 @@ namespace Restless.ViewModels
                     dbHeader.Name = header.Name;
                     dbHeader.Value = header.Value;
                 });
-
-            if (api.Body != null)
-            {
-                if (ContentTypes.IsText(ContentType))
-                    Body = Encoding.UTF8.GetBytes(api.Body);
-                else
-                    Body = Convert.FromBase64String(api.Body);
-            }
+            Body = api.Body;
 
             this.ObservePropertiesChange(x => x.Title, x => x.Url, x => x.Method, x => x.Body)
                 .Throttle(TimeSpan.FromSeconds(1))
@@ -119,20 +113,20 @@ namespace Restless.ViewModels
                 });
         }
 
-        public byte[] Body
+        public string Body
         {
-            get { return Get<byte[]>(); }
+            get { return Get<string>(); }
             set
             {
                 Set(value);
-                OnChanged(GetType().GetProperty("StringBody"), StringBody);
+                OnChanged(GetType().GetProperty(nameof(BinaryBody)), BinaryBody);
             }
         }
 
-        public string StringBody
+        public byte[] BinaryBody
         {
-            get { return Body == null ? null : Encoding.UTF8.GetString(Body); }
-            set { Body = value == null ? null : Encoding.UTF8.GetBytes(value); }
+            get { return Body == null ? null : Encoding.UTF8.GetBytes(Body); }
+            set { Body = value == null ? null : Encoding.UTF8.GetString(value); }
         }
 
         private void SubscribeForInputs<T>(IObservable<T> observable, Func<string> value, ApiInputType inputType)
@@ -288,14 +282,14 @@ namespace Restless.ViewModels
                 var contentType = Headers.SingleOrDefault(x => x.Name == ContentTypes.ContentType)?.Value;
                 if (contentType != null && ContentTypes.IsText(contentType))
                 {
-                    var s = StringBody;
+                    var s = Body;
                     s = Format(s);
                     var stringContent = new StringContent(s);
                     request.Content = stringContent;
                 }
                 else
                 {
-                    request.Content = new ByteArrayContent(Body);
+                    request.Content = new ByteArrayContent(BinaryBody);
                 }
                 foreach (var header in contentHeaders)
                 {
@@ -333,18 +327,13 @@ namespace Restless.ViewModels
                     Name = y.Name,
                     Value = y.Value
                 }).ToList(),
-                Body = Body == null ? null : ContentTypes.IsText(ContentType) ? Encoding.UTF8.GetString(Body) : Convert.ToBase64String(Body)
+                Body = Body
             };
         }
 
         public static ApiModel Import(MainWindowModel mainWindow, ApiCollectionModel parent, Api api)
         {
             return new ApiModel(mainWindow, parent, api);
-        }
-
-        protected override async Task Delete(RestlessDb db)
-        {
-            await DbRepository.Delete(Id);
         }
     }
 }

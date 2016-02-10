@@ -137,13 +137,13 @@ namespace Restless.Controls
             this.Add(topPanel, 0, 0);
             this.AddHorizontalSplitter(1, 0);
 
-            this.Bind(x => x.Title).Mate(title.Value);
+            this.Bind(x => x.Api.Title).Mate(title.Value);
             this.Bind(x => x.Url).Mate(url.Value);
             this.Bind(x => x.Method).Mate(method, x => x.MainWindow.Methods);
             this.Bind(x => x.Inputs).To(x => apiInputsGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Outputs).To(x => apiOutputsGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Headers).To(x => apiHeadersGrid.ItemsSource = x?.ToObservableCollection());
-            this.Bind(x => x.StringBody).Mate(apiBodyTextBox);
+            this.Bind(x => x.Body).Mate(apiBodyTextBox);
             this.Bind(x => x.Send).To(x => sendButton.Command = x);
             this.Bind(x => x.Reset).To(x => resetButton.Command = x);
             this.Bind(x => x.Response).To(x =>

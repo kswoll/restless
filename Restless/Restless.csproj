@@ -124,7 +124,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SexyReact, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SexyReact.1.0.32\lib\net45\SexyReact.dll</HintPath>
+      <HintPath>..\packages\SexyReact.1.0.52\lib\net45\SexyReact.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -308,6 +308,10 @@
       <Project>{1815F43C-669C-469B-B81B-042AD0E28CC6}</Project>
       <Name>Restless.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Restless.Utils\Restless.Utils.csproj">
+      <Project>{f179681b-fde5-4031-bb7b-d18e11f59736}</Project>
+      <Name>Restless.Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="FodyWeavers.xml">
@@ -345,12 +349,12 @@
     <None Include="Resources\Reset.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Fody.1.29.0\build\Fody.targets" Condition="Exists('..\packages\Fody.1.29.0\build\Fody.targets')" />
+  <Import Project="..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fody.1.29.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.0\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,119 +1,171 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Restless.Models;
 
 namespace Restless.Database.Repositories
 {
-    public static class DbRepository
+    public class DbRepository
     {
-        public static async Task Initialize()
+        private readonly Func<RestlessDb> db;
+
+        public DbRepository(Func<RestlessDb> db)
         {
-            using (var db = new RestlessDb())
-            {
-                await db.Database.MigrateAsync();
-            }            
+            this.db = db;
         }
 
-        public static async Task<ApiItem[]> GetApiItems()
+        public async Task Initialize()
+        {
+            using (var db = this.db())
+            {
+                await db.Database.MigrateAsync();
+            }
+        }
+
+        public async Task<ApiItem[]> GetApiItems()
         {
             return await GetApiItems(db => db.ApiItems);
         }
 
-        public static async Task<ApiItem> GetApiItem(int id)
+        public async Task DeleteApiItem(int id)
         {
-            return (await GetApiItems(db => db.ApiItems.Where(x => x.Id == id))).Single();
-        }
-
-        public static async Task Delete(int id)
-        {
-            using (var db = new RestlessDb())
+            using (var db = this.db())
             {
                 var dbApi = await db.ApiItems.SingleAsync(x => x.Id == id);
-                db.ApiItems.Remove(dbApi);                            
+                db.ApiItems.Remove(dbApi);
             }
         }
 
-        private static async Task<ApiItem[]> GetApiItems(Func<RestlessDb, IQueryable<DbApiItem>> query)
+        public async Task InsertApiItem(ApiItem item)
         {
-            using (var db = new RestlessDb())
+            var dbApiItem = new DbApiItem();
+            MapToDb(item, dbApiItem, null);
+
+            using (var db = this.db())
+            {
+                db.ApiItems.Add(dbApiItem);
+                await db.SaveChangesAsync();
+                item.Id = dbApiItem.Id;
+            }
+        }
+
+        public async Task UpdateApiItem(ApiItem item)
+        {
+            
+        }
+
+        private async Task<ApiItem[]> GetApiItems(Func<RestlessDb, IQueryable<DbApiItem>> query)
+        {
+            using (var db = this.db())
             {
                 var dbApiItems = await query(db)
                     .Include(x => x.RequestHeaders)
                     .Include(x => x.Inputs)
                     .Include(x => x.Outputs)
+                    .Include(x => x.Outputs)
                     .ToArrayAsync();
                 var dbApisItemsByParentId = dbApiItems.ToLookup(x => x.CollectionId ?? 0);
 
                 var roots = new List<ApiItem>();
-                roots.AddRange(Map(dbApisItemsByParentId[0], dbApisItemsByParentId));
+                roots.AddRange(MapFromDb(dbApisItemsByParentId[0], dbApisItemsByParentId));
                 return roots.ToArray();
             }
         }
 
-        private static IEnumerable<ApiItem> Map(IEnumerable<DbApiItem> dbApis, ILookup<int, DbApiItem> dbApiItemsByParentId)
+        private IEnumerable<ApiItem> MapFromDb(IEnumerable<DbApiItem> dbApis, ILookup<int, DbApiItem> dbApiItemsByParentId)
         {
-            foreach (var dbApi in dbApis)
+            foreach (var dbApiItem in dbApis)
             {
                 ApiItem apiItem;
-                if (dbApi.Type == ApiItemType.Api)
+                if (dbApiItem.Type == ApiItemType.Api)
                 {
-                    Api api;
-                    apiItem = api = new Api
+                    apiItem = new Api
                     {
                         Type = ApiItemType.Api,
-                        Url = dbApi.Url,
-                        Method = dbApi.Method,
-                        Inputs = dbApi.Inputs.Select(y => new ApiInput
+                        Url = dbApiItem.Url,
+                        Method = dbApiItem.Method,
+                        Inputs = dbApiItem.Inputs.Select(y => new ApiInput
                         {
                             Id = y.Id,
                             Name = y.Name,
                             DefaultValue = y.DefaultValue,
                             InputType = y.InputType
                         }).ToList(),
-                        Outputs = dbApi.Outputs.Select(y => new ApiOutput
+                        Outputs = dbApiItem.Outputs.Select(y => new ApiOutput
                         {
                             Id = y.Id,
                             Name = y.Name,
                             Type = y.Type,
                             Expression = y.Expression
                         }).ToList(),
-                        Headers = dbApi.RequestHeaders.Select(y => new ApiHeader
+                        Headers = dbApiItem.RequestHeaders.Select(y => new ApiHeader
                         {
                             Id = y.Id,
                             Name = y.Name,
                             Value = y.Value
-                        }).ToList()
+                        }).ToList(),
+                        Body = dbApiItem.RequestBody
                     };
-                    if (dbApi.RequestBody != null)
-                    {
-                        if (ContentTypes.IsText(api.Headers.GetContentType()))
-                        {
-                            api.Body = Encoding.UTF8.GetString(dbApi.RequestBody);
-                        }
-                        else
-                        {
-                            api.Body = Convert.ToBase64String(dbApi.RequestBody);
-                        }
-                    }
                 }
                 else
                 {
                     apiItem = new ApiCollection
                     {
                         Type = ApiItemType.Collection,
-                        Items = Map(dbApiItemsByParentId[dbApi.Id], dbApiItemsByParentId).ToList()
+                        Items = MapFromDb(dbApiItemsByParentId[dbApiItem.Id], dbApiItemsByParentId).ToList()
                     };
                 }
-                apiItem.Id = dbApi.Id;
-                apiItem.Created = dbApi.Created;
-                apiItem.Title = dbApi.Title;
+                apiItem.Id = dbApiItem.Id;
+                apiItem.Created = dbApiItem.Created;
+                apiItem.Title = dbApiItem.Title;
 
                 yield return apiItem;
             }
         }
+
+        private void MapToDb(ApiItem apiItem, DbApiItem dbApiItem, ILookup<int, DbApiItem> apiItemsByParentId)
+        {
+            var api = apiItem as Api;
+            if (api != null)
+            {
+                dbApiItem.Type = ApiItemType.Api;
+                dbApiItem.Url = api.Url;
+                dbApiItem.Method = api.Method;
+                dbApiItem.Inputs = api.Inputs?.Select(y => new DbApiInput
+                {
+                    Id = y.Id,
+                    Name = y.Name,
+                    DefaultValue = y.DefaultValue,
+                    InputType = y.InputType
+                }).ToList();
+                dbApiItem.Outputs = api.Outputs?.Select(y => new DbApiOutput
+                {
+                    Id = y.Id,
+                    Name = y.Name,
+                    Type = y.Type,
+                    Expression = y.Expression
+                }).ToList();
+                dbApiItem.RequestHeaders = api.Headers?.Select(y => new DbApiHeader
+                {
+                    Id = y.Id,
+                    Name = y.Name,
+                    Value = y.Value
+                }).ToList();
+                dbApiItem.RequestBody = api.Body;
+            }
+            else
+            {
+                var apiCollection = (ApiCollection)apiItem;
+                dbApiItem.Type = ApiItemType.Collection;
+//                dbApiItem.Items = apiCollection.Items.Select(x => );
+            }
+            dbApiItem.Id = apiItem.Id;
+            dbApiItem.Created = apiItem.Created;
+            dbApiItem.Title = apiItem.Title;
+        }
+
+//        private async Task MapChildren()
     }
 }

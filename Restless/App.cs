@@ -36,10 +36,12 @@ namespace Restless
             mainWindow.Show();
         }
 
-        private string SelectFile(SelectFileType type, string title)
+        private string SelectFile(SelectFileType type, string extension, string title)
         {
             FileDialog dialog = type == SelectFileType.Open ? (FileDialog)new OpenFileDialog() : new SaveFileDialog();
             dialog.Title = title;
+            dialog.Filter = extension;
+            dialog.FilterIndex = 0;
             if (dialog.ShowDialog() ?? true)
             {
                 return dialog.FileName;

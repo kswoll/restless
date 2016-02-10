@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using Restless.Database;
+using Restless.Database.Repositories;
 using Restless.Models;
-using Restless.Utils;
 
 namespace Restless.ViewModels
 {
@@ -16,7 +14,6 @@ namespace Restless.ViewModels
 
         public abstract ApiItemType Type { get; }
         public abstract ApiItem Export();
-        protected abstract Task Delete(RestlessDb db);
 
         protected ApiItemModel(MainWindowModel mainWindow, ApiCollectionModel parent)
         {
@@ -26,10 +23,7 @@ namespace Restless.ViewModels
 
         public async Task Delete()
         {
-            var db = new RestlessDb();
-
-            await Delete(db);
-            await db.SaveChangesAsync();            
+            await MainWindow.Repository.DeleteApiItem(Id);
 
             var items = (Parent?.Items ?? MainWindow.Items);
             var selectedItemIndex = items.IndexOf(this);

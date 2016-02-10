@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Data.Entity;
-using Restless.Database;
-using Restless.Database.Repositories;
 using Restless.Models;
 using SexyReact;
 
@@ -40,9 +36,9 @@ namespace Restless.ViewModels
             };
         }
 
-        protected override async Task Delete(RestlessDb db)
+        public static ApiCollectionModel Import(MainWindowModel mainWindow, ApiCollectionModel parent, ApiCollection apiCollection)
         {
-            await DbRepository.Delete(Id);
+            return new ApiCollectionModel(mainWindow, parent, apiCollection);
         }
     }
 }
