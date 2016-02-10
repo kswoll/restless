@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace Restless.Utils
+namespace Restless.Models
 {
-    public class ContentTypes
+    public static class ContentTypes
     {
         public const string ContentType = "Content-Type";
         public const string ApplicationJson = "application/json";
@@ -25,6 +26,11 @@ namespace Restless.Utils
         public static bool IsText(string contentType)
         {
             return textContentTypes.Contains(contentType);
+        }
+
+        public static string GetContentType(this IEnumerable<IHeader> headers)
+        {
+            return headers.SingleOrDefault(x => x.Name == ContentType)?.Value.Split(';').First();
         }
     }
 }

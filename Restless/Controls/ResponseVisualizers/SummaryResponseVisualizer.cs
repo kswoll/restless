@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using Restless.Models;
 using Restless.Utils;
 using Restless.ViewModels;
 using Restless.WpfExtensions;

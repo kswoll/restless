@@ -8,7 +8,7 @@ using Restless.Database;
 namespace Restless.Database.Migrations
 {
     [DbContext(typeof(RestlessDb))]
-    [Migration("20160121143710_InitialDb")]
+    [Migration("20160208150732_InitialDb")]
     partial class InitialDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,10 @@ namespace Restless.Database.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("CollectionId");
+
+                    b.Property<DateTime>("Created");
 
                     b.Property<int>("Method");
 
@@ -91,6 +95,22 @@ namespace Restless.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasAnnotation("Relational:TableName", "ApiCallResponseHeader");
+                });
+
+            modelBuilder.Entity("Restless.Database.DbApiCollection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("CollectionId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasAnnotation("Relational:TableName", "ApiCollection");
                 });
 
             modelBuilder.Entity("Restless.Database.DbApiHeader", b =>
@@ -165,6 +185,13 @@ namespace Restless.Database.Migrations
                     b.HasAnnotation("Relational:TableName", "ApiResponseVisualizer");
                 });
 
+            modelBuilder.Entity("Restless.Database.DbApi", b =>
+                {
+                    b.HasOne("Restless.Database.DbApiCollection")
+                        .WithMany()
+                        .HasForeignKey("CollectionId");
+                });
+
             modelBuilder.Entity("Restless.Database.DbApiCall", b =>
                 {
                     b.HasOne("Restless.Database.DbApi")
@@ -192,6 +219,13 @@ namespace Restless.Database.Migrations
                     b.HasOne("Restless.Database.DbApiCall")
                         .WithMany()
                         .HasForeignKey("DbApiCallId");
+                });
+
+            modelBuilder.Entity("Restless.Database.DbApiCollection", b =>
+                {
+                    b.HasOne("Restless.Database.DbApiCollection")
+                        .WithMany()
+                        .HasForeignKey("CollectionId");
                 });
 
             modelBuilder.Entity("Restless.Database.DbApiHeader", b =>

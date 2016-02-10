@@ -1,4 +1,6 @@
-﻿namespace Restless.Utils
+﻿using Restless.Models;
+
+namespace Restless.Utils
 {
     public static class HttpHeaders
     {

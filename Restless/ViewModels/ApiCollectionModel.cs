@@ -1,0 +1,48 @@
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Data.Entity;
+using Restless.Database;
+using Restless.Database.Repositories;
+using Restless.Models;
+using SexyReact;
+
+namespace Restless.ViewModels
+{
+    public class ApiCollectionModel : ApiItemModel
+    {
+        public DateTime Created { get; set; }         
+        public RxList<ApiItemModel> Items { get; }
+        public override ApiItemType Type => ApiItemType.Collection;
+
+        public ApiCollectionModel(MainWindowModel mainWindow, ApiCollectionModel parent, ApiCollection apiCollection) : base(mainWindow, parent)
+        {
+            Items = new RxList<ApiItemModel>();
+
+            Id = apiCollection.Id;
+            Title = apiCollection.Title;
+            Created = apiCollection.Created;
+
+            if (apiCollection.Items != null)
+                Items.AddRange(apiCollection.Items.Select(x => x.Type == ApiItemType.Collection ? 
+                    (ApiItemModel)new ApiCollectionModel(mainWindow, this, (ApiCollection)x) :
+                    new ApiModel(mainWindow, this, (Api)x)));
+        }
+
+        public override ApiItem Export()
+        {
+            return new ApiCollection
+            {
+                Type = Type,
+                Title = Title,
+                Created = Created,
+                Items = Items.Select(x => x.Export()).ToList()
+            };
+        }
+
+        protected override async Task Delete(RestlessDb db)
+        {
+            await DbRepository.Delete(Id);
+        }
+    }
+}

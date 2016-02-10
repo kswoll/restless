@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Windows;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using Restless.Styles;
+using Restless.Utils;
 using Restless.ViewModels;
 using Restless.Windows.MainWindows;
 
@@ -34,9 +36,10 @@ namespace Restless
             mainWindow.Show();
         }
 
-        private string SelectFile()
+        private string SelectFile(SelectFileType type, string title)
         {
-            var dialog = new SaveFileDialog();
+            FileDialog dialog = type == SelectFileType.Open ? (FileDialog)new OpenFileDialog() : new SaveFileDialog();
+            dialog.Title = title;
             if (dialog.ShowDialog() ?? true)
             {
                 return dialog.FileName;

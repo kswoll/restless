@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Restless.Models;
 using Restless.Utils;
 
 namespace Restless.ViewModels
@@ -19,7 +20,7 @@ namespace Restless.ViewModels
         public string Reason { get; set; }
 //        public DateTime Finished { get; set; }
 
-        public string ContentType => Headers.SingleOrDefault(x => x.Name == ContentTypes.ContentType)?.Value.Split(';').First();
+        public string ContentType => Headers.GetContentType();
         public string StringResponse => stringResponse.Value;
         public JToken JsonResponse => jsonResponse.Value;
 

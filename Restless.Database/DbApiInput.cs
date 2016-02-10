@@ -12,6 +12,6 @@ namespace Restless.Database
         public string Name { get; set; }
         public string DefaultValue { get; set; }
         
-        public DbApi Api { get; set; }
+        public DbApiItem Api { get; set; }
     }
 }

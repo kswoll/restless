@@ -11,6 +11,6 @@ namespace Restless.Database
         public string ComplicationClass { get; set; }
         public string ComplicationData { get; set; }
 
-        public DbApi Api { get; set; }
+        public DbApiItem Api { get; set; }
     }
 }

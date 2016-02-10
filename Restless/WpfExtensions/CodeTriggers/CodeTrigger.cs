@@ -9,6 +9,10 @@ using Restless.Utils;
 
 namespace Restless.WpfExtensions.CodeTriggers
 {
+    /// <summary>
+    /// Todo: Make the AddProperty method happen dynamically based on whether the element is visible (or perhaps hittest visible)
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class CodeTrigger<T>
         where T : UIElement
     {

@@ -228,8 +228,8 @@
     <Compile Include="Templates\ButtonTemplate.cs" />
     <Compile Include="Templates\TextBoxTemplate.cs" />
     <Compile Include="Templates\TreeViewItemTemplate.cs" />
+    <Compile Include="Utils\ApiItemJsonConverter.cs" />
     <Compile Include="Utils\CompareToExtensions.cs" />
-    <Compile Include="Utils\ContentTypes.cs" />
     <Compile Include="Utils\DatabaseSync.cs" />
     <Compile Include="Utils\ExpressionExtensions.cs" />
     <Compile Include="Utils\HttpHeaders.cs" />
@@ -248,8 +248,11 @@
     <Compile Include="Utils\Outputs\Json\JsonPathIndexerExpression.cs" />
     <Compile Include="Utils\Outputs\Json\JsonPathPropertyExpression.cs" />
     <Compile Include="Utils\Outputs\OutputProcessorRegistry.cs" />
+    <Compile Include="Utils\SelectFileType.cs" />
+    <Compile Include="ViewModels\ApiCollectionModel.cs" />
     <Compile Include="ViewModels\ApiHeaderModel.cs" />
     <Compile Include="ViewModels\ApiInputModel.cs" />
+    <Compile Include="ViewModels\ApiItemModel.cs" />
     <Compile Include="ViewModels\ApiModel.cs" />
     <Compile Include="ViewModels\ApiOutputModel.cs" />
     <Compile Include="ViewModels\ApiResponseModel.cs" />

@@ -135,17 +135,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbApiCall.cs" />
-    <Compile Include="DbApi.cs" />
+    <Compile Include="DbApiItem.cs" />
     <Compile Include="DbApiCallRequestHeader.cs" />
     <Compile Include="DbApiCallResponseHeader.cs" />
-    <Compile Include="DbApiCollection.cs" />
     <Compile Include="DbApiHeader.cs" />
     <Compile Include="DbApiInput.cs" />
     <Compile Include="DbApiOutput.cs" />
     <Compile Include="DbApiResponseComplication.cs" />
-    <Compile Include="Migrations\20160121143710_InitialDb.cs" />
-    <Compile Include="Migrations\20160121143710_InitialDb.designer.cs">
-      <DependentUpon>20160121143710_InitialDb.cs</DependentUpon>
+    <Compile Include="Repositories\DbRepository.cs" />
+    <Compile Include="Migrations\20160208150732_InitialDb.cs" />
+    <Compile Include="Migrations\20160208150732_InitialDb.designer.cs">
+      <DependentUpon>20160208150732_InitialDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\RestlessDbModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

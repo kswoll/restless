@@ -12,6 +12,6 @@ namespace Restless.Database
         public string Expression { get; set; }
         public ApiOutputType Type { get; set; }
 
-        public DbApi Api { get; set; }
+        public DbApiItem Api { get; set; }
     }
 }

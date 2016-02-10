@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Newtonsoft.Json.Linq;
+using Restless.Models;
 using Restless.Properties;
 using Restless.Utils;
 using Restless.ViewModels;

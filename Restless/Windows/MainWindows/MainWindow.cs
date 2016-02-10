@@ -38,6 +38,9 @@ namespace Restless.Windows.MainWindows
             grid.Add(apiList, 0, 0);
             grid.AddVerticalSplitter(0, 1);
             var apiListContextMenu = new ContextMenu();
+
+            var addChildApiMenuItem = apiListContextMenu.Add("Add Child _Api");
+            var addChildApiCollectionMenuItem = apiListContextMenu.Add("Add Child Api _Collection");
             var apiDeleteMenuItem = apiListContextMenu.Add("_Delete");
             apiList.ContextMenu = apiListContextMenu;
 
@@ -57,8 +60,10 @@ namespace Restless.Windows.MainWindows
             this.Bind(x => x.Title).To(this, (window, title) => window.Title = title ?? "");
             this.Bind(x => x.Title).To(apiListItemTemplate, TextBlock.TextProperty);
             this.Bind(x => x.Items).To(apiList, x => x.SelectedItem);
+            this.Bind(x => x.AddChildApi).To(x => addChildApiMenuItem.Command = x);
+            this.Bind(x => x.AddChildApiCollection).To(x => addChildApiCollectionMenuItem.Command = x);
             this.Bind(x => x.DeleteSelectedItem).To(x => apiDeleteMenuItem.Command = x);
-            this.Bind(x => x.SelectedItem).ObserveModelPropertyChange().Subscribe(x =>
+            this.Bind(x => x.SelectedItem).ObserveModelPropertyChange().OfType<ApiModel>().Subscribe(x =>
             {
                 itemPanel.Model = x;
                 if (x != null)
@@ -76,7 +81,7 @@ namespace Restless.Windows.MainWindows
                 ((ApiPanel)this.content).InitNew();
             });
 
-            var exportAll = this.Bind(x => x.ExportAll);
+            var exportAll = this.Bind(x => x.Export);
             exportAll.To(x => exportAllMenuItem.Command = x);
         }
 

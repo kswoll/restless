@@ -6,6 +6,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using Restless.Models;
 using Restless.Properties;
 using Restless.Utils;
 using Restless.ViewModels;

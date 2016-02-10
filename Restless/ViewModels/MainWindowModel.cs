@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.Entity;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Restless.Database;
+using Restless.Database.Repositories;
 using Restless.Models;
 using Restless.Properties;
+using Restless.Utils;
 using SexyReact;
 
 namespace Restless.ViewModels
@@ -18,9 +18,13 @@ namespace Restless.ViewModels
     {
         public string Title { get; set; }
         public IRxFunction<ApiModel> AddApi { get; }
-        public IRxCommand ExportAll { get; }
-        public RxList<ApiModel> Items { get; }
-        public ApiModel SelectedItem { get; set; }
+        public IRxFunction<ApiCollectionModel> AddApiCollection { get; }
+        public IRxFunction<ApiModel> AddChildApi { get; }
+        public IRxFunction<ApiCollectionModel> AddChildApiCollection { get; }
+        public IRxCommand Export { get; }
+        public IRxCommand Import { get; }
+        public RxList<ApiItemModel> Items { get; }
+        public ApiItemModel SelectedItem { get; set; }
         public List<ApiMethod> Methods { get; }
         public List<ApiOutputType> OutputTypes { get; }
         public int SplitterPosition { get; set; }
@@ -28,19 +32,25 @@ namespace Restless.ViewModels
 
         public IRxCommand DeleteSelectedItem { get; }
 
-        private Func<string> selectFile;
+        private readonly Func<SelectFileType, string, string> selectFile;
 
         private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
         private static readonly ApiOutputType[] outputTypes = { ApiOutputType.Default, ApiOutputType.JsonPath };
 
-        public MainWindowModel(Func<string> selectFile)
+        public MainWindowModel(Func<SelectFileType, string, string> selectFile)
         {
             this.selectFile = selectFile;
 
-            AddApi = RxFunction.CreateAsync(OnAddApi);
-            ExportAll = RxCommand.Create(OnExportAll);
+            var canAddChild = this.ObserveProperty(x => x.SelectedItem).Select(x => x is ApiCollectionModel);
+
+            AddApi = RxFunction.CreateAsync(async () => await OnAddApi(null));
+            AddApiCollection = RxFunction.CreateAsync(async () => await OnAddApiCollection(null));
+            AddChildApi = RxFunction.CreateAsync(async () => await OnAddApi((ApiCollectionModel)SelectedItem), canAddChild);
+            AddChildApiCollection = RxFunction.CreateAsync(async () => await OnAddApiCollection((ApiCollectionModel)SelectedItem), canAddChild);
+            Export = RxCommand.Create(OnExport);
+            Import = RxCommand.Create(OnImport);
             Title = "Restless";
-            Items = new RxList<ApiModel>();
+            Items = new RxList<ApiItemModel>();
             Methods = httpMethods.ToList();
             OutputTypes = outputTypes.ToList();
 
@@ -59,81 +69,98 @@ namespace Restless.ViewModels
 
             Task.Run(async () =>
             {
-                var db = new RestlessDb();
-                db.Database.Migrate();
-                var apis = await db.Apis
-                    .Include(x => x.RequestHeaders)
-                    .Include(x => x.Inputs)
-                    .Include(x => x.Outputs)
-                    .ToArrayAsync();
-                foreach (var api in apis)
+                await DbRepository.Initialize();
+                var apiItems = await DbRepository.GetApiItems();
+                foreach (var apiItem in apiItems)
                 {
-                    Items.Add(new ApiModel(this, api));
-                }
+                    if (apiItem is Api)
+                        Items.Add(new ApiModel(this, null, (Api)apiItem));
+                    else
+                        Items.Add(new ApiCollectionModel(this, null, (ApiCollection)apiItem));
+                }                
             });
 
             DeleteSelectedItem = RxCommand.CreateAsync(OnDeleteSelectedItem);
         }
 
-        private async Task<ApiModel> OnAddApi()
+        private async Task<ApiModel> OnAddApi(ApiCollectionModel parent)
         {
-            var db = new RestlessDb();
-            var dbApi = new DbApi
+            int id;
+            using (var db = new RestlessDb())
             {
-                Title = "(New Api)",
-                Method = ApiMethod.Get
-            };
-            db.Apis.Add(dbApi);
-            await db.SaveChangesAsync();
+                var dbApi = new DbApiItem
+                {
+                    Title = "(New Api)",
+                    Method = ApiMethod.Get,
+                    Created = DateTime.UtcNow,
+                    Type = ApiItemType.Api
+                };
+                db.ApiItems.Add(dbApi);
+                await db.SaveChangesAsync();
 
-            var model = new ApiModel(this, dbApi);
+                id = dbApi.Id;
+            }
+
+            var apiItem = await DbRepository.GetApiItem(id);
+
+            var model = new ApiModel(this, parent, (Api)apiItem);
             Items.Add(model);
             return model;
         }
 
-        private void OnExportAll()
+        private async Task<ApiCollectionModel> OnAddApiCollection(ApiCollectionModel parent)
         {
-            var destination = selectFile();
+            int id;
+            using (var db = new RestlessDb())
+            {
+                var dbApiCollection = new DbApiItem
+                {
+                    Title = "(New Api Collection)",
+                    Created = DateTime.UtcNow,
+                    Type = ApiItemType.Collection
+                };
+                db.ApiItems.Add(dbApiCollection);
+                await db.SaveChangesAsync();
+
+                id = dbApiCollection.Id;
+            }
+
+            var apiCollection = await DbRepository.GetApiItem(id);
+            var model = new ApiCollectionModel(this, parent, (ApiCollection)apiCollection);
+
+            Items.Add(model);
+            return model;
+        }
+
+        private static readonly JsonSerializerSettings importExportJsonSettings = new JsonSerializerSettings
+        {
+            Converters = { new ApiItemJsonConverter() }
+        };
+
+        private void OnExport()
+        {
+            var destination = selectFile(SelectFileType.Save, "Provide a file to which your apis will be exported");
             if (destination == null)
                 return;
 
-            var json = JArray.FromObject(Items
-                .Select(x => new
-                {
-                    x.Title,
-                    x.Url,
-                    Method = x.Method.ToString(),
-                    Inputs = x.Inputs.Select(y => new
-                    {
-                        y.Name,
-                        InputType = y.InputType.ToString(),
-                        y.DefaultValue
-                    }).ToArray(),
-                    Outputs = x.Outputs.Select(y => new
-                    {
-                        y.Name,
-                        y.Expression,
-                        Type = y.Type.ToString()
-                    }).ToArray(),
-                    Headers = x.Headers.Select(y => new
-                    {
-                        y.Name,
-                        y.Value
-                    }).ToArray(),
-                    Body = x.Body == null ? null : Convert.ToBase64String(x.Body)
-                }));
-            File.WriteAllText(destination, json.ToString());
+            var json = JsonConvert.SerializeObject(Items.Select(x => x.Export()), importExportJsonSettings);
+            File.WriteAllText(destination, json);
+        }
+
+        private void OnImport()
+        {
+            var file = selectFile(SelectFileType.Open, "Choose a file to import");
+            if (file == null)
+                return;
+
+            var json = File.ReadAllText(file);
+            var data = JsonConvert.DeserializeObject<ApiItem[]>(json);
+            Items.AddRange(data.Select(x => ApiItemModel.Import(this, null, x)));
         }
 
         private async Task OnDeleteSelectedItem()
         {
-            var db = new RestlessDb();
-            var dbApi = await db.Apis.SingleAsync(x => x.Id == SelectedItem.Id);
-            db.Apis.Remove(dbApi);
-            await db.SaveChangesAsync();
-
-            var selectedItemIndex = Items.IndexOf(SelectedItem);
-            Items.RemoveAt(selectedItemIndex);
+            await SelectedItem.Delete();
             SelectedItem = null;
         }
     }
