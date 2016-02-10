@@ -77,6 +77,10 @@
       <Project>{1815F43C-669C-469B-B81B-042AD0E28CC6}</Project>
       <Name>Restless.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Restless.Utils\Restless.Utils.csproj">
+      <Project>{f179681b-fde5-4031-bb7b-d18e11f59736}</Project>
+      <Name>Restless.Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Restless\Restless.csproj">
       <Project>{a42a4b2c-d71f-4220-a73e-582a771cb858}</Project>
       <Name>Restless</Name>

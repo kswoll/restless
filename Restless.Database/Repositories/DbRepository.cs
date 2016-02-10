@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Restless.Models;
+using Restless.Utils;
 
 namespace Restless.Database.Repositories
 {
@@ -40,7 +41,13 @@ namespace Restless.Database.Repositories
 
         public async Task InsertApiItem(ApiItem item)
         {
-            var dbApiItem = new DbApiItem();
+            var dbApiItem = new DbApiItem
+            {
+                RequestHeaders = new List<DbApiHeader>(),
+                Inputs = new List<DbApiInput>(),
+                Outputs = new List<DbApiOutput>(),
+                Items = new List<DbApiItem>()
+            };
             MapToDb(item, dbApiItem, null);
 
             using (var db = this.db())
@@ -53,7 +60,16 @@ namespace Restless.Database.Repositories
 
         public async Task UpdateApiItem(ApiItem item)
         {
-            
+            using (var db = this.db())
+            {
+                var dbApiItem = await db.ApiItems
+                    .Include(x => x.RequestHeaders)
+                    .Include(x => x.Inputs)
+                    .Include(x => x.Outputs)
+                    .SingleAsync(x => x.Id == item.Id);
+                MapToDb(item, dbApiItem, null);
+                await db.SaveChangesAsync();
+            }
         }
 
         private async Task<ApiItem[]> GetApiItems(Func<RestlessDb, IQueryable<DbApiItem>> query)
@@ -147,12 +163,12 @@ namespace Restless.Database.Repositories
                     Type = y.Type,
                     Expression = y.Expression
                 }).ToList();
-                dbApiItem.RequestHeaders = api.Headers?.Select(y => new DbApiHeader
+                MapChildren(api.Headers, dbApiItem.RequestHeaders, (x, y) =>
                 {
-                    Id = y.Id,
-                    Name = y.Name,
-                    Value = y.Value
-                }).ToList();
+                    x.Id = y.Id;
+                    x.Name = y.Name;
+                    x.Value = y.Value;
+                });
                 dbApiItem.RequestBody = api.Body;
             }
             else
@@ -166,6 +182,28 @@ namespace Restless.Database.Repositories
             dbApiItem.Title = apiItem.Title;
         }
 
-//        private async Task MapChildren()
+        private void MapChildren<TModel, TDatabase>(List<TModel> apiHeaders, List<TDatabase> dbApiHeaders, Action<TDatabase, TModel> mapper)
+            where TModel : IdObject
+            where TDatabase : IIdObject, new()
+        {
+            if (apiHeaders == null)
+                return;
+
+            var merge = dbApiHeaders.Merge(apiHeaders, x => x.Id, x => x.Id);
+            foreach (var item in merge.Removed)
+            {
+                dbApiHeaders.Remove(item);
+            }
+            foreach (var item in merge.Added)
+            {
+                var dbItem = new TDatabase();
+                mapper(dbItem, item);
+                dbApiHeaders.Add(dbItem);
+            }
+            foreach (var item in merge.Present)
+            {
+                mapper(item.Item1, item.Item2);
+            }
+        }
     }
 }

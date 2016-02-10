@@ -6,13 +6,13 @@ namespace Restless.Utils
     {
         public List<TRight> Added { get; }
         public List<TLeft> Removed { get; }
-        public List<TUnchanged> Unchanged { get; }
+        public List<TUnchanged> Present { get; }
 
-        public MergeResult(List<TRight> added, List<TLeft> removed, List<TUnchanged> unchanged)  : this()
+        public MergeResult(List<TRight> added, List<TLeft> removed, List<TUnchanged> present)  : this()
         {
             Added = added;
             Removed = removed;
-            Unchanged = unchanged;
+            Present = present;
         }
     }
 }

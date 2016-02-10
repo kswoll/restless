@@ -147,9 +147,9 @@
     <Compile Include="DbApiInput.cs" />
     <Compile Include="DbApiOutput.cs" />
     <Compile Include="DbApiResponseComplication.cs" />
-    <Compile Include="Migrations\20160210142229_InitialDb.cs" />
-    <Compile Include="Migrations\20160210142229_InitialDb.designer.cs">
-      <DependentUpon>20160210142229_InitialDb.cs</DependentUpon>
+    <Compile Include="Migrations\20160210194909_InitialDb.cs" />
+    <Compile Include="Migrations\20160210194909_InitialDb.designer.cs">
+      <DependentUpon>20160210194909_InitialDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\RestlessDbModelSnapshot.cs" />
     <Compile Include="Repositories\DbRepository.cs" />
@@ -172,6 +172,7 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

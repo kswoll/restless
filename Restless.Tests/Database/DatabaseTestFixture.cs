@@ -8,21 +8,17 @@ namespace Restless.Tests.Database
 {
     public class DatabaseTestFixture
     {
-        protected readonly RestlessDb db;
-        protected readonly DbRepository repository;
+        protected RestlessDb db;
+        protected DbRepository repository;
 
-        private readonly string databaseFile;
-
-        public DatabaseTestFixture()
-        {
-            databaseFile = Path.GetTempFileName();
-            db = new RestlessDb(databaseFile);
-            repository = new DbRepository(() => new RestlessDb(databaseFile));
-        }
+        private string databaseFile;
 
         [SetUp]
         public async Task SetUp()
         {
+            databaseFile = Path.GetTempFileName();
+            db = new RestlessDb(databaseFile);
+            repository = new DbRepository(() => new RestlessDb(databaseFile));
             await repository.Initialize();
         }
 

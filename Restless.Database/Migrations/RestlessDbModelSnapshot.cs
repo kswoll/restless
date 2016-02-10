@@ -120,10 +120,9 @@ namespace Restless.Database.Migrations
 
                     b.Property<int>("Method");
 
-                    b.Property<byte[]>("RequestBody");
+                    b.Property<string>("RequestBody");
 
-                    b.Property<string>("Title")
-                        .IsRequired();
+                    b.Property<string>("Title");
 
                     b.Property<int>("Type");
 

@@ -17,8 +17,8 @@ namespace Restless.Database.Migrations
                     CollectionId = table.Column<int>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     Method = table.Column<int>(nullable: false),
-                    RequestBody = table.Column<byte[]>(nullable: true),
-                    Title = table.Column<string>(nullable: false),
+                    RequestBody = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
                     Type = table.Column<int>(nullable: false),
                     Url = table.Column<string>(nullable: true)
                 },

@@ -15,9 +15,14 @@ namespace Restless.Database
         private readonly string configuredDatabaseFile = ConfigurationManager.AppSettings["Database"];
         private readonly string databaseFile;
 
-        public RestlessDb(string databaseFile = null)
+        public RestlessDb()
         {
-            this.databaseFile = databaseFile ??configuredDatabaseFile;
+            databaseFile = configuredDatabaseFile;
+        }
+
+        public RestlessDb(string databaseFile)
+        {
+            this.databaseFile = databaseFile;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
