@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Nito.AsyncEx;
@@ -93,37 +92,50 @@ namespace Restless.Database.Repositories
 
         public async Task AddItem(ApiItem apiItem)
         {
+            var dbApiItem = MapItemToDb(apiItem);
             using (await locker.LockAsync())
             {
-                var dbApiItem = new DbApiItem
-                {
-                    Headers = new List<DbApiHeader>(),
-                    Inputs = new List<DbApiInput>(),
-                    Outputs = new List<DbApiOutput>(),
-                    Items = new List<DbApiItem>()
-                };
                 items = items.Add(apiItem);
-                Bind(apiItem, dbApiItem);
-
-                MapScalarsToDb(apiItem, dbApiItem);
-                var api = apiItem as Api;
-                if (api != null)
-                {
-                    MapChildrenToDb(api.Inputs, dbApiItem.Inputs);
-                    MapChildrenToDb(api.Outputs, dbApiItem.Outputs);
-                    MapChildrenToDb(api.Headers, dbApiItem.Headers);
-                }
-                else
-                {
-                    var apiCollection = (ApiCollection)apiItem;
-                    dbApiItem.Type = ApiItemType.Collection;
-    //                dbApiItem.Items = apiCollection.Items.Select(x => );
-                }
 
                 db.ApiItems.Add(dbApiItem);
                 await db.SaveChangesAsync();
                 apiItem.Id = dbApiItem.Id;
             }
+        }
+
+        private DbApiItem MapItemToDb(ApiItem apiItem)
+        {
+            var dbApiItem = new DbApiItem
+            {
+                Headers = new List<DbApiHeader>(),
+                Inputs = new List<DbApiInput>(),
+                Outputs = new List<DbApiOutput>(),
+                Items = new List<DbApiItem>()
+            };
+            Bind(apiItem, dbApiItem);
+
+            MapScalarsToDb(apiItem, dbApiItem);
+            var api = apiItem as Api;
+            if (api != null)
+            {
+                MapChildrenToDb(api.Inputs, dbApiItem.Inputs);
+                MapChildrenToDb(api.Outputs, dbApiItem.Outputs);
+                MapChildrenToDb(api.Headers, dbApiItem.Headers);
+            }
+            else
+            {
+                var apiCollection = (ApiCollection)apiItem;
+                dbApiItem.Type = ApiItemType.Collection;
+                if (apiCollection.Items != null)
+                {
+                    foreach (var childApiItem in apiCollection.Items)
+                    {
+                        var childDbItem = MapItemToDb(childApiItem);
+                        dbApiItem.Items.Add(childDbItem);
+                    }                    
+                }
+            }
+            return dbApiItem;
         }
 
         private void Bind(IdObject modelItem, IIdObject dbItem)

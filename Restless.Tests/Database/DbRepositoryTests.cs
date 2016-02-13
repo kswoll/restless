@@ -104,18 +104,33 @@ namespace Restless.Tests.Database
         }
 
         [Test]
-        public async Task InsertApiChild()
+        public async Task AddApiCollectionWithChild()
+        {
+            var collection = new ApiCollection
+            {
+                Items = ImmutableList.Create<ApiItem>(new Api())
+            };
+            await repository.AddItem(collection);
+
+            var dbApiItem = await db.ApiItems.Include(x => x.Items).SingleAsync(x => x.Id == collection.Id);
+            Assert.AreEqual(1, dbApiItem.Items.Count);
+        }
+
+        [Test]
+        public async Task UpdateCollectionAddApiChild()
         {
             var collection = new ApiCollection
             {
                 Items = ImmutableList<ApiItem>.Empty
             };
-            var child = new Api();
-            collection.Items.Add(child);
             await repository.AddItem(collection);
 
+            collection.Items = collection.Items.Add(new Api());
+
+            await repository.WaitForIdle();
+
             var dbApiItem = await db.ApiItems.Include(x => x.Items).SingleAsync(x => x.Id == collection.Id);
-//            Assert
+            Assert.AreEqual(1, dbApiItem.Items.Count);
         }
     }
 }
