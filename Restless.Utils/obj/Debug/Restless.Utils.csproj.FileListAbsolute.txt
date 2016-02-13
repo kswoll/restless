@@ -2,3 +2,4 @@ C:\dev\restless\Restless.Utils\bin\Debug\Restless.Utils.dll
 C:\dev\restless\Restless.Utils\bin\Debug\Restless.Utils.pdb
 C:\dev\restless\Restless.Utils\obj\Debug\Restless.Utils.dll
 C:\dev\restless\Restless.Utils\obj\Debug\Restless.Utils.pdb
+C:\dev\restless\Restless.Utils\obj\Debug\Restless.Utils.csprojResolveAssemblyReference.cache

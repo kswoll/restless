@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 
 namespace Restless.Models
 {
     public class ApiCollection : ApiItem
     {
-        public List<ApiItem> Items { get; set; }
+        public ImmutableList<ApiItem> Items { get; set; }
     }
 }

@@ -69,13 +69,13 @@ namespace Restless.ViewModels
                 Settings.Default.Save();
             });
 
-            Repository = new DbRepository(() => new RestlessDb());
+            Repository = new DbRepository(new RestlessDb());
 
             Task.Run(async () =>
             {
                 await Repository.Initialize();
-                var apiItems = await Repository.GetApiItems();
-                foreach (var apiItem in apiItems)
+                await Repository.Load();
+                foreach (var apiItem in Repository.Items)
                 {
                     if (apiItem is Api)
                         Items.Add(new ApiModel(this, null, (Api)apiItem));
@@ -96,7 +96,7 @@ namespace Restless.ViewModels
                 Created = DateTime.UtcNow,
                 Type = ApiItemType.Api
             };
-            await Repository.InsertApiItem(api);
+            await Repository.AddItem(api);
 
             var model = new ApiModel(this, parent, api);
             Items.Add(model);
@@ -111,7 +111,7 @@ namespace Restless.ViewModels
                 Created = DateTime.UtcNow,
                 Type = ApiItemType.Collection
             };
-            await Repository.InsertApiItem(apiCollection);
+            await Repository.AddItem(apiCollection);
 
             var model = new ApiCollectionModel(this, parent, apiCollection);
 

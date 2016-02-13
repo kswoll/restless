@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Restless.Models;
 using SexyReact;
@@ -32,7 +33,7 @@ namespace Restless.ViewModels
                 Type = Type,
                 Title = Title,
                 Created = Created,
-                Items = Items.Select(x => x.Export()).ToList()
+                Items = Items.Select(x => x.Export()).ToImmutableList()
             };
         }
 

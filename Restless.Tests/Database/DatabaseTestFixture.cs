@@ -18,7 +18,7 @@ namespace Restless.Tests.Database
         {
             databaseFile = Path.GetTempFileName();
             db = new RestlessDb(databaseFile);
-            repository = new DbRepository(() => new RestlessDb(databaseFile));
+            repository = new DbRepository(db);
             await repository.Initialize();
         }
 

@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
+using Nito.AsyncEx;
 using Restless.Models;
 using Restless.Utils;
 
@@ -10,83 +15,179 @@ namespace Restless.Database.Repositories
 {
     public class DbRepository
     {
-        private readonly Func<RestlessDb> db;
+        public IReadOnlyList<ApiItem> Items => items;
 
-        public DbRepository(Func<RestlessDb> db)
+        private static readonly Dictionary<Type, Delegate> saveMappers = new Dictionary<Type, Delegate>();
+
+        private readonly RestlessDb db;
+        private readonly AsyncLock locker = new AsyncLock();
+        private AsyncAutoResetEvent idle = new AsyncAutoResetEvent(false);
+        private ImmutableList<ApiItem> items = ImmutableList<ApiItem>.Empty;
+        private ImmutableDictionary<IdObject, object> cache = ImmutableDictionary<IdObject, object>.Empty;
+        private int isSavePending;
+
+        public DbRepository(RestlessDb db)
         {
             this.db = db;
         }
 
+        static DbRepository()
+        {
+            CreateMapper<Api, DbApiItem>(ApiSaveMapper);
+            CreateMapper<ApiCollection, DbApiItem>(ApiCollectionSaveMapper);
+            CreateMapper<ApiHeader, DbApiHeader>(ApiHeaderSaveMapper);
+            CreateMapper<ApiInput, DbApiInput>(ApiInputSaveMapper);
+            CreateMapper<ApiOutput, DbApiOutput>(ApiOutputSaveMapper);
+        }
+
+        private static void CreateMapper<TModel, TDatabase>(Action<TModel, TDatabase> mapper)
+        {
+            saveMappers[typeof(TModel)] = mapper;
+        }
+
         public async Task Initialize()
         {
-            using (var db = this.db())
+            using (await locker.LockAsync())
             {
                 await db.Database.MigrateAsync();
             }
         }
 
-        public async Task<ApiItem[]> GetApiItems()
+        public async Task Load()
         {
-            return await GetApiItems(db => db.ApiItems);
-        }
-
-        public async Task DeleteApiItem(int id)
-        {
-            using (var db = this.db())
+            using (await locker.LockAsync())
             {
-                var dbApi = await db.ApiItems.SingleAsync(x => x.Id == id);
-                db.ApiItems.Remove(dbApi);
-            }
-        }
-
-        public async Task InsertApiItem(ApiItem item)
-        {
-            var dbApiItem = new DbApiItem
-            {
-                RequestHeaders = new List<DbApiHeader>(),
-                Inputs = new List<DbApiInput>(),
-                Outputs = new List<DbApiOutput>(),
-                Items = new List<DbApiItem>()
-            };
-            MapToDb(item, dbApiItem, null);
-
-            using (var db = this.db())
-            {
-                db.ApiItems.Add(dbApiItem);
-                await db.SaveChangesAsync();
-                item.Id = dbApiItem.Id;
-            }
-        }
-
-        public async Task UpdateApiItem(ApiItem item)
-        {
-            using (var db = this.db())
-            {
-                var dbApiItem = await db.ApiItems
-                    .Include(x => x.RequestHeaders)
-                    .Include(x => x.Inputs)
-                    .Include(x => x.Outputs)
-                    .SingleAsync(x => x.Id == item.Id);
-                MapToDb(item, dbApiItem, null);
-                await db.SaveChangesAsync();
-            }
-        }
-
-        private async Task<ApiItem[]> GetApiItems(Func<RestlessDb, IQueryable<DbApiItem>> query)
-        {
-            using (var db = this.db())
-            {
-                var dbApiItems = await query(db)
-                    .Include(x => x.RequestHeaders)
+                var dbApiItems = await db.ApiItems
+                    .Include(x => x.Headers)
                     .Include(x => x.Inputs)
                     .Include(x => x.Outputs)
                     .Include(x => x.Outputs)
                     .ToArrayAsync();
-                var dbApisItemsByParentId = dbApiItems.ToLookup(x => x.CollectionId ?? 0);
+                var dbApiItemsByParentId = dbApiItems.ToLookup(x => x.CollectionId ?? 0);
 
-                var roots = new List<ApiItem>();
-                roots.AddRange(MapFromDb(dbApisItemsByParentId[0], dbApisItemsByParentId));
-                return roots.ToArray();
+                items = items.AddRange(MapFromDb(dbApiItemsByParentId[0], dbApiItemsByParentId));
+            }
+        }
+
+        public async Task WaitForIdle()
+        {
+            using (await locker.LockAsync())
+            {
+                if (isSavePending == 0)
+                    return;
+            }
+            await idle.WaitAsync();
+        }
+
+        public async Task DeleteApiItem(int id)
+        {
+            using (await locker.LockAsync())
+            {
+                var item = items.Single(x => x.Id == id);
+                var dbItem = (DbApiItem)cache[item];
+                cache = cache.Remove(item);
+                db.ApiItems.Remove(dbItem);
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddItem(ApiItem apiItem)
+        {
+            using (await locker.LockAsync())
+            {
+                var dbApiItem = new DbApiItem
+                {
+                    Headers = new List<DbApiHeader>(),
+                    Inputs = new List<DbApiInput>(),
+                    Outputs = new List<DbApiOutput>(),
+                    Items = new List<DbApiItem>()
+                };
+                items = items.Add(apiItem);
+                Bind(apiItem, dbApiItem);
+
+                MapScalarsToDb(apiItem, dbApiItem);
+                var api = apiItem as Api;
+                if (api != null)
+                {
+                    MapChildrenToDb(api.Inputs, dbApiItem.Inputs);
+                    MapChildrenToDb(api.Outputs, dbApiItem.Outputs);
+                    MapChildrenToDb(api.Headers, dbApiItem.Headers);
+                }
+                else
+                {
+                    var apiCollection = (ApiCollection)apiItem;
+                    dbApiItem.Type = ApiItemType.Collection;
+    //                dbApiItem.Items = apiCollection.Items.Select(x => );
+                }
+
+                db.ApiItems.Add(dbApiItem);
+                await db.SaveChangesAsync();
+                apiItem.Id = dbApiItem.Id;
+            }
+        }
+
+        private void Bind(IdObject modelItem, IIdObject dbItem)
+        {
+            cache = cache.Add(modelItem, dbItem);
+            int? isSavePending = null;
+            modelItem.Changed
+                .Where(x => x.Property.Name != nameof(IIdObject.Id))
+                .Do(_ =>
+                {
+                    using (locker.Lock())
+                    {
+                        isSavePending = isSavePending ?? ++this.isSavePending;
+                    }
+                })
+                .Throttle(TimeSpan.FromSeconds(1))
+                .Select(async x =>
+                {
+                    if (typeof(IList).IsAssignableFrom(x.Property.PropertyType))
+                    {
+                        var oldList = ((IEnumerable)x.OldValue)?.Cast<IdObject>() ?? Enumerable.Empty<IdObject>();
+                        var newList = ((IEnumerable)x.NewValue)?.Cast<IdObject>() ?? Enumerable.Empty<IdObject>();
+                        var merge = oldList.Merge(newList);
+                        var dbListProperty = dbItem.GetType().GetProperty(x.Property.Name);
+                        var dbList = (IList)dbListProperty.GetValue(dbItem, null);
+                        foreach (var childModelItem in merge.Removed)
+                        {
+                            var childDbItem = cache[childModelItem];
+                            dbList.Remove(childDbItem);
+                        }
+                        foreach (var childModelItem in merge.Added)
+                        {
+                            var childDbType = dbListProperty.PropertyType.GetGenericArguments()[0];
+                            var childDbItem = (IIdObject)Activator.CreateInstance(childDbType);
+                            Bind(childModelItem, childDbItem);
+                            MapScalarsToDb(childModelItem, childDbItem);
+                            dbList.Add(childDbItem);
+                        }
+                    }
+                    else
+                    {
+                        MapScalarsToDb(modelItem, dbItem);
+                    }
+                    using (await locker.LockAsync())
+                    {
+                        await db.SaveChangesAsync();
+                        this.isSavePending--;
+                        isSavePending = null;
+                        if (this.isSavePending == 0)
+                            idle.Set();
+                    }
+                })
+                .Subscribe();
+        }
+
+        private IEnumerable<TModel> MapChildrenFromDb<TDatabase, TModel>(IEnumerable<TDatabase> source, Func<TDatabase, TModel> factory)
+            where TModel : IdObject
+            where TDatabase : IIdObject, new()
+        {
+            foreach (var item in source)
+            {
+                var model = factory(item);
+                Bind(model, item);
+                yield return model;
             }
         }
 
@@ -102,26 +203,26 @@ namespace Restless.Database.Repositories
                         Type = ApiItemType.Api,
                         Url = dbApiItem.Url,
                         Method = dbApiItem.Method,
-                        Inputs = dbApiItem.Inputs.Select(y => new ApiInput
+                        Inputs = MapChildrenFromDb(dbApiItem.Inputs, y => new ApiInput
                         {
                             Id = y.Id,
                             Name = y.Name,
                             DefaultValue = y.DefaultValue,
                             InputType = y.InputType
-                        }).ToList(),
-                        Outputs = dbApiItem.Outputs.Select(y => new ApiOutput
+                        }).ToImmutableList(),
+                        Outputs = MapChildrenFromDb(dbApiItem.Outputs, y => new ApiOutput
                         {
                             Id = y.Id,
                             Name = y.Name,
                             Type = y.Type,
                             Expression = y.Expression
-                        }).ToList(),
-                        Headers = dbApiItem.RequestHeaders.Select(y => new ApiHeader
+                        }).ToImmutableList(),
+                        Headers = MapChildrenFromDb(dbApiItem.Headers, y => new ApiHeader
                         {
                             Id = y.Id,
                             Name = y.Name,
                             Value = y.Value
-                        }).ToList(),
+                        }).ToImmutableList(),
                         Body = dbApiItem.RequestBody
                     };
                 }
@@ -130,79 +231,86 @@ namespace Restless.Database.Repositories
                     apiItem = new ApiCollection
                     {
                         Type = ApiItemType.Collection,
-                        Items = MapFromDb(dbApiItemsByParentId[dbApiItem.Id], dbApiItemsByParentId).ToList()
+                        Items = MapFromDb(dbApiItemsByParentId[dbApiItem.Id], dbApiItemsByParentId).ToImmutableList()
                     };
                 }
                 apiItem.Id = dbApiItem.Id;
                 apiItem.Created = dbApiItem.Created;
                 apiItem.Title = dbApiItem.Title;
 
+                cache = cache.Add(apiItem, dbApiItem);
                 yield return apiItem;
             }
         }
 
-        private void MapToDb(ApiItem apiItem, DbApiItem dbApiItem, ILookup<int, DbApiItem> apiItemsByParentId)
+        private static void ApiItemSaveMapper(ApiItem apiItem, DbApiItem dbApiItem)
         {
-            var api = apiItem as Api;
-            if (api != null)
-            {
-                dbApiItem.Type = ApiItemType.Api;
-                dbApiItem.Url = api.Url;
-                dbApiItem.Method = api.Method;
-                dbApiItem.Inputs = api.Inputs?.Select(y => new DbApiInput
-                {
-                    Id = y.Id,
-                    Name = y.Name,
-                    DefaultValue = y.DefaultValue,
-                    InputType = y.InputType
-                }).ToList();
-                dbApiItem.Outputs = api.Outputs?.Select(y => new DbApiOutput
-                {
-                    Id = y.Id,
-                    Name = y.Name,
-                    Type = y.Type,
-                    Expression = y.Expression
-                }).ToList();
-                MapChildren(api.Headers, dbApiItem.RequestHeaders, (x, y) =>
-                {
-                    x.Id = y.Id;
-                    x.Name = y.Name;
-                    x.Value = y.Value;
-                });
-                dbApiItem.RequestBody = api.Body;
-            }
-            else
-            {
-                var apiCollection = (ApiCollection)apiItem;
-                dbApiItem.Type = ApiItemType.Collection;
-//                dbApiItem.Items = apiCollection.Items.Select(x => );
-            }
-            dbApiItem.Id = apiItem.Id;
             dbApiItem.Created = apiItem.Created;
-            dbApiItem.Title = apiItem.Title;
+            dbApiItem.Title = apiItem.Title;            
         }
 
-        private void MapChildren<TModel, TDatabase>(List<TModel> apiHeaders, List<TDatabase> dbApiHeaders, Action<TDatabase, TModel> mapper)
+        private static void ApiSaveMapper(Api api, DbApiItem dbApi)
+        {
+            ApiItemSaveMapper(api, dbApi);
+            dbApi.Type = ApiItemType.Api;
+            dbApi.Url = api.Url;
+            dbApi.Method = api.Method;
+            dbApi.RequestBody = api.Body;            
+        }
+
+        private static void ApiCollectionSaveMapper(ApiCollection apiCollection, DbApiItem dbApiItem)
+        {
+            ApiItemSaveMapper(apiCollection, dbApiItem);
+            dbApiItem.Type = ApiItemType.Collection;
+        }
+
+        private static void ApiInputSaveMapper(ApiInput apiInput, DbApiInput dbApiInput)
+        {
+            dbApiInput.Name = apiInput.Name;
+            dbApiInput.DefaultValue = apiInput.DefaultValue;
+            dbApiInput.InputType = apiInput.InputType;            
+        }
+
+        private static void ApiOutputSaveMapper(ApiOutput apiOutput, DbApiOutput dbApiOutput)
+        {
+            dbApiOutput.Name = apiOutput.Name;
+            dbApiOutput.Type = apiOutput.Type;
+            dbApiOutput.Expression = apiOutput.Expression;
+        }
+
+        private static void ApiHeaderSaveMapper(ApiHeader apiHeader, DbApiHeader dbApiHeader)
+        {
+            dbApiHeader.Name = apiHeader.Name;
+            dbApiHeader.Value = apiHeader.Value;            
+        }
+
+        private static void MapScalarsToDb<TModel, TDatabase>(TModel modelItem, TDatabase dbItem)
+        {
+            saveMappers[modelItem.GetType()].DynamicInvoke(modelItem, dbItem);
+        }
+
+        private void MapChildrenToDb<TModel, TDatabase>(ImmutableList<TModel> modelObjects, List<TDatabase> dbObjects)
             where TModel : IdObject
             where TDatabase : IIdObject, new()
         {
-            if (apiHeaders == null)
+            if (modelObjects == null)
                 return;
 
-            var merge = dbApiHeaders.Merge(apiHeaders, x => x.Id, x => x.Id);
-            foreach (var item in merge.Removed)
+            foreach (var modelObject in modelObjects)
             {
-                dbApiHeaders.Remove(item);
-            }
-            foreach (var item in merge.Added)
-            {
-                var dbItem = new TDatabase();
-                mapper(dbItem, item);
-                dbApiHeaders.Add(dbItem);
-            }
-            foreach (var item in merge.Present)
-            {
-                mapper(item.Item1, item.Item2);
+                object dbObjectFromCache;
+                TDatabase dbObject;
+                if (cache.TryGetValue(modelObject, out dbObjectFromCache))
+                {
+                    dbObject = (TDatabase)dbObjectFromCache;
+                }
+                else
+                {
+                    dbObject = new TDatabase();
+                    Bind(modelObject, dbObject);
+                    dbObjects.Add(dbObject);
+                }
+                MapScalarsToDb(modelObject, dbObject);
             }
         }
     }

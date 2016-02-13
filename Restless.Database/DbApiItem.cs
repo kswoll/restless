@@ -7,7 +7,7 @@ using Restless.Models;
 namespace Restless.Database
 {
     [Table("ApiItem")]
-    public class DbApiItem
+    public class DbApiItem : IIdObject
     {
         public int Id { get; set; }
         public int? CollectionId { get; set; }
@@ -22,7 +22,7 @@ namespace Restless.Database
         public DbApiItem Collection { get; set; }
         public List<DbApiInput> Inputs { get; set; }
         public List<DbApiOutput> Outputs { get; set; }
-        public List<DbApiHeader> RequestHeaders { get; set; }
+        public List<DbApiHeader> Headers { get; set; }
         public List<DbApiResponseComplication> ResponseComplications { get; set; }
         public List<DbApiItem> Items { get; set; }
     }

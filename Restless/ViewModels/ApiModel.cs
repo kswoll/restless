@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -315,18 +316,18 @@ namespace Restless.ViewModels
                     Name = y.Name,
                     InputType = y.InputType,
                     DefaultValue = y.DefaultValue
-                }).ToList(),
+                }).ToImmutableList(),
                 Outputs = Outputs.Select(y => new ApiOutput
                 {
                     Name = y.Name,
                     Expression = y.Expression,
                     Type = y.Type
-                }).ToList(),
+                }).ToImmutableList(),
                 Headers = Headers.Select(y => new ApiHeader
                 {
                     Name = y.Name,
                     Value = y.Value
-                }).ToList(),
+                }).ToImmutableList(),
                 Body = Body
             };
         }

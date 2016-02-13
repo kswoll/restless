@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using NUnit.Framework;
@@ -21,7 +22,7 @@ namespace Restless.Tests.Database
                 Body = "test body",
                 Created = new DateTime(2015, 1, 1)
             };
-            await repository.InsertApiItem(api);
+            await repository.AddItem(api);
 
             Assert.AreNotEqual(0, api.Id);
 
@@ -42,7 +43,7 @@ namespace Restless.Tests.Database
                 Type = ApiItemType.Collection,
                 Created = new DateTime(2015, 1, 1)
             };
-            await repository.InsertApiItem(collection);
+            await repository.AddItem(collection);
 
             Assert.AreNotEqual(0, collection.Id);
 
@@ -57,13 +58,13 @@ namespace Restless.Tests.Database
         {
             var api = new Api
             {
-                Headers = new List<ApiHeader> { new ApiHeader { Name = "test name", Value = "test value" } }
+                Headers = ImmutableList.Create(new ApiHeader { Name = "test name", Value = "test value" })
             };
 
-            await repository.InsertApiItem(api);
+            await repository.AddItem(api);
 
-            var dbApiItem = await db.ApiItems.Include(x => x.RequestHeaders).SingleAsync(x => x.Id == api.Id);
-            Assert.AreNotEqual(0, dbApiItem.RequestHeaders[0].Id);
+            var dbApiItem = await db.ApiItems.Include(x => x.Headers).SingleAsync(x => x.Id == api.Id);
+            Assert.AreNotEqual(0, dbApiItem.Headers[0].Id);
         }
 
         [Test]
@@ -71,19 +72,50 @@ namespace Restless.Tests.Database
         {
             var api = new Api
             {
-                Headers = new List<ApiHeader> { new ApiHeader { Name = "test name", Value = "test value" } }
+                Headers = ImmutableList.Create(new ApiHeader { Name = "test name", Value = "test value" })
             };
 
-            await repository.InsertApiItem(api);
+            await repository.AddItem(api);
 
             api.Headers[0].Name = "test name2";
 
-            await repository.UpdateApiItem(api);
+            await repository.WaitForIdle();
 
-            var dbApiItem = await db.ApiItems.Include(x => x.RequestHeaders).SingleAsync(x => x.Id == api.Id);
-            Assert.AreNotEqual(0, dbApiItem.RequestHeaders[0].Id);
-            Assert.AreEqual(1, dbApiItem.RequestHeaders.Count);
-            Assert.AreEqual(api.Headers[0].Name, dbApiItem.RequestHeaders[0].Name);
+            var dbApiItem = await db.ApiItems.Include(x => x.Headers).SingleAsync(x => x.Id == api.Id);
+            Assert.AreNotEqual(0, dbApiItem.Headers[0].Id);
+            Assert.AreEqual(1, dbApiItem.Headers.Count);
+            Assert.AreEqual(api.Headers[0].Name, dbApiItem.Headers[0].Name);
+        }
+
+        [Test]
+        public async Task UpdateApiAddHeader()
+        {
+            var api = new Api();
+            await repository.AddItem(api);
+
+            api.Headers = ImmutableList.Create(new ApiHeader { Name = "test name", Value = "test value" });
+
+            await repository.WaitForIdle();
+
+            var dbApiItem = await db.ApiItems.Include(x => x.Headers).SingleAsync(x => x.Id == api.Id);
+            Assert.AreNotEqual(0, dbApiItem.Headers[0].Id);
+            Assert.AreEqual(1, dbApiItem.Headers.Count);
+            Assert.AreEqual(api.Headers[0].Name, dbApiItem.Headers[0].Name);            
+        }
+
+        [Test]
+        public async Task InsertApiChild()
+        {
+            var collection = new ApiCollection
+            {
+                Items = ImmutableList<ApiItem>.Empty
+            };
+            var child = new Api();
+            collection.Items.Add(child);
+            await repository.AddItem(collection);
+
+            var dbApiItem = await db.ApiItems.Include(x => x.Items).SingleAsync(x => x.Id == collection.Id);
+//            Assert
         }
     }
 }
