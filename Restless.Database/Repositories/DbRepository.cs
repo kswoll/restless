@@ -20,7 +20,7 @@ namespace Restless.Database.Repositories
 
         private readonly RestlessDb db;
         private readonly AsyncLock locker = new AsyncLock();
-        private AsyncAutoResetEvent idle = new AsyncAutoResetEvent(false);
+        private readonly AsyncAutoResetEvent idle = new AsyncAutoResetEvent(false);
         private ImmutableList<ApiItem> items = ImmutableList<ApiItem>.Empty;
         private ImmutableDictionary<IdObject, object> cache = ImmutableDictionary<IdObject, object>.Empty;
         private int isSavePending;
@@ -250,7 +250,7 @@ namespace Restless.Database.Repositories
                 apiItem.Created = dbApiItem.Created;
                 apiItem.Title = dbApiItem.Title;
 
-                cache = cache.Add(apiItem, dbApiItem);
+                Bind(apiItem, dbApiItem);
                 yield return apiItem;
             }
         }

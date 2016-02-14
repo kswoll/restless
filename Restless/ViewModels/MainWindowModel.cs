@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -50,7 +51,7 @@ namespace Restless.ViewModels
             AddChildApi = RxFunction.CreateAsync(async () => await OnAddApi((ApiCollectionModel)SelectedItem), canAddChild);
             AddChildApiCollection = RxFunction.CreateAsync(async () => await OnAddApiCollection((ApiCollectionModel)SelectedItem), canAddChild);
             Export = RxCommand.Create(OnExport);
-            Import = RxCommand.Create(OnImport);
+            Import = RxCommand.CreateAsync(OnImport);
             Title = "Restless";
             Items = new RxList<ApiItemModel>();
             Methods = httpMethods.ToList();
@@ -94,7 +95,10 @@ namespace Restless.ViewModels
                 Title = "(New Api)",
                 Method = ApiMethod.Get,
                 Created = DateTime.UtcNow,
-                Type = ApiItemType.Api
+                Type = ApiItemType.Api,
+                Headers = ImmutableList<ApiHeader>.Empty,
+                Inputs = ImmutableList<ApiInput>.Empty,
+                Outputs = ImmutableList<ApiOutput>.Empty
             };
             await Repository.AddItem(api);
 
@@ -109,7 +113,8 @@ namespace Restless.ViewModels
             {
                 Title = "(New Api Collection)",
                 Created = DateTime.UtcNow,
-                Type = ApiItemType.Collection
+                Type = ApiItemType.Collection,
+                Items = ImmutableList<ApiItem>.Empty
             };
             await Repository.AddItem(apiCollection);
 
@@ -137,7 +142,7 @@ namespace Restless.ViewModels
             File.WriteAllText(destination, json);
         }
 
-        private void OnImport()
+        private async Task OnImport()
         {
             var file = selectFile(SelectFileType.Open, JsonExtension, "Choose a file to import");
             if (file == null)
@@ -145,7 +150,10 @@ namespace Restless.ViewModels
 
             var json = File.ReadAllText(file);
             var data = JsonConvert.DeserializeObject<ApiItem[]>(json, importExportJsonSettings);
-            Items.AddRange(data.Select(x => ApiItemModel.Import(this, null, x)));
+            foreach (var item in data.Select(x => ApiItemModel.Import(this, null, x)))
+            {
+                await Repository.AddItem(item.ItemModel);
+            }
         }
 
         private async Task OnDeleteSelectedItem()

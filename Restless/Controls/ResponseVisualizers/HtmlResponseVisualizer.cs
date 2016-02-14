@@ -24,8 +24,8 @@ namespace Restless.Controls.ResponseVisualizers
                 if (x != null)
                 {
                     var s = Encoding.UTF8.GetString(x);
-                    var url = new Uri(Model.Api.Url).AbsoluteUri;
-                    var baseUrl = Model.Api.Url.Substring(0, url.Length - new Uri(url).PathAndQuery.Length);
+                    var url = new Uri(Model.Api.Model.Url).AbsoluteUri;
+                    var baseUrl = Model.Api.Model.Url.Substring(0, url.Length - new Uri(url).PathAndQuery.Length);
                     browser.NavigateToString(InsertBaseRef(s, baseUrl));
                 }
             });

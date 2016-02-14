@@ -25,7 +25,7 @@ namespace Restless.Windows.MainWindows
 
             ConfigureWindowStateAndPosition();
 
-            var apiListItemTemplate = new FrameworkElementFactory(typeof(TextBlock));
+            var apiListItemTemplate = new FrameworkElementFactory(typeof(Item));
 
             var apiList = new ListView();
             apiList.ItemTemplate = new DataTemplate { VisualTree = apiListItemTemplate };
@@ -59,7 +59,6 @@ namespace Restless.Windows.MainWindows
             var itemPanel = new ApiPanel();
 
             this.Bind(x => x.Title).To(this, (window, title) => window.Title = title ?? "");
-            this.Bind(x => x.Title).To(apiListItemTemplate, TextBlock.TextProperty);
             this.Bind(x => x.Items).To(apiList, x => x.SelectedItem);
             this.Bind(x => x.AddChildApi).To(x => addChildApiMenuItem.Command = x);
             this.Bind(x => x.AddChildApiCollection).To(x => addChildApiCollectionMenuItem.Command = x);
@@ -127,6 +126,19 @@ namespace Restless.Windows.MainWindows
         {
             if (content != null)
                 grid.Children.Remove(this.content);            
+        }
+
+        public class Item : RxTextBlock<ApiItemModel>
+        {
+            public Item()
+            {
+                this.Bind(x => x.ItemModel.Title).To(x => Text = x);
+            }
+
+            public override void EndInit()
+            {
+                base.EndInit();
+            }
         }
     }
 }

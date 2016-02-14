@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using Restless.Models;
 using SexyReact;
@@ -8,17 +7,15 @@ namespace Restless.ViewModels
 {
     public class ApiCollectionModel : ApiItemModel
     {
-        public DateTime Created { get; set; }         
+        public ApiCollection Model { get; }
+
         public RxList<ApiItemModel> Items { get; }
         public override ApiItemType Type => ApiItemType.Collection;
 
-        public ApiCollectionModel(MainWindowModel mainWindow, ApiCollectionModel parent, ApiCollection apiCollection) : base(mainWindow, parent)
+        public ApiCollectionModel(MainWindowModel mainWindow, ApiCollectionModel parent, ApiCollection apiCollection) : base(mainWindow, parent, apiCollection)
         {
+            Model = apiCollection;
             Items = new RxList<ApiItemModel>();
-
-            Id = apiCollection.Id;
-            Title = apiCollection.Title;
-            Created = apiCollection.Created;
 
             if (apiCollection.Items != null)
                 Items.AddRange(apiCollection.Items.Select(x => x.Type == ApiItemType.Collection ? 
@@ -31,8 +28,8 @@ namespace Restless.ViewModels
             return new ApiCollection
             {
                 Type = Type,
-                Title = Title,
-                Created = Created,
+                Title = Model.Title,
+                Created = Model.Created,
                 Items = Items.Select(x => x.Export()).ToImmutableList()
             };
         }

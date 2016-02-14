@@ -9,24 +9,18 @@ using System.Net.Http.Headers;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Data.Entity;
-using Restless.Database;
 using Restless.Models;
 using Restless.Utils;
 using Restless.Utils.Inputs;
 using Restless.Utils.Outputs;
 using SexyReact;
-using SexyReact.Utils;
 using HttpHeaders = Restless.Utils.HttpHeaders;
 
 namespace Restless.ViewModels
 {
     public class ApiModel : ApiItemModel
     {
-        public Api Api { get; set; }
-        public string Url { get; set; }
-        public DateTime Created { get; set; }
-        public ApiMethod Method { get; set; }
+        public Api Model { get; set; }
         public RxList<ApiInputModel> Inputs { get; }
         public RxList<ApiOutputModel> Outputs { get; }
         public RxList<ApiHeaderModel> Headers { get; }
@@ -36,21 +30,17 @@ namespace Restless.ViewModels
         public override ApiItemType Type => ApiItemType.Api;
         public string ContentType => Headers.GetContentType();
 
-        public ApiModel(MainWindowModel mainWindow, ApiCollectionModel parent, Api api) : base(mainWindow, parent)
+        public ApiModel(MainWindowModel mainWindow, ApiCollectionModel parent, Api api) : base(mainWindow, parent, api)
         {
             Inputs = new RxList<ApiInputModel>();
             Outputs = new RxList<ApiOutputModel>();
             Headers = new RxList<ApiHeaderModel>();
 
-            SubscribeForInputs(this.ObservePropertyChange(x => x.Url), () => Url, ApiInputType.Url);
-            SubscribeForInputs(this.ObservePropertyChange(x => x.Body).Where(x => ContentTypes.IsText(ContentType)), () => Body, ApiInputType.Body);
+            SubscribeForInputs(this.ObservePropertyChange(x => x.Model.Url), () => Model.Url, ApiInputType.Url);
+            SubscribeForInputs(this.ObservePropertyChange(x => x.Model.Body).Where(x => ContentTypes.IsText(ContentType)), () => Model.Body, ApiInputType.Body);
             SubscribeForInputs(this.ObservePropertyChange(x => x.Headers).SelectMany(x => x.ObserveElementProperty(y => y.Name)).Merge(this.ObservePropertyChange(x => x.Headers).SelectMany(x => x.ObserveElementProperty(y => y.Value))), () => string.Join("\n", Headers.Select(x => x.Name + "=" + x.Value)), ApiInputType.Header);
 
-            Api = api;
-            Id = api.Id;
-            Title = api.Title;
-            Url = api.Url;
-            Method = api.Method;
+            Model = api;
             if (api.Inputs != null)
                 Inputs.AddRange(api.Inputs.Select(x => new ApiInputModel
                 {
@@ -78,56 +68,23 @@ namespace Restless.ViewModels
             Reset = RxCommand.Create(OnReset);
 
             Inputs.SetUpSync(
-                x => new DbApiInput { ApiId = Id, Name = x.Name, DefaultValue = "", InputType = x.InputType },
-                (input, dbInput) =>
-                {
-                    dbInput.DefaultValue = input.DefaultValue;
-                });
+                MainWindow.Repository,
+                Model.Inputs,
+                x => new ApiInput { Name = x.Name, DefaultValue = "", InputType = x.InputType });
             Outputs.SetUpSync(
-                x => new DbApiOutput { ApiId = Id, Name = x.Name, Expression = "" },
-                (output, dbOutput) =>
-                {
-                    dbOutput.Name = output.Name;
-                    dbOutput.Expression = output.Expression;
-                    dbOutput.Type = output.Type;
-                });
+                MainWindow.Repository,
+                Model.Outputs,
+                x => new ApiOutput { Name = x.Name, Expression = "" });
             Headers.SetUpSync(
-                _ => new DbApiHeader { ApiId = Id, Name = "", Value = "" },
-                (header, dbHeader) =>
-                {
-                    dbHeader.Name = header.Name;
-                    dbHeader.Value = header.Value;
-                });
-            Body = api.Body;
-
-            this.ObservePropertiesChange(x => x.Title, x => x.Url, x => x.Method, x => x.Body)
-                .Throttle(TimeSpan.FromSeconds(1))
-                .SubscribeAsync(async _ =>
-                {
-                    var db = new RestlessDb();
-                    var updatedApi = await db.ApiItems.SingleAsync(x => x.Id == Id);
-                    updatedApi.Title = Title;
-                    updatedApi.Url = Url;
-                    updatedApi.Method = Method;
-                    updatedApi.RequestBody = Body;
-                    await db.SaveChangesAsync();
-                });
-        }
-
-        public string Body
-        {
-            get { return Get<string>(); }
-            set
-            {
-                Set(value);
-                OnChanged(GetType().GetProperty(nameof(BinaryBody)), BinaryBody);
-            }
+                MainWindow.Repository,
+                Model.Headers,
+                _ => new ApiHeader { Name = "", Value = "" });
         }
 
         public byte[] BinaryBody
         {
-            get { return Body == null ? null : Encoding.UTF8.GetBytes(Body); }
-            set { Body = value == null ? null : Encoding.UTF8.GetString(value); }
+            get { return Model.Body == null ? null : Encoding.UTF8.GetBytes(Model.Body); }
+            set { Model.Body = value == null ? null : Encoding.UTF8.GetString(value); }
         }
 
         private void SubscribeForInputs<T>(IObservable<T> observable, Func<string> value, ApiInputType inputType)
@@ -238,7 +195,7 @@ namespace Restless.ViewModels
 
         private HttpMethod MapApiMethod()
         {
-            switch (Method)
+            switch (Model.Method)
             {
                 case ApiMethod.Delete:
                     return HttpMethod.Delete;
@@ -249,7 +206,7 @@ namespace Restless.ViewModels
                 case ApiMethod.Put:
                     return HttpMethod.Put;
                 default:
-                    throw new Exception($"Unexpected ApiMethod: {Method}");
+                    throw new Exception($"Unexpected ApiMethod: {Model.Method}");
             }
         }
 
@@ -266,7 +223,7 @@ namespace Restless.ViewModels
                     input.Value = input.DefaultValue;
             }
 
-            var request = new HttpRequestMessage(MapApiMethod(), Format(Url));
+            var request = new HttpRequestMessage(MapApiMethod(), Format(Model.Url));
             var contentHeaders = new List<KeyValuePair<string, string>>();
             foreach (var header in Headers)
             {
@@ -278,12 +235,12 @@ namespace Restless.ViewModels
                     request.Headers.Add(name, value);
             }
 
-            if (Body != null && Method.IsBodyAllowed())
+            if (Model.Body != null && Model.Method.IsBodyAllowed())
             {
                 var contentType = Headers.SingleOrDefault(x => x.Name == ContentTypes.ContentType)?.Value;
                 if (contentType != null && ContentTypes.IsText(contentType))
                 {
-                    var s = Body;
+                    var s = Model.Body;
                     s = Format(s);
                     var stringContent = new StringContent(s);
                     request.Content = stringContent;
@@ -307,10 +264,10 @@ namespace Restless.ViewModels
             return new Api
             {
                 Type = Type,
-                Title = Title,
-                Created = Created,
-                Url = Url,
-                Method = Method,
+                Title = Model.Title,
+                Created = Model.Created,
+                Url = Model.Url,
+                Method = Model.Method,
                 Inputs = Inputs.Select(y => new ApiInput
                 {
                     Name = y.Name,
@@ -328,7 +285,7 @@ namespace Restless.ViewModels
                     Name = y.Name,
                     Value = y.Value
                 }).ToImmutableList(),
-                Body = Body
+                Body = Model.Body
             };
         }
 

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using Microsoft.Data.Entity;
 using Restless.Database;
+using Restless.Database.Repositories;
 using Restless.Models;
 using SexyReact;
 using SexyReact.Utils;
@@ -11,43 +13,42 @@ namespace Restless.Utils
 {
     public static class DatabaseSync
     {
-        public static void SetUpSync<TModelObject, TDbObject>(
-            this RxList<TModelObject> list, 
-            Func<TModelObject, TDbObject> newDbObject,
-            Action<TModelObject, TDbObject> updateDbObject
+        public static void SetUpSync<TViewModel, TModel>(
+            this RxList<TViewModel> list, 
+            DbRepository repository,
+            ImmutableList<TModel> modelList,
+            Func<TViewModel, TModel> newModelObject
         )
-            where TModelObject : IIdObject, IRxObject
-            where TDbObject : class, IIdObject
+            where TViewModel : IIdObject, IRxObject
+            where TModel : IdObject
         {
-            var updatingId = false;
-            list.ItemAdded.Subscribe(async x =>
+            Action<TViewModel, TModel> bind = (viewModel, model) =>
             {
-                var db = new RestlessDb();
-                var dbObject = newDbObject(x);
-                db.Set<TDbObject>().Add(dbObject);
-                await db.SaveChangesAsync();
-
-                updatingId = true;
-                x.Id = dbObject.Id;
-                updatingId = false;
-            });
-            list.ItemRemoved.Subscribe(async x =>
-            {
-                var db = new RestlessDb();
-                var dbApiHeader = await db.Set<TDbObject>().SingleAsync(y => y.Id == x.Id);
-                db.Set<TDbObject>().Remove(dbApiHeader);
-                await db.SaveChangesAsync();
-            });
-            list.ObserveElementChange().Throttle(TimeSpan.FromSeconds(1)).Subscribe(async x =>
-            {
-                if (!updatingId)
+                viewModel.Changed.Where(y => y.Property.Name != nameof(IdObject.Id)).Subscribe(y =>
                 {
-                    var db = new RestlessDb();
-                    var dbObject = await db.Set<TDbObject>().SingleAsync(y => y.Id == x.Element.Id);
-                    updateDbObject(x.Element, dbObject);
-                    await db.SaveChangesAsync();
-                }
-            });            
+                    model.GetType().GetProperty(y.Property.Name).SetValue(model, y.NewValue);
+                });
+            };
+            var modelsById = modelList.ToDictionary(x => x.Id);
+            foreach (var item in list)
+            {
+                bind(item, modelsById[item.Id]);
+            }
+            list.ItemAdded.Subscribe(async viewModel =>
+            {
+                viewModel.ObservePropertyChange(y => y.Id).SubscribeOnce(y => viewModel.Id = y);
+                var newModel = newModelObject(viewModel);
+                modelList.Add(newModel);
+                await repository.WaitForIdle();
+                bind(viewModel, newModel);
+            });
+            list.ItemRemoved.Subscribe(async viewModel =>
+            {
+                var db = new RestlessDb();
+                var dbApiHeader = await db.Set<TModel>().SingleAsync(y => y.Id == viewModel.Id);
+                db.Set<TModel>().Remove(dbApiHeader);
+                await db.SaveChangesAsync();
+            });
         } 
     }
 }

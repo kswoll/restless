@@ -178,6 +178,8 @@
     <Compile Include="App.cs" />
     <Compile Include="Controls\ApiPanel.cs" />
     <Compile Include="Controls\ApiResponsePanel.cs" />
+    <Compile Include="Controls\RequestVisualizer.cs" />
+    <Compile Include="Controls\RequestVisualizers\GeneralRequestVisualizer.cs" />
     <Compile Include="Controls\ResponseActions\IResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\NextPageResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\PageResponseAction.cs" />

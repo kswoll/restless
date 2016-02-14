@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Restless.Database.Repositories;
 using Restless.Models;
 
 namespace Restless.ViewModels
@@ -8,22 +7,22 @@ namespace Restless.ViewModels
     public abstract class ApiItemModel : BaseModel
     {
         public MainWindowModel MainWindow { get; }
-        public int Id { get; set; }
-        public string Title { get; set; }
+        public ApiItem ItemModel { get; set; }
         public ApiCollectionModel Parent { get; }
 
         public abstract ApiItemType Type { get; }
         public abstract ApiItem Export();
 
-        protected ApiItemModel(MainWindowModel mainWindow, ApiCollectionModel parent)
+        protected ApiItemModel(MainWindowModel mainWindow, ApiCollectionModel parent, ApiItem item)
         {
             MainWindow = mainWindow;
             Parent = parent;
+            ItemModel = item;
         }
 
         public async Task Delete()
         {
-            await MainWindow.Repository.DeleteApiItem(Id);
+            await MainWindow.Repository.DeleteApiItem(ItemModel.Id);
 
             var items = (Parent?.Items ?? MainWindow.Items);
             var selectedItemIndex = items.IndexOf(this);

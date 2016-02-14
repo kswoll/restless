@@ -1,6 +1,7 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
+using Restless.Controls.RequestVisualizers;
 using Restless.Models;
 using Restless.Properties;
 using Restless.Utils;
@@ -13,26 +14,12 @@ namespace Restless.Controls
 {
     public class ApiPanel : RxGrid<ApiModel>
     {
-        private readonly NameValuePanel<TextBox> title;
         private ApiResponsePanel currentApiResponsePanel;
+        private List<RequestVisualizer> requestVisualizers = new List<RequestVisualizer>();
 
         public ApiPanel()
         {
-            title = NameValuePanel.Create("Title", new TextBox());
-            var url = NameValuePanel.Create("URL", new TextBox());
-            var method = new ComboBox
-            {
-                VerticalAlignment = VerticalAlignment.Bottom,
-                Margin = new Thickness(0, 0, 5, 0),
-                SelectedIndex = 0
-            };
-
-            var urlAndMethod = new Grid();
-            urlAndMethod.AddColumn(1, GridUnitType.Star);
-            urlAndMethod.AddColumn(100, GridUnitType.Pixel);
-            urlAndMethod.AddRow(GridLength.Auto);
-            urlAndMethod.Add(url, 0, 0);
-            urlAndMethod.Add(method, 0, 1);
+            requestVisualizers.Add(new GeneralRequestVisualizer());
 
             var sendButton = new Button { Content = Icons.Get(IconResources.Send, 22, 18), Focusable = false, ToolTip = "Send the request to the server" };
             var resetButton = new Button { Content = Icons.Get(IconResources.Reset, 22, 14), Focusable = false, ToolTip = "Reset transient data back to their default state", Padding = new Thickness(3) };
@@ -57,16 +44,6 @@ namespace Restless.Controls
             var buttonsAndStatusPanel = new DockPanel();
             buttonsAndStatusPanel.Add(buttonsPanel, Dock.Left);
             buttonsAndStatusPanel.Add(statusPanel);
-
-            var apiGeneralStackPanel = new StackPanel
-            {
-                Margin = new Thickness(0, 0, 0, 10)
-            };
-            apiGeneralStackPanel.Children.Add(title);
-            apiGeneralStackPanel.Children.Add(urlAndMethod);
-            var apiGeneralPanel = new Grid();
-            apiGeneralPanel.RowDefinitions.Add(new RowDefinition { SharedSizeGroup = "apiTabs" });
-            apiGeneralPanel.Children.Add(apiGeneralStackPanel);
 
             var apiHeadersGrid = new RxDataGrid<ApiHeaderModel>
             {
@@ -118,7 +95,10 @@ namespace Restless.Controls
             var apiDetailsPanel = new TabControl();
             var bodyTab = new TabItem { Header = "Body", Content = apiBodyPanel };
             SetIsSharedSizeScope(apiDetailsPanel, true);
-            apiDetailsPanel.Items.Add(new TabItem { Header = "General", Content = apiGeneralPanel });
+            foreach (var requestVisualizer in requestVisualizers)
+            {
+                apiDetailsPanel.Items.Add(new TabItem { Header = requestVisualizer.Title, Content = requestVisualizer });
+            }
             apiDetailsPanel.Items.Add(new TabItem { Header = "Headers", Content = apiHeadersPanel });
             apiDetailsPanel.Items.Add(bodyTab);
             apiDetailsPanel.Items.Add(new TabItem { Header = "Inputs", Content = apiInputsPanel });
@@ -137,13 +117,10 @@ namespace Restless.Controls
             this.Add(topPanel, 0, 0);
             this.AddHorizontalSplitter(1, 0);
 
-            this.Bind(x => x.Api.Title).Mate(title.Value);
-            this.Bind(x => x.Url).Mate(url.Value);
-            this.Bind(x => x.Method).Mate(method, x => x.MainWindow.Methods);
             this.Bind(x => x.Inputs).To(x => apiInputsGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Outputs).To(x => apiOutputsGrid.ItemsSource = x?.ToObservableCollection());
             this.Bind(x => x.Headers).To(x => apiHeadersGrid.ItemsSource = x?.ToObservableCollection());
-            this.Bind(x => x.Body).Mate(apiBodyTextBox);
+            this.Bind(x => x.Model.Body).Mate(apiBodyTextBox);
             this.Bind(x => x.Send).To(x => sendButton.Command = x);
             this.Bind(x => x.Reset).To(x => resetButton.Command = x);
             this.Bind(x => x.Response).To(x =>
@@ -160,16 +137,20 @@ namespace Restless.Controls
             this.Bind(x => x.Response.Status).To(x => statusLabel.Content = x);
             this.Bind(x => x.MainWindow.OutputTypes).To(outputTypeColumn);
             this.Bind(x => x.MainWindow.ApiSplitterPosition).Mate(topRow, RowDefinition.HeightProperty);
-            this.Bind(x => x.Method).To(x => bodyTab.Visibility = x.IsBodyAllowed() ? Visibility.Visible : Visibility.Collapsed);
+            this.Bind(x => x.Model.Method).To(x => bodyTab.Visibility = x.IsBodyAllowed() ? Visibility.Visible : Visibility.Collapsed);
+
+            foreach (var requestVisualizer in requestVisualizers)
+            {
+                this.Bind(x => x).To(x => requestVisualizer.Model = x);
+            }
         }
 
         public void InitNew()
         {
-            Dispatcher.InvokeAsync(() =>
+            foreach (var requestVisualizer in requestVisualizers)
             {
-                title.Value.SelectAll();
-                title.Value.Focus();
-            }, DispatcherPriority.ApplicationIdle);
+                requestVisualizer.InitNew();
+            }
         }
     }
 }
