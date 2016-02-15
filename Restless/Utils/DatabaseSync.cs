@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
-using Microsoft.Data.Entity;
-using Restless.Database;
 using Restless.Database.Repositories;
 using Restless.Models;
 using SexyReact;
@@ -16,7 +13,7 @@ namespace Restless.Utils
         public static void SetUpSync<TViewModel, TModel>(
             this RxList<TViewModel> list, 
             DbRepository repository,
-            ImmutableList<TModel> modelList,
+            RxList<TModel> modelList,
             Func<TViewModel, TModel> newModelObject
         )
             where TViewModel : IIdObject, IRxObject
@@ -26,7 +23,7 @@ namespace Restless.Utils
             {
                 viewModel.Changed.Where(y => y.Property.Name != nameof(IdObject.Id)).Subscribe(y =>
                 {
-                    model.GetType().GetProperty(y.Property.Name).SetValue(model, y.NewValue);
+                    model.GetType().GetProperty(y.Property.Name)?.SetValue(model, y.NewValue);
                 });
             };
             var modelsById = modelList.ToDictionary(x => x.Id);
@@ -38,16 +35,14 @@ namespace Restless.Utils
             {
                 viewModel.ObservePropertyChange(y => y.Id).SubscribeOnce(y => viewModel.Id = y);
                 var newModel = newModelObject(viewModel);
+                bind(viewModel, newModel);
                 modelList.Add(newModel);
                 await repository.WaitForIdle();
-                bind(viewModel, newModel);
             });
-            list.ItemRemoved.Subscribe(async viewModel =>
+            list.ItemRemoved.Subscribe(viewModel =>
             {
-                var db = new RestlessDb();
-                var dbApiHeader = await db.Set<TModel>().SingleAsync(y => y.Id == viewModel.Id);
-                db.Set<TModel>().Remove(dbApiHeader);
-                await db.SaveChangesAsync();
+                var model = modelList.Single(x => x.Id == viewModel.Id);
+                modelList.Remove(model);
             });
         } 
     }

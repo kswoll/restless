@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Nito.AsyncEx;
 using Restless.Models;
-using Restless.Utils;
+using SexyReact;
 
 namespace Restless.Database.Repositories
 {
@@ -142,9 +142,55 @@ namespace Restless.Database.Repositories
         {
             cache = cache.Add(modelItem, dbItem);
             int? isSavePending = null;
+            foreach (var property in modelItem.GetType().GetProperties().Where(x => typeof(IRxListObservables).IsAssignableFrom(x.PropertyType)))
+            {
+                var list = (IRxListObservables)property.GetValue(modelItem, null);
+                if (list == null)
+                {
+                    list = (IRxListObservables)Activator.CreateInstance(property.PropertyType);
+                    property.SetValue(modelItem, list);
+                }
+                var dbListProperty = dbItem.GetType().GetProperty(property.Name);
+                var dbList = (IList)dbListProperty.GetValue(dbItem, null);
+                list.Changed
+                    .Do(_ =>
+                    {
+                        using (locker.Lock())
+                        {
+                            isSavePending = isSavePending ?? ++this.isSavePending;
+                        }                        
+                    })
+                    .Select(async changes =>
+                    {
+                        foreach (var added in changes.Added)
+                        {
+                            var childDbType = dbListProperty.PropertyType.GetGenericArguments()[0];
+                            var childDbItem = (IIdObject)Activator.CreateInstance(childDbType);
+                            var childModelItem = (IdObject)added.Value;
+                            Bind(childModelItem, childDbItem);
+                            MapScalarsToDb(childModelItem, childDbItem);
+                            dbList.Add(childDbItem);                            
+                        }
+                        foreach (var removed in changes.Removed)
+                        {
+                            var childModelItem = (IdObject)removed.Value;
+                            var childDbItem = cache[childModelItem];
+                            dbList.Remove(childDbItem);                            
+                        }
+                        using (await locker.LockAsync())
+                        {
+                            await db.SaveChangesAsync();
+                            this.isSavePending--;
+                            isSavePending = null;
+                            if (this.isSavePending == 0)
+                                idle.Set();
+                        }
+                    })
+                    .Subscribe();
+            }
             modelItem.Changed
-                .Where(x => x.Property.Name != nameof(IIdObject.Id))
-                .Do(_ =>
+                .Where(x => x.Property.Name != nameof(IIdObject.Id) && !typeof(IRxListObservables).IsAssignableFrom(x.Property.PropertyType))
+                .Do(x =>
                 {
                     using (locker.Lock())
                     {
@@ -154,31 +200,7 @@ namespace Restless.Database.Repositories
                 .Throttle(TimeSpan.FromSeconds(1))
                 .Select(async x =>
                 {
-                    if (typeof(IList).IsAssignableFrom(x.Property.PropertyType))
-                    {
-                        var oldList = ((IEnumerable)x.OldValue)?.Cast<IdObject>() ?? Enumerable.Empty<IdObject>();
-                        var newList = ((IEnumerable)x.NewValue)?.Cast<IdObject>() ?? Enumerable.Empty<IdObject>();
-                        var merge = oldList.Merge(newList);
-                        var dbListProperty = dbItem.GetType().GetProperty(x.Property.Name);
-                        var dbList = (IList)dbListProperty.GetValue(dbItem, null);
-                        foreach (var childModelItem in merge.Removed)
-                        {
-                            var childDbItem = cache[childModelItem];
-                            dbList.Remove(childDbItem);
-                        }
-                        foreach (var childModelItem in merge.Added)
-                        {
-                            var childDbType = dbListProperty.PropertyType.GetGenericArguments()[0];
-                            var childDbItem = (IIdObject)Activator.CreateInstance(childDbType);
-                            Bind(childModelItem, childDbItem);
-                            MapScalarsToDb(childModelItem, childDbItem);
-                            dbList.Add(childDbItem);
-                        }
-                    }
-                    else
-                    {
-                        MapScalarsToDb(modelItem, dbItem);
-                    }
+                    MapScalarsToDb(modelItem, dbItem);
                     using (await locker.LockAsync())
                     {
                         await db.SaveChangesAsync();
@@ -221,20 +243,20 @@ namespace Restless.Database.Repositories
                             Name = y.Name,
                             DefaultValue = y.DefaultValue,
                             InputType = y.InputType
-                        }).ToImmutableList(),
+                        }).ToRxList(),
                         Outputs = MapChildrenFromDb(dbApiItem.Outputs, y => new ApiOutput
                         {
                             Id = y.Id,
                             Name = y.Name,
                             Type = y.Type,
                             Expression = y.Expression
-                        }).ToImmutableList(),
+                        }).ToRxList(),
                         Headers = MapChildrenFromDb(dbApiItem.Headers, y => new ApiHeader
                         {
                             Id = y.Id,
                             Name = y.Name,
                             Value = y.Value
-                        }).ToImmutableList(),
+                        }).ToRxList(),
                         Body = dbApiItem.RequestBody
                     };
                 }
@@ -243,7 +265,7 @@ namespace Restless.Database.Repositories
                     apiItem = new ApiCollection
                     {
                         Type = ApiItemType.Collection,
-                        Items = MapFromDb(dbApiItemsByParentId[dbApiItem.Id], dbApiItemsByParentId).ToImmutableList()
+                        Items = MapFromDb(dbApiItemsByParentId[dbApiItem.Id], dbApiItemsByParentId).ToRxList()
                     };
                 }
                 apiItem.Id = dbApiItem.Id;
@@ -301,7 +323,7 @@ namespace Restless.Database.Repositories
             saveMappers[modelItem.GetType()].DynamicInvoke(modelItem, dbItem);
         }
 
-        private void MapChildrenToDb<TModel, TDatabase>(ImmutableList<TModel> modelObjects, List<TDatabase> dbObjects)
+        private void MapChildrenToDb<TModel, TDatabase>(RxList<TModel> modelObjects, List<TDatabase> dbObjects)
             where TModel : IdObject
             where TDatabase : IIdObject, new()
         {

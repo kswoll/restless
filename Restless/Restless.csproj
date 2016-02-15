@@ -179,7 +179,11 @@
     <Compile Include="Controls\ApiPanel.cs" />
     <Compile Include="Controls\ApiResponsePanel.cs" />
     <Compile Include="Controls\RequestVisualizer.cs" />
+    <Compile Include="Controls\RequestVisualizers\BodyRequestVisualizer.cs" />
     <Compile Include="Controls\RequestVisualizers\GeneralRequestVisualizer.cs" />
+    <Compile Include="Controls\RequestVisualizers\HeadersRequestVisualizer.cs" />
+    <Compile Include="Controls\RequestVisualizers\InputsRequestVisualizer.cs" />
+    <Compile Include="Controls\RequestVisualizers\OutputsRequestVisualizer.cs" />
     <Compile Include="Controls\ResponseActions\IResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\NextPageResponseAction.cs" />
     <Compile Include="Controls\ResponseActions\PageResponseAction.cs" />

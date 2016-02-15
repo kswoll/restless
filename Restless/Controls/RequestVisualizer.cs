@@ -16,7 +16,11 @@ namespace Restless.Controls
         /// <summary>
         /// Called when a new API is created.
         /// </summary>
-        public virtual void InitNew()
+        public virtual void InitializeNew()
+        {
+        }
+
+        public virtual void InitializeTab(TabItem item)
         {
         }
     }

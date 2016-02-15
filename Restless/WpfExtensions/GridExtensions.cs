@@ -36,7 +36,7 @@ namespace Restless.WpfExtensions
             });
         }
 
-        public static void AddColumn(this Grid grid, int width, GridUnitType unit = GridUnitType.Pixel)
+        public static void AddColumn(this Grid grid, double width, GridUnitType unit = GridUnitType.Pixel)
         {
             grid.ColumnDefinitions.Add(new ColumnDefinition
             {
@@ -44,7 +44,7 @@ namespace Restless.WpfExtensions
             });
         }
 
-        public static RowDefinition AddRow(this Grid grid, int height, GridUnitType unit = GridUnitType.Pixel)
+        public static RowDefinition AddRow(this Grid grid, double height, GridUnitType unit = GridUnitType.Pixel)
         {
             var row = new RowDefinition
             {

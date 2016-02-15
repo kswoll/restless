@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using NUnit.Framework;
 using Restless.Models;
+using SexyReact;
 
 namespace Restless.Tests.Database
 {
@@ -58,7 +57,7 @@ namespace Restless.Tests.Database
         {
             var api = new Api
             {
-                Headers = ImmutableList.Create(new ApiHeader { Name = "test name", Value = "test value" })
+                Headers = new RxList<ApiHeader>(new ApiHeader { Name = "test name", Value = "test value" })
             };
 
             await repository.AddItem(api);
@@ -72,7 +71,7 @@ namespace Restless.Tests.Database
         {
             var api = new Api
             {
-                Headers = ImmutableList.Create(new ApiHeader { Name = "test name", Value = "test value" })
+                Headers = new RxList<ApiHeader>(new ApiHeader { Name = "test name", Value = "test value" })
             };
 
             await repository.AddItem(api);
@@ -93,7 +92,7 @@ namespace Restless.Tests.Database
             var api = new Api();
             await repository.AddItem(api);
 
-            api.Headers = ImmutableList.Create(new ApiHeader { Name = "test name", Value = "test value" });
+            api.Headers.Add(new ApiHeader { Name = "test name", Value = "test value" });
 
             await repository.WaitForIdle();
 
@@ -108,7 +107,7 @@ namespace Restless.Tests.Database
         {
             var collection = new ApiCollection
             {
-                Items = ImmutableList.Create<ApiItem>(new Api())
+                Items = new RxList<ApiItem>(new Api())
             };
             await repository.AddItem(collection);
 
@@ -121,11 +120,11 @@ namespace Restless.Tests.Database
         {
             var collection = new ApiCollection
             {
-                Items = ImmutableList<ApiItem>.Empty
+                Items = new RxList<ApiItem>()
             };
             await repository.AddItem(collection);
 
-            collection.Items = collection.Items.Add(new Api());
+            collection.Items.Add(new Api());
 
             await repository.WaitForIdle();
 

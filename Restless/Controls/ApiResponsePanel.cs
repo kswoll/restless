@@ -31,6 +31,10 @@ namespace Restless.Controls
             this.Bind(x => x).To(model =>
             {
                 Visibility = model?.Status != null ? Visibility.Visible : Visibility.Hidden;
+                foreach (TabItem tabItem in tabControl.Items)
+                {
+                    tabItem.Template = null;
+                }
                 tabControl.Items.Clear();
                 buttonPanel.Children.Clear();
 
@@ -46,7 +50,6 @@ namespace Restless.Controls
                             Content = visualizer
                         });
                     }
-
                     var actions = ResponseActionRegistry.GetActions(Model).ToList();
                     if (actions.Any())
                     {

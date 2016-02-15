@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -96,9 +95,9 @@ namespace Restless.ViewModels
                 Method = ApiMethod.Get,
                 Created = DateTime.UtcNow,
                 Type = ApiItemType.Api,
-                Headers = ImmutableList<ApiHeader>.Empty,
-                Inputs = ImmutableList<ApiInput>.Empty,
-                Outputs = ImmutableList<ApiOutput>.Empty
+                Headers = new RxList<ApiHeader>(),
+                Inputs = new RxList<ApiInput>(),
+                Outputs = new RxList<ApiOutput>()
             };
             await Repository.AddItem(api);
 
@@ -114,7 +113,7 @@ namespace Restless.ViewModels
                 Title = "(New Api Collection)",
                 Created = DateTime.UtcNow,
                 Type = ApiItemType.Collection,
-                Items = ImmutableList<ApiItem>.Empty
+                Items = new RxList<ApiItem>()
             };
             await Repository.AddItem(apiCollection);
 

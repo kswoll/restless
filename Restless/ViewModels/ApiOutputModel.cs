@@ -1,4 +1,5 @@
-﻿using Restless.Models;
+﻿using System;
+using Restless.Models;
 
 namespace Restless.ViewModels
 {
@@ -9,5 +10,6 @@ namespace Restless.ViewModels
         public string Expression { get; set; }
         public ApiOutputType Type { get; set; }
         public object Value { get; set; }
+        public string ValueAsString => Value?.ToString().Replace(Environment.NewLine, "\\n") ?? "";
     }
 }

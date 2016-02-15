@@ -44,7 +44,7 @@ namespace Restless.Controls.RequestVisualizers
             this.Bind(x => x.Model.Method).Mate(method, x => x.MainWindow.Methods);
         }
 
-        public override void InitNew()
+        public override void InitializeNew()
         {
             Dispatcher.InvokeAsync(() =>
             {

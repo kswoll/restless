@@ -30,7 +30,7 @@ namespace Restless.ViewModels
                 Type = Type,
                 Title = Model.Title,
                 Created = Model.Created,
-                Items = Items.Select(x => x.Export()).ToImmutableList()
+                Items = Items.Select(x => x.Export()).ToRxList()
             };
         }
 
