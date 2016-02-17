@@ -14,11 +14,10 @@ namespace Restless.Controls.RequestVisualizers
             var apiOutputsGrid = new RxDataGrid<ApiOutputModel>
             {
                 AutoGenerateColumns = false,
-                HeadersVisibility = DataGridHeadersVisibility.Column,
+                HeadersVisibility = DataGridHeadersVisibility.Column | DataGridHeadersVisibility.Row,
                 CanUserAddRows = true,
                 CanUserDeleteRows = true,
-                SelectionUnit = DataGridSelectionUnit.Cell,
-//                MaxPreferredHeight = 200
+                SelectionUnit = DataGridSelectionUnit.CellOrRowHeader
             };
             apiOutputsGrid.AddTextColumn("Name", x => x.Name, new DataGridLength(1, DataGridLengthUnitType.Star));
             apiOutputsGrid.AddTextColumn("Expression", x => x.Expression, new DataGridLength(2, DataGridLengthUnitType.Star));

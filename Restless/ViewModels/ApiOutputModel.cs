@@ -10,6 +10,6 @@ namespace Restless.ViewModels
         public string Expression { get; set; }
         public ApiOutputType Type { get; set; }
         public object Value { get; set; }
-        public string ValueAsString => Value?.ToString().Replace(Environment.NewLine, "\\n") ?? "";
+        public string ValueAsString => Value?.ToString().Replace("\n", "\\n").Replace("\r", "\\r") ?? "";
     }
 }

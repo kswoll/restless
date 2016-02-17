@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Controls\ApiCollectionPanel.cs" />
     <Compile Include="Controls\ApiPanel.cs" />
     <Compile Include="Controls\ApiResponsePanel.cs" />
     <Compile Include="Controls\RequestVisualizer.cs" />

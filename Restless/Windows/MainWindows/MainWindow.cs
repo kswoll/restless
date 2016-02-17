@@ -46,7 +46,8 @@ namespace Restless.Windows.MainWindows
 
             var menu = new Menu();
             var fileMenu = menu.Add("_File");
-            var newApiMenuItem = fileMenu.Add("_New Api");
+            var newApiMenuItem = fileMenu.Add("New _Api");
+            var newApiCollectionItem = fileMenu.Add("New Api _Collection");
             var exportAllMenuItem = fileMenu.Add("_Export");
             var importMenuItem = fileMenu.Add("_Import");
 
@@ -56,21 +57,32 @@ namespace Restless.Windows.MainWindows
 
             Content = content;
 
-            var itemPanel = new ApiPanel();
+            var apiPanel = new ApiPanel();
+            var apiCollectionPanel = new ApiCollectionPanel();
 
             this.Bind(x => x.Title).To(this, (window, title) => window.Title = title ?? "");
             this.Bind(x => x.Items).To(apiList, x => x.SelectedItem);
             this.Bind(x => x.AddChildApi).To(x => addChildApiMenuItem.Command = x);
             this.Bind(x => x.AddChildApiCollection).To(x => addChildApiCollectionMenuItem.Command = x);
             this.Bind(x => x.DeleteSelectedItem).To(x => apiDeleteMenuItem.Command = x);
-            this.Bind(x => x.SelectedItem).ObserveModelPropertyChange().OfType<ApiModel>().Subscribe(x =>
+
+            var selectedItemChange = this.Bind(x => x.SelectedItem).ObserveModelPropertyChange();
+            var selectedItemNotNullChange = selectedItemChange.Where(x => x != null);
+            selectedItemChange.Where(x => x == null).Subscribe(x => HideContent());
+            selectedItemNotNullChange.OfType<ApiModel>().Subscribe(x =>
             {
-                itemPanel.Model = x;
+                apiPanel.Model = x;
+                ShowContent(apiPanel);
+            });
+            selectedItemNotNullChange.OfType<ApiCollectionModel>().Subscribe(x =>
+            {
+                apiCollectionPanel.Model = x;
                 if (x != null)
-                    ShowContent(itemPanel);
+                    ShowContent(apiCollectionPanel);
                 else
                     HideContent();
             });
+
             this.Bind(x => x.SplitterPosition).Mate(grid.ColumnDefinitions[0], ColumnDefinition.WidthProperty);
 
             var addApi = this.Bind(x => x.AddApi);
@@ -80,6 +92,7 @@ namespace Restless.Windows.MainWindows
                 Model.SelectedItem = apiModel;
                 ((ApiPanel)this.content).InitNew();
             });
+            this.Bind(x => x.AddApiCollection).To(x => newApiCollectionItem.Command = x);
 
             this.Bind(x => x.Export).To(x => exportAllMenuItem.Command = x);
             this.Bind(x => x.Import).To(x => importMenuItem.Command = x);

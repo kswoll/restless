@@ -102,7 +102,10 @@ namespace Restless.ViewModels
             await Repository.AddItem(api);
 
             var model = new ApiModel(this, parent, api);
-            Items.Add(model);
+            if (parent == null)
+                Items.Add(model);
+            else
+                parent.Items.Add(model);
             return model;
         }
 
@@ -119,7 +122,11 @@ namespace Restless.ViewModels
 
             var model = new ApiCollectionModel(this, parent, apiCollection);
 
-            Items.Add(model);
+            if (parent == null)
+                Items.Add(model);
+            else
+                parent.Items.Add(model);
+
             return model;
         }
 
