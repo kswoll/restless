@@ -1,6 +1,6 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Linq;
 using Restless.Models;
+using Restless.Utils;
 using SexyReact;
 
 namespace Restless.ViewModels
@@ -9,18 +9,21 @@ namespace Restless.ViewModels
     {
         public ApiCollection Model { get; }
 
-        public RxList<ApiItemModel> Items { get; }
         public override ApiItemType Type => ApiItemType.Collection;
 
         public ApiCollectionModel(MainWindowModel mainWindow, ApiCollectionModel parent, ApiCollection apiCollection) : base(mainWindow, parent, apiCollection)
         {
             Model = apiCollection;
-            Items = new RxList<ApiItemModel>();
 
             if (apiCollection.Items != null)
                 Items.AddRange(apiCollection.Items.Select(x => x.Type == ApiItemType.Collection ? 
                     (ApiItemModel)new ApiCollectionModel(mainWindow, this, (ApiCollection)x) :
                     new ApiModel(mainWindow, this, (Api)x)));
+
+            Items.SetUpSync(
+                MainWindow.Repository,
+                Model.Items,
+                x => x.ItemModel);
         }
 
         public override ApiItem Export()

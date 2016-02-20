@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
+using SexyReact;
 
 namespace Restless.Database
 {
@@ -36,6 +37,12 @@ namespace Restless.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            foreach (var type in typeof(DbObject).Assembly.GetTypes().Where(x => typeof(DbObject).IsAssignableFrom(x) && x != typeof(DbObject)))
+            {
+                modelBuilder.Entity(type).Ignore(nameof(RxObject.Changed));
+                modelBuilder.Entity(type).Ignore(nameof(RxObject.Changing));
+            }
 
 //            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
 //            {

@@ -7,9 +7,8 @@ using Restless.Models;
 namespace Restless.Database
 {
     [Table("ApiItem")]
-    public class DbApiItem : IIdObject
+    public class DbApiItem : DbObject
     {
-        public int Id { get; set; }
         public int? CollectionId { get; set; }
         public DateTime Created { get; set; }
         public string Title { get; set; }

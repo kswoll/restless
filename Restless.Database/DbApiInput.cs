@@ -4,9 +4,8 @@ using Restless.Models;
 namespace Restless.Database
 {
     [Table("ApiInput")]
-    public class DbApiInput : IIdObject
+    public class DbApiInput : DbObject
     {
-        public int Id { get; set; } 
         public int ApiId { get; set; }
         public ApiInputType InputType { get; set; }
         public string Name { get; set; }

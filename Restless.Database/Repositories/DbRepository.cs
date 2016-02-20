@@ -9,6 +9,7 @@ using Microsoft.Data.Entity;
 using Nito.AsyncEx;
 using Restless.Models;
 using SexyReact;
+using SexyReact.Utils;
 
 namespace Restless.Database.Repositories
 {
@@ -22,6 +23,7 @@ namespace Restless.Database.Repositories
         private readonly AsyncLock locker = new AsyncLock();
         private readonly AsyncAutoResetEvent idle = new AsyncAutoResetEvent(false);
         private ImmutableList<ApiItem> items = ImmutableList<ApiItem>.Empty;
+        private ImmutableDictionary<int, ApiItem> itemsById = ImmutableDictionary<int, ApiItem>.Empty;
         private ImmutableDictionary<IdObject, object> cache = ImmutableDictionary<IdObject, object>.Empty;
         private int isSavePending;
 
@@ -61,6 +63,7 @@ namespace Restless.Database.Repositories
                     .Include(x => x.Inputs)
                     .Include(x => x.Outputs)
                     .Include(x => x.Outputs)
+                    .Include(x => x.Items)
                     .ToArrayAsync();
                 var dbApiItemsByParentId = dbApiItems.ToLookup(x => x.CollectionId ?? 0);
 
@@ -82,7 +85,7 @@ namespace Restless.Database.Repositories
         {
             using (await locker.LockAsync())
             {
-                var item = items.Single(x => x.Id == id);
+                var item = itemsById[id];
                 var dbItem = (DbApiItem)cache[item];
                 cache = cache.Remove(item);
                 db.ApiItems.Remove(dbItem);
@@ -100,6 +103,7 @@ namespace Restless.Database.Repositories
                 db.ApiItems.Add(dbApiItem);
                 await db.SaveChangesAsync();
                 apiItem.Id = dbApiItem.Id;
+                itemsById = itemsById.Add(apiItem.Id, apiItem);
             }
         }
 
@@ -131,6 +135,11 @@ namespace Restless.Database.Repositories
                     foreach (var childApiItem in apiCollection.Items)
                     {
                         var childDbItem = MapItemToDb(childApiItem);
+                        childDbItem.ObservePropertyChange(x => x.Id).SubscribeOnce(x =>
+                        {
+                            childApiItem.Id = x;
+                            itemsById.Add(x, childApiItem);
+                        });
                         dbApiItem.Items.Add(childDbItem);
                     }                    
                 }
@@ -152,6 +161,11 @@ namespace Restless.Database.Repositories
                 }
                 var dbListProperty = dbItem.GetType().GetProperty(property.Name);
                 var dbList = (IList)dbListProperty.GetValue(dbItem, null);
+                if (dbList == null)
+                {
+                    dbList = (IList)Activator.CreateInstance(dbListProperty.PropertyType);
+                    dbListProperty.SetValue(dbItem, dbList);
+                }
                 list.Changed
                     .Do(_ =>
                     {
@@ -169,7 +183,13 @@ namespace Restless.Database.Repositories
                             var childModelItem = (IdObject)added.Value;
                             Bind(childModelItem, childDbItem);
                             MapScalarsToDb(childModelItem, childDbItem);
-                            dbList.Add(childDbItem);                            
+                            dbList.Add(childDbItem);
+
+                            var dbApiItem = childDbItem as DbApiItem;
+                            if (dbApiItem != null)
+                            {
+                                dbApiItem.ObservePropertyChange(x => x.Id).SubscribeOnce(x => childModelItem.Id = x);
+                            }
                         }
                         foreach (var removed in changes.Removed)
                         {
@@ -271,6 +291,8 @@ namespace Restless.Database.Repositories
                 apiItem.Id = dbApiItem.Id;
                 apiItem.Created = dbApiItem.Created;
                 apiItem.Title = dbApiItem.Title;
+
+                itemsById = itemsById.Add(apiItem.Id, apiItem);
 
                 Bind(apiItem, dbApiItem);
                 yield return apiItem;

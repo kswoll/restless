@@ -171,9 +171,10 @@
     <Compile Include="DbApiInput.cs" />
     <Compile Include="DbApiOutput.cs" />
     <Compile Include="DbApiResponseComplication.cs" />
-    <Compile Include="Migrations\20160213164746_InitialDb.cs" />
-    <Compile Include="Migrations\20160213164746_InitialDb.designer.cs">
-      <DependentUpon>20160213164746_InitialDb.cs</DependentUpon>
+    <Compile Include="DbObject.cs" />
+    <Compile Include="Migrations\20160219150430_InitialDb.cs" />
+    <Compile Include="Migrations\20160219150430_InitialDb.designer.cs">
+      <DependentUpon>20160219150430_InitialDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\RestlessDbModelSnapshot.cs" />
     <Compile Include="Repositories\DbRepository.cs" />

@@ -4,9 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Restless.Database
 {
     [Table("ApiCallRequestHeader")]
-    public class DbApiCallRequestHeader
+    public class DbApiCallRequestHeader : DbObject
     {
-        public int Id { get; set; }
         public int ApiCallId { get; set; }
 
         [Required]

@@ -3,9 +3,8 @@
 namespace Restless.Database
 {
     [Table("ApiResponseVisualizer")]
-    public class DbApiResponseComplication
+    public class DbApiResponseComplication : DbObject
     {
-        public int Id { get; set; }
         public int ApiId { get; set; }
         public int Priority { get; set; }
         public string ComplicationClass { get; set; }

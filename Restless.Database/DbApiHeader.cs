@@ -5,9 +5,8 @@ using Restless.Models;
 namespace Restless.Database
 {
     [Table("ApiHeader")]
-    public class DbApiHeader : IIdObject
+    public class DbApiHeader : DbObject
     {
-        public int Id { get; set; } 
         public int ApiId { get; set; }
 
         [Required]

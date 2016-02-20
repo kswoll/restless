@@ -25,7 +25,6 @@ namespace Restless.ViewModels
         public IRxCommand Export { get; }
         public IRxCommand Import { get; }
         public RxList<ApiItemModel> Items { get; }
-        public ApiItemModel SelectedItem { get; set; }
         public List<ApiMethod> Methods { get; }
         public List<ApiOutputType> OutputTypes { get; }
         public int SplitterPosition { get; set; }
@@ -35,6 +34,7 @@ namespace Restless.ViewModels
         public DbRepository Repository { get; }
 
         private readonly Func<SelectFileType, string, string, string> selectFile;
+        private ApiItemModel selectedItem;
 
         private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
         private static readonly ApiOutputType[] outputTypes = { ApiOutputType.Default, ApiOutputType.JsonPath };
@@ -87,38 +87,40 @@ namespace Restless.ViewModels
             DeleteSelectedItem = RxCommand.CreateAsync(OnDeleteSelectedItem);
         }
 
+        public ApiItemModel SelectedItem
+        {
+            get { return selectedItem; }
+            set
+            {
+                selectedItem?.NotifySelectedChanged(false);
+                selectedItem = value;
+                OnChanged(GetType().GetProperty("SelectedItem"), value);
+                selectedItem?.NotifySelectedChanged(true);
+            }
+        }
+
         private async Task<ApiModel> OnAddApi(ApiCollectionModel parent)
         {
-            var api = new Api
-            {
-                Title = "(New Api)",
-                Method = ApiMethod.Get,
-                Created = DateTime.UtcNow,
-                Type = ApiItemType.Api,
-                Headers = new RxList<ApiHeader>(),
-                Inputs = new RxList<ApiInput>(),
-                Outputs = new RxList<ApiOutput>()
-            };
-            await Repository.AddItem(api);
+            var api = Api.Create();
+            if (parent == null)
+                await Repository.AddItem(api);
 
             var model = new ApiModel(this, parent, api);
             if (parent == null)
                 Items.Add(model);
             else
                 parent.Items.Add(model);
+
+            SelectedItem = model;
+
             return model;
         }
 
         private async Task<ApiCollectionModel> OnAddApiCollection(ApiCollectionModel parent)
         {
-            var apiCollection = new ApiCollection
-            {
-                Title = "(New Api Collection)",
-                Created = DateTime.UtcNow,
-                Type = ApiItemType.Collection,
-                Items = new RxList<ApiItem>()
-            };
-            await Repository.AddItem(apiCollection);
+            var apiCollection = ApiCollection.Create();
+            if (parent == null)
+                await Repository.AddItem(apiCollection);
 
             var model = new ApiCollectionModel(this, parent, apiCollection);
 
@@ -126,6 +128,8 @@ namespace Restless.ViewModels
                 Items.Add(model);
             else
                 parent.Items.Add(model);
+
+            SelectedItem = model;
 
             return model;
         }

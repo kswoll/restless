@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using NUnit.Framework;
+using Restless.Database.Repositories;
 using Restless.Models;
 using SexyReact;
 
@@ -130,6 +132,34 @@ namespace Restless.Tests.Database
 
             var dbApiItem = await db.ApiItems.Include(x => x.Items).SingleAsync(x => x.Id == collection.Id);
             Assert.AreEqual(1, dbApiItem.Items.Count);
+        }
+
+        [Test]
+        public async Task CreateThreeLevelHierarchy()
+        {
+            var rootCollection = new ApiCollection { Items = new RxList<ApiItem>(), Title = "Root" };
+            await repository.AddItem(rootCollection);
+            await repository.WaitForIdle();
+
+            var childCollection = new ApiCollection { Items = new RxList<ApiItem>(), Title = "Child" };
+            rootCollection.Items.Add(childCollection);
+            await repository.WaitForIdle();
+
+            var leaf = new Api { Title = "Leaf" };
+            childCollection.Items.Add(leaf);
+            await repository.WaitForIdle();
+
+            var newRepository = new DbRepository(db);
+            await newRepository.Load();
+
+            var loadedRootCollection = (ApiCollection)newRepository.Items.Single();
+            Assert.AreEqual(rootCollection.Title, loadedRootCollection.Title);
+
+            var loadedChildCollection = (ApiCollection)loadedRootCollection.Items.Single();
+            Assert.AreEqual(childCollection.Title, loadedChildCollection.Title);
+
+            var loadedLeaf = (Api)loadedChildCollection.Items.Single();
+            Assert.AreEqual(leaf.Title, loadedLeaf.Title);
         }
     }
 }

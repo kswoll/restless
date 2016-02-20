@@ -4,9 +4,11 @@ using System.Reactive.Linq;
 using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using Restless.Controls;
 using Restless.Properties;
+using Restless.Styles;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
@@ -25,10 +27,7 @@ namespace Restless.Windows.MainWindows
 
             ConfigureWindowStateAndPosition();
 
-            var apiListItemTemplate = new FrameworkElementFactory(typeof(Item));
-
-            var apiList = new ListView();
-            apiList.ItemTemplate = new DataTemplate { VisualTree = apiListItemTemplate };
+            var apiList = new TreeView();
 
             grid = new Grid();
             grid.AddColumn(300);
@@ -60,8 +59,16 @@ namespace Restless.Windows.MainWindows
             var apiPanel = new ApiPanel();
             var apiCollectionPanel = new ApiCollectionPanel();
 
+            var selectedItemBinder = new Binding("IsSelected");
+            selectedItemBinder.Mode = BindingMode.TwoWay;
+            var expandedItemBinder = new Binding("IsExpanded");
+            expandedItemBinder.Mode = BindingMode.TwoWay;
+            apiList.ItemContainerStyle = new Style(typeof(TreeViewItem));
+            apiList.ItemContainerStyle.Setters.Add(new Setter(TreeViewItem.IsSelectedProperty, selectedItemBinder));
+            apiList.ItemContainerStyle.Setters.Add(new Setter(TreeViewItem.IsExpandedProperty, expandedItemBinder));
+
             this.Bind(x => x.Title).To(this, (window, title) => window.Title = title ?? "");
-            this.Bind(x => x.Items).To(apiList, x => x.SelectedItem);
+            this.Bind(x => x.Items).To(apiList, x => x.Items, typeof(Item));
             this.Bind(x => x.AddChildApi).To(x => addChildApiMenuItem.Command = x);
             this.Bind(x => x.AddChildApiCollection).To(x => addChildApiCollectionMenuItem.Command = x);
             this.Bind(x => x.DeleteSelectedItem).To(x => apiDeleteMenuItem.Command = x);
