@@ -4,9 +4,9 @@ using Restless.Templates;
 
 namespace Restless.Styles
 {
-    public class TreeViewItemStyle
+    public class TreeViewItemStyle : Style
     {
-        public static void Register(ResourceDictionary resources)
+        public TreeViewItemStyle() : base(typeof(TreeViewItem))
         {
             var treeViewItemTemplate = new FrameworkElementFactory(typeof(TreeViewItemTemplate));
             treeViewItemTemplate.AppendChild(new FrameworkElementFactory(typeof(ItemsPresenter), "ItemsHost"));
@@ -15,11 +15,12 @@ namespace Restless.Styles
             var controlTemplate = new ControlTemplate(typeof(TreeViewItem));
             controlTemplate.VisualTree = treeViewItemTemplate;
 
-            var style = new Style(typeof(TreeViewItem));
-            style.Setters.Add(new Setter(Control.TemplateProperty, controlTemplate));
+            Setters.Add(new Setter(Control.TemplateProperty, controlTemplate));
+        }
 
-            resources.Add(typeof(TreeViewItem), style);
+        public static void Register(ResourceDictionary resources)
+        {
+            resources.Add(typeof(TreeViewItem), new TreeViewItemStyle());
         } 
-         
     }
 }

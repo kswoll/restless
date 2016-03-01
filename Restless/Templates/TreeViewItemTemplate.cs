@@ -47,15 +47,13 @@ namespace Restless.Templates
             header.Content = item.Header;
             header.ContentTemplate = item.HeaderTemplate;
             header.ContentStringFormat = item.HeaderStringFormat;
-            header.ContentSource = "Header";
             header.HorizontalAlignment = item.HorizontalContentAlignment;
             header.SnapsToDevicePixels = item.SnapsToDevicePixels;
             var border = new Border
             {
                 BorderThickness = item.BorderThickness,
-                Padding = item.Padding,
+                Padding = new Thickness(2, 1, 2, 1),
                 BorderBrush = item.BorderBrush,
-                Name = "Bd",
                 SnapsToDevicePixels = true
             };
             SetColumn(border, 1);
@@ -101,6 +99,7 @@ namespace Restless.Templates
             var noItemsTrigger = item.AddTrigger();
             noItemsTrigger.AddProperty(x => x.IsExpanded);
             noItemsTrigger.AddConditionalAction(x => !x.IsExpanded, setters => setters.Set(itemsHost, x => x.Visibility, Visibility.Collapsed));
+            noItemsTrigger.AddConditionalAction(x => x.IsExpanded, setters => setters.Set(itemsHost, x => x.Visibility, Visibility.Visible));
 
             item.PairExpanded(expander, ToggleButton.CheckedEvent, ToggleButton.UncheckedEvent, ToggleButton.IsCheckedProperty);
 
@@ -123,7 +122,6 @@ namespace Restless.Templates
                 {
                     Fill = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF)),
                     Stroke = new SolidColorBrush(Color.FromArgb(0xFF, 0x81, 0x81, 0x81)),
-                    Name = "ExpandPath",
                     Data = Geometry.Parse("M0,0L0,6L6,0z"),
                     RenderTransform = new RotateTransform(135, 3, 3)
                 };

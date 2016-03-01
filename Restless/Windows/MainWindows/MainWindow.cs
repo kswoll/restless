@@ -63,7 +63,7 @@ namespace Restless.Windows.MainWindows
             selectedItemBinder.Mode = BindingMode.TwoWay;
             var expandedItemBinder = new Binding("IsExpanded");
             expandedItemBinder.Mode = BindingMode.TwoWay;
-            apiList.ItemContainerStyle = new Style(typeof(TreeViewItem));
+            apiList.ItemContainerStyle = new TreeViewItemStyle();
             apiList.ItemContainerStyle.Setters.Add(new Setter(TreeViewItem.IsSelectedProperty, selectedItemBinder));
             apiList.ItemContainerStyle.Setters.Add(new Setter(TreeViewItem.IsExpandedProperty, expandedItemBinder));
 
