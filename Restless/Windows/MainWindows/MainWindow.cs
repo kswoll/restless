@@ -69,8 +69,6 @@ namespace Restless.Windows.MainWindows
 
             this.Bind(x => x.Title).To(this, (window, title) => window.Title = title ?? "");
             this.Bind(x => x.Items).To(apiList, x => x.Items, typeof(Item));
-            this.Bind(x => x.AddChildApi).To(x => addChildApiMenuItem.Command = x);
-            this.Bind(x => x.AddChildApiCollection).To(x => addChildApiCollectionMenuItem.Command = x);
             this.Bind(x => x.DeleteSelectedItem).To(x => apiDeleteMenuItem.Command = x);
 
             var selectedItemChange = this.Bind(x => x.SelectedItem).ObserveModelPropertyChange();
@@ -92,13 +90,26 @@ namespace Restless.Windows.MainWindows
 
             this.Bind(x => x.SplitterPosition).Mate(grid.ColumnDefinitions[0], ColumnDefinition.WidthProperty);
 
-            var addApi = this.Bind(x => x.AddApi);
-            addApi.To(x => newApiMenuItem.Command = x);
-            addApi.ObserveModelPropertyChange().SelectMany(x => x).Subscribe(apiModel =>
+            Action<ApiModel> onAddApi = apiModel =>
             {
                 Model.SelectedItem = apiModel;
                 ((ApiPanel)this.content).InitNew();
+            };
+
+            var addChildApi = this.Bind(x => x.AddChildApi);
+            addChildApi.To(x => addChildApiMenuItem.Command = x);
+            addChildApi.ObserveModelPropertyChange().SelectMany(x => x).Subscribe(onAddApi);
+
+            var addChildApiCollection = this.Bind(x => x.AddChildApiCollection);
+            addChildApiCollection.To(x => addChildApiCollectionMenuItem.Command = x);
+            addChildApiCollection.ObserveModelPropertyChange().SelectMany(x => x).Subscribe(collectionModel =>
+            {
+                Model.SelectedItem = collectionModel;
             });
+
+            var addApi = this.Bind(x => x.AddApi);
+            addApi.To(x => newApiMenuItem.Command = x);
+            addApi.ObserveModelPropertyChange().SelectMany(x => x).Subscribe(onAddApi);
             this.Bind(x => x.AddApiCollection).To(x => newApiCollectionItem.Command = x);
 
             this.Bind(x => x.Export).To(x => exportAllMenuItem.Command = x);
@@ -145,7 +156,7 @@ namespace Restless.Windows.MainWindows
         private void HideContent()
         {
             if (content != null)
-                grid.Children.Remove(this.content);            
+                grid.Children.Remove(content);            
         }
 
         public class Item : RxTextBlock<ApiItemModel>

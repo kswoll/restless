@@ -29,12 +29,12 @@ namespace Restless.ViewModels
         public List<ApiOutputType> OutputTypes { get; }
         public int SplitterPosition { get; set; }
         public int ApiSplitterPosition { get; set; }
+        public ApiItemModel SelectedItem { get; set; }
 
         public IRxCommand DeleteSelectedItem { get; }
         public DbRepository Repository { get; }
 
         private readonly Func<SelectFileType, string, string, string> selectFile;
-        private ApiItemModel selectedItem;
 
         private static readonly ApiMethod[] httpMethods = { ApiMethod.Get, ApiMethod.Post, ApiMethod.Put, ApiMethod.Delete };
         private static readonly ApiOutputType[] outputTypes = { ApiOutputType.Default, ApiOutputType.JsonPath };
@@ -69,6 +69,16 @@ namespace Restless.ViewModels
                 Settings.Default.Save();
             });
 
+            ApiItemModel selectedItem = null;
+            this.ObservePropertyChange(x => x.SelectedItem).Subscribe(x =>
+            {
+                if (selectedItem != null)
+                    selectedItem.IsSelected = false;
+                selectedItem = x;
+                if (selectedItem != null)
+                    selectedItem.IsSelected = true;
+            });
+
             Repository = new DbRepository(new RestlessDb());
 
             Task.Run(async () =>
@@ -85,18 +95,6 @@ namespace Restless.ViewModels
             });
 
             DeleteSelectedItem = RxCommand.CreateAsync(OnDeleteSelectedItem);
-        }
-
-        public ApiItemModel SelectedItem
-        {
-            get { return selectedItem; }
-            set
-            {
-                selectedItem?.NotifySelectedChanged(false);
-                selectedItem = value;
-                OnChanged(GetType().GetProperty("SelectedItem"), value);
-                selectedItem?.NotifySelectedChanged(true);
-            }
         }
 
         private async Task<ApiModel> OnAddApi(ApiCollectionModel parent)
@@ -169,7 +167,6 @@ namespace Restless.ViewModels
         private async Task OnDeleteSelectedItem()
         {
             await SelectedItem.Delete();
-            SelectedItem = null;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Data.Entity.Metadata.Internal;
 using Restless.Models;
-using Restless.Utils;
 using SexyReact;
 
 namespace Restless.ViewModels
@@ -14,6 +12,7 @@ namespace Restless.ViewModels
         public ApiCollectionModel Parent { get; }
         public RxList<ApiItemModel> Items { get; }
         public bool IsExpanded { get; set; }
+        public bool IsSelected { get; set; }
 
         public abstract ApiItemType Type { get; }
         public abstract ApiItem Export();
@@ -24,30 +23,26 @@ namespace Restless.ViewModels
             Parent = parent;
             ItemModel = item;
             Items = new RxList<ApiItemModel>();
+
+            this.ObservePropertyChange(x => x.IsSelected).Subscribe(x =>
+            {
+                if (x)
+                {
+                    var current = Parent;
+                    while (current != null)
+                    {
+                        current.IsExpanded = true;
+                        current = current.Parent;
+                    }
+                    MainWindow.SelectedItem = this;
+                }
+            });
         }
 
         int IIdObject.Id
         {
             get { return ItemModel.Id; }
             set { ItemModel.Id = value; }
-        }
-
-        public bool IsSelected
-        {
-            get { return MainWindow.SelectedItem == this; }
-            set
-            {
-                var current = Parent;
-                while (current != null)
-                {
-                    current.IsExpanded = true;
-                    current = current.Parent;
-                }
-                if (value)
-                    MainWindow.SelectedItem = this;
-                else
-                    MainWindow.SelectedItem = null;
-            }
         }
 
         public async Task Delete()
@@ -78,11 +73,6 @@ namespace Restless.ViewModels
                     throw new Exception();
             }
             return result;
-        }
-
-        public void NotifySelectedChanged(bool isSelected)
-        {
-            OnChanged(GetType().GetProperty("IsSelected"), isSelected);
         }
     }
 }
