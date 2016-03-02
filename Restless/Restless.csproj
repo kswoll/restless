@@ -232,6 +232,7 @@
     <Compile Include="Styles\TextBoxStyle.cs" />
     <Compile Include="Styles\ToggleButtonStyle.cs" />
     <Compile Include="Styles\TreeViewItemStyle.cs" />
+    <Compile Include="Styles\TypedStyle.cs" />
     <Compile Include="Templates\ButtonTemplate.cs" />
     <Compile Include="Templates\TextBoxTemplate.cs" />
     <Compile Include="Templates\TreeViewItemTemplate.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="WpfExtensions\PropertyPathGenerator.cs" />
     <Compile Include="WpfExtensions\RestlessTreeView.cs" />
     <Compile Include="WpfExtensions\StoryboardExtensions.cs" />
+    <Compile Include="WpfExtensions\StyleExtensions.cs" />
     <Compile Include="WpfExtensions\TreeViewExtensions.cs" />
     <Compile Include="WpfExtensions\TreeViewItemFilter.cs" />
     <Compile Include="WpfExtensions\UIElementExtensions.cs" />

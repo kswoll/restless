@@ -4,12 +4,12 @@ using Restless.Templates;
 
 namespace Restless.Styles
 {
-    public class TreeViewItemStyle : Style
+    public class TreeViewItemStyle : TypedStyle<TreeViewItem>
     {
         public ControlTemplate Template { get; }
         public FrameworkElementFactory VisualTree { get; }
 
-        public TreeViewItemStyle() : base(typeof(TreeViewItem))
+        public TreeViewItemStyle() 
         {
             VisualTree = new FrameworkElementFactory(typeof(TreeViewItemTemplate));
             VisualTree.AppendChild(new FrameworkElementFactory(typeof(ItemsPresenter), "ItemsHost"));
