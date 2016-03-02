@@ -64,13 +64,14 @@ namespace Restless.Controls
 
             topPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
-            var preferredHeight = topPanel.DesiredSize.Height;
+            var preferredHeight = topPanel.DesiredSize.Height + 10;
+
             var topRow = this.AddRow(preferredHeight);
             this.AddRow(4);
             this.AddRow(new GridLength(1, GridUnitType.Star));
             topRow.MinHeight = preferredHeight;
             this.Add(topPanel, 0, 0);
-            this.AddHorizontalSplitter(1, 0);
+            this.AddHorizontalSplitter(200, 200);
 
             this.Bind(x => x.Send).To(x => sendButton.Command = x);
             this.Bind(x => x.Reset).To(x => resetButton.Command = x);

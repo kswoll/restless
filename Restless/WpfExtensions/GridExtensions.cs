@@ -28,20 +28,24 @@ namespace Restless.WpfExtensions
             grid.Children.Add(child);
         }
 
-        public static void AddColumn(this Grid grid, GridLength width)
+        public static ColumnDefinition AddColumn(this Grid grid, GridLength width)
         {
-            grid.ColumnDefinitions.Add(new ColumnDefinition
+            var column = new ColumnDefinition
             {
                 Width = width
-            });
+            };
+            grid.ColumnDefinitions.Add(column);
+            return column;
         }
 
-        public static void AddColumn(this Grid grid, double width, GridUnitType unit = GridUnitType.Pixel)
+        public static ColumnDefinition AddColumn(this Grid grid, double width, GridUnitType unit = GridUnitType.Pixel)
         {
-            grid.ColumnDefinitions.Add(new ColumnDefinition
+            var column = new ColumnDefinition
             {
                 Width = new GridLength(width, unit)
-            });
+            };
+            grid.ColumnDefinitions.Add(column);
+            return column;
         }
 
         public static RowDefinition AddRow(this Grid grid, double height, GridUnitType unit = GridUnitType.Pixel)

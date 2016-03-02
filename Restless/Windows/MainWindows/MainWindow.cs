@@ -28,18 +28,22 @@ namespace Restless.Windows.MainWindows
         {
             SnapsToDevicePixels = true;
             Icon = BitmapFrame.Create(Application.GetResourceStream(new Uri("/Icon.ico", UriKind.Relative)).Stream);
+            MinWidth = 600;
+            MinHeight = 480;
 
             ConfigureWindowStateAndPosition();
 
             var apiList = new RestlessTreeView<ApiItemModel>();
-
+            
             grid = new Grid();
+
             grid.AddColumn(300);
             grid.AddColumn(4);
             grid.AddColumn(1, GridUnitType.Star);
+
             grid.AddRow(1, GridUnitType.Star);
             grid.Add(apiList, 0, 0);
-            grid.AddVerticalSplitter(0, 1);
+            grid.AddVerticalSplitter(200, 400);
             var apiListContextMenu = new ContextMenu();
 
             var addChildApiMenuItem = apiListContextMenu.Add("Add Child _Api");
