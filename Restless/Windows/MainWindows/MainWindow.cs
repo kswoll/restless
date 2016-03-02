@@ -4,11 +4,15 @@ using System.Reactive.Linq;
 using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Restless.Controls;
 using Restless.Properties;
 using Restless.Styles;
+using Restless.Templates;
 using Restless.ViewModels;
 using Restless.WpfExtensions;
 using SexyReact.Views;
@@ -27,7 +31,7 @@ namespace Restless.Windows.MainWindows
 
             ConfigureWindowStateAndPosition();
 
-            var apiList = new TreeView();
+            var apiList = new RestlessTreeView();
 
             grid = new Grid();
             grid.AddColumn(300);

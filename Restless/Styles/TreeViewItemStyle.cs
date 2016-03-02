@@ -6,16 +6,19 @@ namespace Restless.Styles
 {
     public class TreeViewItemStyle : Style
     {
+        public ControlTemplate Template { get; }
+        public FrameworkElementFactory VisualTree { get; }
+
         public TreeViewItemStyle() : base(typeof(TreeViewItem))
         {
-            var treeViewItemTemplate = new FrameworkElementFactory(typeof(TreeViewItemTemplate));
-            treeViewItemTemplate.AppendChild(new FrameworkElementFactory(typeof(ItemsPresenter), "ItemsHost"));
-            treeViewItemTemplate.AppendChild(new FrameworkElementFactory(typeof(ContentPresenter), "PART_Header"));
+            VisualTree = new FrameworkElementFactory(typeof(TreeViewItemTemplate));
+            VisualTree.AppendChild(new FrameworkElementFactory(typeof(ItemsPresenter), "ItemsHost"));
+            VisualTree.AppendChild(new FrameworkElementFactory(typeof(ContentPresenter), "PART_Header"));
 
-            var controlTemplate = new ControlTemplate(typeof(TreeViewItem));
-            controlTemplate.VisualTree = treeViewItemTemplate;
+            Template = new ControlTemplate(typeof(TreeViewItem));
+            Template.VisualTree = VisualTree;
 
-            Setters.Add(new Setter(Control.TemplateProperty, controlTemplate));
+            Setters.Add(new Setter(Control.TemplateProperty, Template));
         }
 
         public static void Register(ResourceDictionary resources)

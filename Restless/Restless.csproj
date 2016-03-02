@@ -280,9 +280,11 @@
     <Compile Include="WpfExtensions\NameValuePanel.cs" />
     <Compile Include="WpfExtensions\Placeholder.cs" />
     <Compile Include="WpfExtensions\PropertyPathGenerator.cs" />
+    <Compile Include="WpfExtensions\RestlessTreeView.cs" />
     <Compile Include="WpfExtensions\StoryboardExtensions.cs" />
     <Compile Include="WpfExtensions\TreeViewExtensions.cs" />
     <Compile Include="WpfExtensions\TreeViewItemFilter.cs" />
+    <Compile Include="WpfExtensions\UIElementExtensions.cs" />
     <Compile Include="WpfExtensions\VisualStateExtensions.cs" />
     <EmbeddedResource Include="Properties\IconResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

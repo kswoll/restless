@@ -11,20 +11,22 @@ namespace Restless.Templates
 {
     public class TreeViewItemTemplate : Grid, IAddChild
     {
-        private ItemsPresenter itemsHost;
-        private ContentPresenter header;
+        public ItemsPresenter ItemsHost { get; private set; }
+        public ContentPresenter Header { get; private set; }
 
         void IAddChild.AddChild(object value)
         {
             if (value is ItemsPresenter)
-                itemsHost = (ItemsPresenter)value;
+                ItemsHost = (ItemsPresenter)value;
             else if (value is ContentPresenter)
-                header = (ContentPresenter)value;
+                Header = (ContentPresenter)value;
         }
 
         public override void EndInit()
         {
             var item = (TreeViewItem)TemplatedParent;
+            var treeView = item.FindAncestor<RestlessTreeView>();
+            treeView.NotifyItemCreated(item);
 
             this.AddRow(GridLength.Auto);
             RowDefinitions.Add(new RowDefinition());
@@ -44,11 +46,11 @@ namespace Restless.Templates
             };
             Children.Add(expander);
 
-            header.Content = item.Header;
-            header.ContentTemplate = item.HeaderTemplate;
-            header.ContentStringFormat = item.HeaderStringFormat;
-            header.HorizontalAlignment = item.HorizontalContentAlignment;
-            header.SnapsToDevicePixels = item.SnapsToDevicePixels;
+            Header.Content = item.Header;
+            Header.ContentTemplate = item.HeaderTemplate;
+            Header.ContentStringFormat = item.HeaderStringFormat;
+            Header.HorizontalAlignment = item.HorizontalContentAlignment;
+            Header.SnapsToDevicePixels = item.SnapsToDevicePixels;
             var border = new Border
             {
                 BorderThickness = item.BorderThickness,
@@ -57,11 +59,11 @@ namespace Restless.Templates
                 SnapsToDevicePixels = true
             };
             SetColumn(border, 1);
-            border.Child = header;
+            border.Child = Header;
             Children.Add(border);
 
-            SetColumnSpan(itemsHost, 2);
-            this.Add(itemsHost, 1, 1);
+            SetColumnSpan(ItemsHost, 2);
+            this.Add(ItemsHost, 1, 1);
 
             var colorTrigger = item.AddTrigger();
             colorTrigger.AddProperty(x => x.IsSelected);
@@ -98,10 +100,16 @@ namespace Restless.Templates
 
             var noItemsTrigger = item.AddTrigger();
             noItemsTrigger.AddProperty(x => x.IsExpanded);
-            noItemsTrigger.AddConditionalAction(x => !x.IsExpanded, setters => setters.Set(itemsHost, x => x.Visibility, Visibility.Collapsed));
-            noItemsTrigger.AddConditionalAction(x => x.IsExpanded, setters => setters.Set(itemsHost, x => x.Visibility, Visibility.Visible));
+            noItemsTrigger.AddConditionalAction(x => !x.IsExpanded, setters => setters.Set(ItemsHost, x => x.Visibility, Visibility.Collapsed));
+            noItemsTrigger.AddConditionalAction(x => x.IsExpanded, setters => setters.Set(ItemsHost, x => x.Visibility, Visibility.Visible));
 
             item.PairExpanded(expander, ToggleButton.CheckedEvent, ToggleButton.UncheckedEvent, ToggleButton.IsCheckedProperty);
+
+            item.Selected += (sender, args) =>
+            {
+                if (item.IsSelected)
+                    item.FindAncestor<RestlessTreeView>().NotifySelected(item);
+            };
 
             base.EndInit();
         }

@@ -28,7 +28,7 @@ namespace Restless.Controls.ResponseVisualizers
 
         public JsonResponseVisualizer()
         {
-            treeView = new TreeView();
+            treeView = new RestlessTreeView();
 
             filterTextBox.VerticalContentAlignment = VerticalAlignment.Center;
             Placeholder.SetPlaceholder(filterTextBox, "Type here and press enter to filter the results");
