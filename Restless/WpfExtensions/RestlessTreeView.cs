@@ -4,20 +4,33 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Restless.Templates;
+using SexyReact;
+using SexyReact.Views;
 
 namespace Restless.WpfExtensions
 {
-    public class RestlessTreeView : TreeView
+    public interface IRestlessTreeView
     {
-        public static readonly DependencyProperty SelectedTreeViewItemProperty = DependencyProperty.Register(nameof(SelectedTreeViewItem), typeof(TreeViewItem), typeof(TreeView));
+        void NotifySelected(TreeViewItem item);
+        void NotifyItemCreated(TreeViewItem item);
+    }
+
+    public static class RestlessTreeView
+    {
+        public static readonly DependencyProperty SelectedTreeViewItemProperty = DependencyProperty.Register(nameof(RestlessTreeView<IRxObject>.SelectedTreeViewItem), typeof(TreeViewItem), typeof(TreeView));
+    }
+
+    public class RestlessTreeView<T> : RxTreeView<T>, IRestlessTreeView
+        where T : IRxObject
+    {
 
         public event Action<TreeViewItem> ItemCreated;
         public event Action<TreeViewItem> ItemSelected;
 
         public TreeViewItem SelectedTreeViewItem
         {
-            get { return (TreeViewItem)GetValue(SelectedTreeViewItemProperty); }
-            set { SetValue(SelectedTreeViewItemProperty, value); }
+            get { return (TreeViewItem)GetValue(RestlessTreeView.SelectedTreeViewItemProperty); }
+            set { SetValue(RestlessTreeView.SelectedTreeViewItemProperty, value); }
         }
 
         protected override void OnKeyUp(KeyEventArgs args)
@@ -53,13 +66,13 @@ namespace Restless.WpfExtensions
             ItemSelected?.Invoke(item);
         }
 
-        internal void NotifySelected(TreeViewItem item)
+        void IRestlessTreeView.NotifySelected(TreeViewItem item)
         {
             SelectedTreeViewItem = item;
             OnItemSelected(item);
         }
 
-        internal void NotifyItemCreated(TreeViewItem item)
+        void IRestlessTreeView.NotifyItemCreated(TreeViewItem item)
         {
             OnItemCreated(item);
         }

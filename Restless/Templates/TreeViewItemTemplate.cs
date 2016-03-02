@@ -25,7 +25,7 @@ namespace Restless.Templates
         public override void EndInit()
         {
             var item = (TreeViewItem)TemplatedParent;
-            var treeView = item.FindAncestor<RestlessTreeView>();
+            var treeView = (IRestlessTreeView)item.FindAncestor<TreeView>();
             treeView.NotifyItemCreated(item);
 
             this.AddRow(GridLength.Auto);
@@ -108,7 +108,7 @@ namespace Restless.Templates
             item.Selected += (sender, args) =>
             {
                 if (item.IsSelected)
-                    item.FindAncestor<RestlessTreeView>().NotifySelected(item);
+                    ((IRestlessTreeView)item.FindAncestor<TreeView>()).NotifySelected(item);
             };
 
             base.EndInit();

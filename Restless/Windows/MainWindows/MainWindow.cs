@@ -31,7 +31,7 @@ namespace Restless.Windows.MainWindows
 
             ConfigureWindowStateAndPosition();
 
-            var apiList = new RestlessTreeView();
+            var apiList = new RestlessTreeView<ApiItemModel>();
 
             grid = new Grid();
             grid.AddColumn(300);
@@ -63,15 +63,9 @@ namespace Restless.Windows.MainWindows
             var apiPanel = new ApiPanel();
             var apiCollectionPanel = new ApiCollectionPanel();
 
-            var selectedItemBinder = new Binding("IsSelected");
-            selectedItemBinder.Mode = BindingMode.TwoWay;
-            var expandedItemBinder = new Binding("IsExpanded");
-            expandedItemBinder.Mode = BindingMode.TwoWay;
-
             var treeViewItemStyle = new TreeViewItemStyle();
-            treeViewItemStyle.AddSetter(x => x.IsSelected);
-            apiList.ItemContainerStyle.Setters.Add(new Setter(TreeViewItem.IsSelectedProperty, selectedItemBinder));
-            apiList.ItemContainerStyle.Setters.Add(new Setter(TreeViewItem.IsExpandedProperty, expandedItemBinder));
+            treeViewItemStyle.AddSetter(x => x.IsSelected, apiList.Bind(x => x.IsSelected));
+            treeViewItemStyle.AddSetter(x => x.IsExpanded, apiList.Bind(x => x.IsExpanded));
             apiList.ItemContainerStyle = treeViewItemStyle;
 
             this.Bind(x => x.Title).To(this, (window, title) => window.Title = title ?? "");
