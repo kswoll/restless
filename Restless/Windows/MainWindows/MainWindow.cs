@@ -52,11 +52,16 @@ namespace Restless.Windows.MainWindows
             apiList.ContextMenu = apiListContextMenu;
 
             var menu = new Menu();
+
             var fileMenu = menu.Add("_File");
             var newApiMenuItem = fileMenu.Add("New _Api");
             var newApiCollectionItem = fileMenu.Add("New Api _Collection");
             var exportAllMenuItem = fileMenu.Add("_Export");
             var importMenuItem = fileMenu.Add("_Import");
+
+            var editMenu = menu.Add("_Edit");
+            var copyMenuItem = editMenu.Add("_Copy");
+            var pasteMenuItem = editMenu.Add("_Paste");
 
             var content = new DockPanel { LastChildFill = true };
             content.Add(menu, Dock.Top);
