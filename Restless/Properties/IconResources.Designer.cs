@@ -19,7 +19,7 @@ namespace Restless.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class IconResources {
@@ -177,17 +177,17 @@ namespace Restless.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Viewbox xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; Stretch=&quot;Uniform&quot;&gt;
-        ///  &lt;Canvas Name=&quot;svg3493&quot; Width=&quot;97.991998&quot; Height=&quot;79.597001&quot;&gt;
+        ///  &lt;Canvas Name=&quot;Layer_1&quot; Width=&quot;470.20001&quot; Height=&quot;390.70001&quot; Canvas.Left=&quot;0&quot; Canvas.Top=&quot;0&quot;&gt;
         ///    &lt;Canvas.RenderTransform&gt;
         ///      &lt;TranslateTransform X=&quot;0&quot; Y=&quot;0&quot;/&gt;
         ///    &lt;/Canvas.RenderTransform&gt;
         ///    &lt;Canvas.Resources/&gt;
-        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
         ///    &lt;!--Unknown tag: metadata--&gt;
-        ///    &lt;Canvas Name=&quot;layer1&quot;&gt;
+        ///    &lt;!--Unknown tag: sodipodi:namedview--&gt;
+        ///    &lt;Canvas Name=&quot;g3339&quot;&gt;
         ///      &lt;Canvas.RenderTransform&gt;
-        ///        &lt;TranslateTransform X=&quot;-225.28971&quot; Y=&quot;-372.5637&quot;/&gt;
-        ///      &lt;/Canvas.RenderTransfo [rest of string was truncated]&quot;;.
+        ///        &lt;TranslateTransform X=&quot;-321.7&quot; Y=&quot;-684&quot;/&gt;
+        ///      &lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Send {
             get {
