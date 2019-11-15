@@ -119,8 +119,7 @@ namespace Restless.Database.Repositories
             Bind(apiItem, dbApiItem);
 
             MapScalarsToDb(apiItem, dbApiItem);
-            var api = apiItem as Api;
-            if (api != null)
+            if (apiItem is Api api)
             {
                 MapChildrenToDb(api.Inputs, dbApiItem.Inputs);
                 MapChildrenToDb(api.Outputs, dbApiItem.Outputs);
@@ -185,8 +184,7 @@ namespace Restless.Database.Repositories
                             MapScalarsToDb(childModelItem, childDbItem);
                             dbList.Add(childDbItem);
 
-                            var dbApiItem = childDbItem as DbApiItem;
-                            if (dbApiItem != null)
+                            if (childDbItem is DbApiItem dbApiItem)
                             {
                                 dbApiItem.ObservePropertyChange(x => x.Id).SubscribeOnce(x => childModelItem.Id = x);
                             }
